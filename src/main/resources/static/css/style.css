@@ -14,9 +14,20 @@ body {
     margin: 0px;
 }
 
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
 main {
     padding-top: calc(80px + 20px);
+/*    opacity: 0;*/
+/*    animation: fadeIn 0.1s 0.1s forwards;
+da mettere per evitare di visuallizare strani campi vue prima che si carichi il dom,
+però nmella pagina view-operations fa scazzare il modal*/
 }
+
+
 
 /* HOME PAGE */
 

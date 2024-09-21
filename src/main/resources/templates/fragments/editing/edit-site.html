@@ -1,4 +1,5 @@
 <div class="main-contact-card-container" th:fragment="edit-site">
+    <div th:data-info="|{'siteName': '${site.name}', 'address': '${site.address}'}|" ref="siteDiv">
     <form ref="editSiteForm" action="#" th:action="@{/admin/edit}" th:object="${site}" method="post" @submit.prevent="validateSiteForm" novalidate>
         <input type="hidden" name="tableName" th:value="'sites'" />
         <input type="hidden" th:field="*{id}" />

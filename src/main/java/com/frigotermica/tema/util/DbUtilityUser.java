@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,7 +31,9 @@ public class DbUtilityUser {
             String surname = rs.getString("surname");
             boolean enabled = rs.getBoolean("enabled");
             String role = rs.getString("authority");
-            UserModel user = new UserModel(id, username, email, name, surname, role, enabled);
+            int totalWorkHours = rs.getInt("total_work_hours");
+            LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
+            UserModel user = new UserModel(id, username, email, name, surname, totalWorkHours, createdAt, role, enabled);
             listUser.add(user);
         }
         rs.close();
@@ -53,7 +56,9 @@ public class DbUtilityUser {
             String surname = rs.getString("surname");
             boolean enabled = rs.getBoolean("enabled");
             String role = rs.getString("authority");
-            UserModel user = new UserModel(id, username, email, name, surname, role, enabled);
+            int totalWorkHours = rs.getInt("total_work_hours");
+            LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
+            UserModel user = new UserModel(id, username, email, name, surname, totalWorkHours, createdAt, role, enabled);
             listUser.add(user);
         }
         rs.close();

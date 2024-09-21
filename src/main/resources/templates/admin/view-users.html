@@ -57,6 +57,41 @@
 
     <h2>Lista utenti</h2>
 
+    <div>
+        <label for="filter-select">Filtra per:</label>
+        <select id="filter-select" v-model="selectedFilter" @change="applyFilter">
+            <option value="">Tutti</option>
+            <option value="username">Username</option>
+            <option value="name">Nome</option>
+            <option value="surname">Cognome</option>
+            <option value="email">Email</option>
+        </select>
+
+        <input type="text" v-model="searchUser" placeholder="Cerca..." @input="applyFilter" />
+
+        <label>
+            Escludi disabilitati:
+            <input type="checkbox" v-model="excludeDisabled" @change="applyFilter" />
+        </label>
+
+        <!-- Filtro per totale ore manutenzione -->
+        <label for="work-hours">Totale ore manutenzione:</label>
+        <select v-model="workHoursCondition" @change="applyFilter">
+            <option value="equal">Uguale a</option>
+            <option value="less">Minore di</option>
+            <option value="greater">Maggiore di</option>
+        </select>
+        <input type="number" v-model="workHoursValue" @input="applyFilter" placeholder="Inserisci ore" />
+
+        <!-- Filtro per data di creazione -->
+        <label>Data di creazione (inizio):</label>
+        <input type="date" v-model="startDate" @change="applyFilter" />
+
+        <label>Data di creazione (fine):</label>
+        <input type="date" v-model="endDate" @change="applyFilter" />
+        <button @click="resetFilters" class="btn btn-secondary">Reset Filtri</button>
+    </div>
+
     <table>
         <thead>
         <tr>
@@ -64,6 +99,8 @@
             <th>Username</th>
             <th>Email</th>
             <th>Nome</th>
+            <th>Totale ore manutenzione</th>
+            <th>Creato il</th>
             <th>Abilitato</th>
             <th>Menù</th>
         </tr>
@@ -73,7 +110,9 @@
             <td>{{ user.id }}</td>
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
-            <td>{{ user.name }}</td>
+            <td>{{ user.name }} {{ user.surname }}</td>
+            <td>{{ user.totalWorkHours }}</td>
+            <td>{{ formatDate(user.createdAt) }}</td>
             <td>{{ user.enabled ? 'Abilitato' : 'Disabilitato' }}</td>
             <td>
                 <div class="dropdown">
@@ -111,6 +150,9 @@
                     </div>
                 </div>
             </td>
+        </tr>
+        <tr v-if="filteredUsers.length === 0">
+            <td colspan="8">Nessun utente disponibile.</td>
         </tr>
         </tbody>
     </table>

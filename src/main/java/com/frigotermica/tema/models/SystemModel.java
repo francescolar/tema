@@ -19,14 +19,6 @@ public class SystemModel {
 
     private boolean enabled;
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
     public SystemModel(@NotNull int id, @NotNull String name, @NotNull int siteId, int totalWorkHours, boolean enabled) {
         this.id = id;
         this.name = name;
@@ -97,5 +89,24 @@ public class SystemModel {
     public void setTotalWorkHours(int totalWorkHours) {
         this.totalWorkHours = totalWorkHours;
     }
-    
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public String toString() {
+        return "SystemModel{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", siteId=" + siteId +
+                ", totalWorkHours=" + totalWorkHours +
+                ", deleted=" + deleted +
+                ", enabled=" + enabled +
+                '}';
+    }
 }

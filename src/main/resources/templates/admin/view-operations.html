@@ -42,6 +42,58 @@
 
     <h2>Tutte le manutenzioni</h2>
 
+    <div id="filters">
+        <!-- Filtro per data (inizio - fine) -->
+        <label>Data (inizio):</label>
+        <input type="date" v-model="startDate" @change="applyFilter" />
+
+        <label>Data (fine):</label>
+        <input type="date" v-model="endDate" @change="applyFilter" />
+
+        <!-- Filtro per sede -->
+        <label for="site-select">Sede:</label>
+        <select id="site-select" v-model="selectedSiteFilter" @change="applyFilter">
+            <option value="">Tutte</option>
+            <option v-for="site in sites" :value="site.id" :key="site.id">{{ site.name }}</option>
+        </select>
+
+        <!-- Filtro per impianto (disponibile solo dopo selezione sede) -->
+        <label for="system-select">Impianto:</label>
+        <select id="system-select" v-model="selectedSystemFilter" :disabled="!selectedSiteFilter" @change="applyFilter">
+            <option value="">Tutti</option>
+            <option v-for="system in filteredSystems" :value="system.id" :key="system.id">{{ system.name }}</option>
+        </select>
+
+        <!-- Filtro per ore impiegate -->
+        <label for="work-hours">Ore impiegate:</label>
+        <select v-model="hoursCondition" @change="applyFilter">
+            <option value="equal">Uguale a</option>
+            <option value="less">Minore di</option>
+            <option value="greater">Maggiore di</option>
+        </select>
+        <input type="number" v-model="hoursValue" @input="applyFilter" placeholder="Inserisci ore" />
+
+        <!-- Filtro per descrizione -->
+        <label for="description">Descrizione:</label>
+        <input type="text" v-model="descriptionFilter" @input="applyFilter" placeholder="Cerca descrizione" />
+
+        <!-- Filtro per utente -->
+        <label for="user-select">Utente:</label>
+        <select id="user-select" v-model="selectedUserFilter" @change="applyFilter">
+            <option value="">Tutti</option>
+            <option v-for="user in users" :value="user.id" :key="user.id">{{ user.username }}</option>
+        </select>
+
+        <!-- Filtro per data di creazione (inizio - fine) -->
+        <label>Data di creazione (inizio):</label>
+        <input type="date" v-model="createdStartDate" @change="applyFilter" />
+
+        <label>Data di creazione (fine):</label>
+        <input type="date" v-model="createdEndDate" @change="applyFilter" />
+        <button @click="resetFilters" class="btn btn-secondary">Reset Filtri</button>
+    </div>
+
+
     <table>
         <thead>
         <tr>
@@ -61,7 +113,7 @@
         <tbody>
         <tr v-for="op in filteredOps" :key="op.id">
             <td>{{ op.id }}</td>
-            <td>{{ op.date }}</td>
+            <td>{{ formatDate(op.date) }}</td>
             <td>{{ op.siteName }}</td>
             <td>{{ op.systemName }}</td>
             <td>{{ op.hoursSpent }}</td>

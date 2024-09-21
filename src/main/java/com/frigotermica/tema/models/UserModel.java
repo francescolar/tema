@@ -3,6 +3,8 @@ package com.frigotermica.tema.models;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.LocalDateTime;
+
 public class UserModel {
 
     @NotNull
@@ -29,6 +31,10 @@ public class UserModel {
 
     private String role;
 
+    private int totalWorkHours;
+
+    private LocalDateTime createdAt;
+
     private boolean enabled;
     private boolean deleted;
     
@@ -41,6 +47,20 @@ public class UserModel {
         this.email = email;
         this.name = name;
         this.surname = surname;
+        this.role = role;
+        this.enabled = enabled;
+    }
+
+    public UserModel(@NotNull int id, @NotNull @Size(min = 4, max = 30) String username,
+                     @NotNull @Size(min = 2, max = 100) String email, @NotNull @Size(min = 2, max = 50) String name,
+                     @Size(min = 2, max = 50) String surname, int totalWorkHours, LocalDateTime createdAt, String role, boolean enabled) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.name = name;
+        this.surname = surname;
+        this.totalWorkHours = totalWorkHours;
+        this.createdAt = createdAt;
         this.role = role;
         this.enabled = enabled;
     }
@@ -134,6 +154,32 @@ public class UserModel {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+    public int getTotalWorkHours() {
+        return totalWorkHours;
+    }
+    public void setTotalWorkHours(int totalWorkHours) {
+        this.totalWorkHours = totalWorkHours;
+    }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
-    
+
+    @Override
+    public String toString() {
+        return "UserModel{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", role='" + role + '\'' +
+                ", enabled=" + enabled +
+                ", deleted=" + deleted +
+                '}';
+    }
 }

@@ -39,10 +39,8 @@ public class AdminWebController implements WebMvcConfigurer {
     @GetMapping("/admin/view-users")
     public String viewUsers(Model model) {
         try {
-            List<UserModel> usersList = DbUtilityUser.getAll();
-            model.addAttribute("users", usersList);
             return "admin/view-users";
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "redirect:/error";
         }

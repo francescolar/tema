@@ -40,17 +40,55 @@
 <main class="homepage" id="app" th:attr="data-auth-id=${authId}">
     <h2>Tutte le sedi</h2>
 
-<!--    aggiungere stile flex box   -->
+    <div id="site-filters">
+        <label for="siteName">Nome sede:</label>
+        <input type="text" v-model="siteNameFilter" placeholder="Cerca per nome sede" @input="applySiteFilter" />
+
+        <label for="city">Città sede:</label>
+        <input type="text" v-model="cityFilter" placeholder="Cerca per città" @input="applySiteFilter" />
+
+        <label for="numImpianti">Numero impianti:</label>
+        <select v-model="numImpiantiCondition" @change="applySiteFilter">
+            <option value="equal">Uguale a</option>
+            <option value="less">Minore di</option>
+            <option value="greater">Maggiore di</option>
+        </select>
+        <input type="number" v-model="numImpiantiValue" @input="applySiteFilter" placeholder="Inserisci numero impianti" />
+
+        <label for="totManutenzione">Totale ore manutenzione:</label>
+        <select v-model="totManutenzioneCondition" @change="applySiteFilter">
+            <option value="equal">Uguale a</option>
+            <option value="less">Minore di</option>
+            <option value="greater">Maggiore di</option>
+        </select>
+        <input type="number" v-model="totManutenzioneValue" @input="applySiteFilter" placeholder="Inserisci ore manutenzione" />
+
+        <label>
+            Abilitato:
+            <input type="checkbox" v-model="excludeDisabledSites" @change="applySiteFilter" />
+        </label>
+
+        <label>
+            Sedi con 0 impianti:
+            <input type="checkbox" v-model="excludeZeroSystems" @change="applySiteFilter" />
+        </label>
+
+        <button @click="resetSiteFilters" class="btn btn-secondary">Reset Filtri</button>
+    </div>
+
+
+    <!--    aggiungere stile flex box   -->
     <div style="display:flex;">
         <div v-if="sites.length === 0">
             <p colspan="4">Nessuna sede disponibile.</p>
         </div>
-    <div class="card text-start" v-for="site in sites" :key="site.id">
+    <div class="card text-start" v-for="site in filteredSites" :key="site.id">
         <div class="card-body">
             <h4 class="card-title">(ID: {{ site.id }}) {{ site.name }}</h4>
             <p class="card-text">{{ site.address }}</p>
             <p class="card-text">Tot. h. manutenzioni: {{ site.totalWorkHours }}</p>
             <p class="card-text">Impianti tot.: {{ site.totalSystems }}</p>
+            <p class="card-text">Abilitato: {{ site.enabled ? 'Sì' : 'No' }}</p>
             <div class="dropdown open">
                 <a
                         class="btn btn-secondary dropdown-toggle"
@@ -102,8 +140,6 @@
     <div th:replace="~{fragments/insert-site :: insert-site}"></div>
     <div th:replace="~{fragments/insert-system :: insert-system}"></div>
 
-
-
     <div
             class="offcanvas offcanvas-start"
             style="width: 500px;"
@@ -124,6 +160,26 @@
             ></button>
         </div>
         <div class="offcanvas-body">
+            <div id="system-filters">
+                <label for="systemName">Nome impianto:</label>
+                <input type="text" v-model="systemNameFilter" placeholder="Cerca per nome impianto" @input="applySystemFilter" />
+
+                <label for="totManutenzioneSystem">Totale ore manutenzione:</label>
+                <select v-model="totManutenzioneSystemCondition" @change="applySystemFilter">
+                    <option value="equal">Uguale a</option>
+                    <option value="less">Minore di</option>
+                    <option value="greater">Maggiore di</option>
+                </select>
+                <input type="number" v-model="totManutenzioneSystemValue" @input="applySystemFilter" placeholder="Inserisci ore manutenzione" />
+
+                <label>
+                    Abilitato:
+                    <input type="checkbox" v-model="excludeDisabledSystems" @change="applySystemFilter" />
+                </label>
+
+                <button @click="resetSystemFilters" class="btn btn-secondary">Reset Filtri</button>
+            </div>
+
             <div>
                 <td colspan="3">
                     <table>
@@ -132,14 +188,16 @@
                             <th>ID Impianto</th>
                             <th>Nome Impianto</th>
                             <th>Ore totali manutenzioni</th>
+                            <th>Abilitato</th>
                             <th>Menù</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="system in getSystemsForSite()" :key="system.id">
+                        <tr v-for="system in filteredSystems" :key="system.id">
                             <td>{{ system.id }}</td>
                             <td>{{ system.name }}</td>
                             <td>{{ system.totalWorkHours }}</td>
+                            <td>{{ system.enabled ? 'No' : 'Sì' }}</td>
                             <td>
                                 <div class="dropdown">
                                     <button

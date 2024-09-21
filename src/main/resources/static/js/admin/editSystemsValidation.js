@@ -11,6 +11,13 @@ new Vue({
         }
     },
     mounted() {
+        try {
+            const info = JSON.parse(this.$refs.systemDiv.getAttribute('data-info').replace(/'/g, '"'));
+            this.systemName = info.systemName;
+            this.selectedSiteId = info.selectedSiteId;
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+        }
         this.fetchSites();
     },
     methods: {

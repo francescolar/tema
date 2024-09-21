@@ -1,4 +1,5 @@
 <div class="main-contact-card-container" th:fragment="edit-system">
+    <div th:data-info="|{'systemName': '${system.name}', 'selectedSiteId': '${system.siteId}'}|" ref="systemDiv">
     <form ref="editSystemForm" action="#" th:action="@{/admin/edit}" th:object="${system}" method="post" @submit.prevent="validateSystemForm" novalidate>
         <input type="hidden" name="tableName" th:value="'systems'" />
         <input type="hidden" th:field="*{id}" />

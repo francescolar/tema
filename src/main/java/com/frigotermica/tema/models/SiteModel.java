@@ -107,5 +107,17 @@ public class SiteModel {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-    
+
+    @Override
+    public String toString() {
+        return "SiteModel{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", deleted=" + deleted +
+                ", enabled=" + enabled +
+                ", totalWorkHours=" + totalWorkHours +
+                ", totalSystems=" + totalSystems +
+                '}';
+    }
 }

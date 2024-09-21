@@ -141,9 +141,18 @@ public class OperationModel {
         this.deleted = deleted;
     }
 
+
     @Override
     public String toString() {
-        return "OperationModel [id=" + id + ", date=" + date + ", description=" + description + ", hoursSpent="
-                + hoursSpent + ", site_id=" + siteId + ", system_id=" + systemId + ", user_id=" + userId + "]";
+        return "OperationModel{" +
+                "id=" + id +
+                ", date=" + date +
+                ", description='" + description + '\'' +
+                ", hoursSpent=" + hoursSpent +
+                ", siteId=" + siteId +
+                ", systemId=" + systemId +
+                ", userId=" + userId +
+                ", deleted=" + deleted +
+                '}';
     }
 }

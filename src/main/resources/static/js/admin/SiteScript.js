@@ -8,17 +8,104 @@ document.addEventListener('DOMContentLoaded', function() {
       siteName: '',
       systemName: '',
       selectedSiteId: '',
+      // Filtri siti
+      siteNameFilter: '',
+      cityFilter: '',
+      numImpiantiCondition: 'equal',
+      numImpiantiValue: null,
+      totManutenzioneCondition: 'equal',
+      totManutenzioneValue: null,
+      excludeDisabledSites: false,
+      excludeZeroSystems: false,
+
+      // Filtri impianti
+      systemNameFilter: '',
+      totManutenzioneSystemCondition: 'equal',
+      totManutenzioneSystemValue: null,
+      excludeDisabledSystems: false,
+
       siteErrors: {
         siteName: false,
       },
       systemErrors: {
         systemName: false,
         selectedSiteId: false,
-      }
+      },
+      googleApiKey: null
     },
     mounted() {
       this.fetchSites();
       this.fetchSystems();
+      this.loadGoogleMapsApi();
+    },
+    computed: {
+      filteredSites() {
+        let filtered = this.sites;
+
+        // Filtro per nome sede
+        if (this.siteNameFilter) {
+          filtered = filtered.filter(site => site.name.toLowerCase().includes(this.siteNameFilter.toLowerCase()));
+        }
+
+        // Filtro per città
+        if (this.cityFilter) {
+          filtered = filtered.filter(site => site.address.toLowerCase().includes(this.cityFilter.toLowerCase()));
+        }
+
+        // Filtro per numero impianti
+        if (this.numImpiantiValue !== null) {
+          filtered = filtered.filter(site => {
+            if (this.numImpiantiCondition === 'greater') return site.totalSystems > this.numImpiantiValue;
+            if (this.numImpiantiCondition === 'less') return site.totalSystems < this.numImpiantiValue;
+            return site.totalSystems == this.numImpiantiValue;
+          });
+        }
+
+        // Filtro per ore manutenzione
+        if (this.totManutenzioneValue !== null) {
+          filtered = filtered.filter(site => {
+            if (this.totManutenzioneCondition === 'greater') return site.totalWorkHours > this.totManutenzioneValue;
+            if (this.totManutenzioneCondition === 'less') return site.totalWorkHours < this.totManutenzioneValue;
+            return site.totalWorkHours == this.totManutenzioneValue;
+          });
+        }
+
+        // Escludi sedi disabilitate
+        if (this.excludeDisabledSites) {
+          filtered = filtered.filter(site => site.enabled);
+        }
+
+        // Escludi sedi con 0 impianti
+        if (this.excludeZeroSystems) {
+          filtered = filtered.filter(site => site.totalSystems === 0);
+        }
+
+        return filtered;
+      },
+      filteredSystems() {
+        let filtered = this.getSystemsForSite();
+
+        // Filtro per nome impianto
+        if (this.systemNameFilter) {
+          filtered = filtered.filter(system => system.name.toLowerCase().includes(this.systemNameFilter.toLowerCase()));
+        }
+
+        // Filtro per ore manutenzione
+        if (this.totManutenzioneSystemValue !== null) {
+          filtered = filtered.filter(system => {
+            if (this.totManutenzioneSystemCondition === 'greater') return system.totalWorkHours > this.totManutenzioneSystemValue;
+            if (this.totManutenzioneSystemCondition === 'less') return system.totalWorkHours < this.totManutenzioneSystemValue;
+            return system.totalWorkHours == this.totManutenzioneSystemValue;
+          });
+        }
+
+        // Escludi impianti disabilitati
+        if (this.excludeDisabledSystems) {
+          filtered = filtered.filter(system => system.enabled);
+        }
+
+        return filtered;
+      }
     },
     methods: {
       validateSiteForm() {
@@ -55,6 +142,33 @@ document.addEventListener('DOMContentLoaded', function() {
           selectedSiteId: false,
         };
       },
+      applySiteFilter() {
+        this.filteredSites; // Forza il ricalcolo dei filtri
+      },
+      // Applica i filtri agli impianti
+      applySystemFilter() {
+        this.filteredSystems; // Forza il ricalcolo dei filtri
+      },
+      // Reset filtri siti
+      resetSiteFilters() {
+        this.siteNameFilter = '';
+        this.cityFilter = '';
+        this.numImpiantiCondition = 'equal';
+        this.numImpiantiValue = null;
+        this.totManutenzioneCondition = 'equal';
+        this.totManutenzioneValue = null;
+        this.excludeDisabledSites = false;
+        this.excludeZeroSystems = false;
+        this.applySiteFilter(); // Ricalcola i dati filtrati
+      },
+      // Reset filtri impianti
+      resetSystemFilters() {
+        this.systemNameFilter = '';
+        this.totManutenzioneSystemCondition = 'equal';
+        this.totManutenzioneSystemValue = null;
+        this.excludeDisabledSystems = false;
+        this.applySystemFilter(); // Ricalcola i dati filtrati
+      },
       fetchSites() {
         axios.get('/api/sites/all')
           .then(response => {
@@ -75,52 +189,43 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       getSystemsForSite() {
         return this.systems.filter(system => system.siteId === this.siteId);
+      },
+      async loadGoogleMapsApi() {
+        try {
+          const response = await fetch('/api/google-maps-key');
+          const apiKey = await response.text();
+          this.googleApiKey = apiKey;
+
+          const script = document.createElement("script");
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+          script.async = true;
+          script.defer = true;
+          document.head.appendChild(script);
+
+          script.onload = this.initAutocomplete;
+        } catch (error) {
+          console.error('Error fetching API key:', error);
+        }
+      },
+      initAutocomplete() {
+        const addressInput = document.getElementById("address");
+
+        if (addressInput) {
+          const autocomplete = new google.maps.places.Autocomplete(addressInput, {
+            types: ["geocode"],
+          });
+
+          autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+
+            if (place.formatted_address) {
+              addressInput.value = place.formatted_address;
+            }
+          });
+        } else {
+          console.error("Indirizzo input non trovato!");
+        }
       }
     }
   });
 });
-
-async function loadGoogleMapsApi() {
-    try {
-      const response = await fetch('/api/google-maps-key');
-      const apiKey = await response.text();
-
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
-      document.head.appendChild(script);
-    } catch (error) {
-      console.error('Error fetching API key:', error);
-    }
-  }
-
-  loadGoogleMapsApi();
-
-
-
-
-async function initMap() {
-  // Request needed libraries.
-  //@ts-ignore
-  await google.maps.importLibrary("places");
-
-  // Get the input element by ID.
-  const addressInput = document.getElementById("address");
-
-  // Create the autocomplete object, restricting the search to geographical location types.
-  //@ts-ignore
-  const autocomplete = new google.maps.places.Autocomplete(addressInput, {
-    types: ["geocode"], // You can restrict to certain types like geocode if needed
-  });
-
-  // When the user selects an address from the dropdown
-  autocomplete.addListener("place_changed", () => {
-    const place = autocomplete.getPlace();
-
-    // Populate the address field with the formatted address
-    if (place.formatted_address) {
-      addressInput.value = place.formatted_address;
-    }
-  });
-}
-
-initMap();
