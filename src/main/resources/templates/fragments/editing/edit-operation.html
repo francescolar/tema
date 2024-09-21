@@ -1,0 +1,89 @@
+<div class="main-contact-card-container" th:fragment="edit-operation">
+    <div th:object="${op}" th:data-date="${op.date}" ref="dataDiv">
+        <p><strong>Data:</strong> <span>{{ formattedDate }}</span></p>
+        <p><strong>Descrizione:</strong> <span th:text="*{description}"></span></p>
+        <p><strong>Ore impiegate:</strong> <span th:text="*{hoursSpent}"></span></p>
+        <p><strong>Nome sito:</strong> <span th:text="*{siteName}"></span></p>
+        <p><strong>Nome impianto:</strong> <span th:text="*{systemName}"></span></p>
+        <p><strong>Utente:</strong> <span th:text="*{username}"></span></p>
+    </div>
+
+    <div>
+        <form id="operationForm" ref="operationForm" th:action="@{/admin/edit}" th:object="${operation}" method="post" novalidate>
+            <div class="mb-3">
+                <input type="hidden" name="tableName" th:value="'operations'" />
+                <input type="hidden" th:field="${op.id}" />
+                <label for="date" class="form-label">Data e ora esecuzione</label>
+                <input
+                        type="datetime-local"
+                        name="date"
+                        id="date"
+                        class="form-control"
+                        placeholder=""
+                        aria-describedby="helpId"
+                />
+                <small id="helpId" class="text-muted">Inserisci la data in cui è stata eseguita la manutenzione</small>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Descrizione</label>
+                <textarea class="form-control" name="description" id="description" rows="3"></textarea>
+            </div>
+            <div class="mb-3 counter-container">
+                <label for="hoursSpent" class="form-label">Descrizione</label>
+
+                <div class="counter-button" tabindex="0" @click="decrease(5)">-5</div>
+                <div class="counter-button" tabindex="0" @click="decrease(1)">-1</div>
+
+                <input class="counter-input" type="number" name="hoursSpent" id="hoursSpent" :value="counter" readonly>
+
+                <div class="counter-button" tabindex="0" @click="increase(1)">+1</div>
+                <div class="counter-button" tabindex="0" @click="increase(5)">+5</div>
+            </div>
+            <div class="mb-3">
+                <label for="siteId" class="form-label">Sede</label>
+                <select
+                        class="form-select form-select-lg"
+                        name="siteId"
+                        id="siteId"
+                        v-model="selectedSiteId"
+                >
+                    <option value="" selected>Seleziona una...</option>
+                    <option v-for="site in sites" :value="site.id" :key="site.id">{{ site.name }}</option>
+                </select>
+            </div>
+            <div class="mb-3" v-if="filteredSystems.length > 0">
+                <label for="systemId" class="form-label">Impianto</label>
+                <select
+                        class="form-select form-select-lg"
+                        name="systemId"
+                        id="systemId"
+                        v-model="selectedSystemId"
+                >
+                    <option value="" selected>Seleziona una...</option>
+                    <option v-for="system in filteredSystems" :value="system.id" :key="system.id">{{ system.name }}</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="userId" class="form-label">Utente</label>
+                <select
+                        class="form-select form-select-lg"
+                        name="userId"
+                        id="userId"
+                        v-model="selectedUserId"
+                >
+                    <option value="" selected>Seleziona una...</option>
+                    <option v-for="user in users" :value="user.id" :key="user.id">({{ user.id }}) {{ user.username }}: {{ user.name }} {{ user.surname }}</option>
+                </select>
+            </div>
+
+            <button
+                    type="submit"
+                    class="btn btn-outline-primary"
+            >
+                Invia
+            </button>
+
+        </form>
+    </div>
+
+</div>

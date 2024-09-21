@@ -1,0 +1,148 @@
+/* GENERAL */
+
+:root {
+    color-scheme: light;
+}
+
+body {
+    color: light-dark(#333b3c, #efefec);
+    background-color: light-dark(#efedea, #223a2c);
+}
+
+* {
+    font-family:sans-serif;
+    margin: 0px;
+}
+
+main {
+    padding-top: calc(80px + 20px);
+}
+
+/* HOME PAGE */
+
+.homepage {
+    margin: 200px 0px 0px 200px;
+}
+
+.welcome-message {
+    font-size: 50px;
+}
+
+.welcome-message a {
+    text-decoration: none;
+}
+
+/* LOGIN */
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    margin: 100px auto 0px auto;
+    padding: 100px 50px;
+    width: 500px;
+    background-color: #09f16a;
+    border-radius: 20px;
+}
+
+.login-container h2 {
+    padding-bottom: 60px;
+    text-align: center;
+}
+
+.login-container form button {
+    margin-top: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+#show-password {
+    position: absolute;
+    margin: -40px 0 0 360px;
+    z-index: 5;
+    cursor: pointer;
+}
+
+/* REGISTER */
+
+.register-container {
+    display: flex;
+    flex-direction: column;
+    margin: 100px auto 0px auto;
+    padding: 100px 50px;
+    width: 500px;
+    background-color: #09f16a;
+    border-radius: 20px;
+}
+
+.register-container h2 {
+    padding-bottom: 60px;
+    text-align: center;
+}
+
+.register-container form button {
+    margin-top: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+#show-password-confirm {
+    position: absolute;
+    margin: -40px 0 0 360px;
+    z-index: 5;
+    cursor: pointer;
+}
+
+/* VIEW LIST USER */
+
+table {
+    width: 70%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+th {
+    background-color: #f2f2f2;
+}
+select {
+    padding: 5px;
+}
+
+.link-button {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+}
+
+/* INSERT OPERATION */
+
+.counter-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 50px;
+  }
+  .counter-button {
+    font-size: 20px;
+    margin: 0 10px;
+    padding: 10px 20px;
+    background-color: #eee;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 5px;
+    display: inline-block;
+  }
+  .counter-input {
+    font-size: 24px;
+    width: 100px;
+    text-align: center;
+  }
+  .counter-button:focus {
+    outline: 2px solid blue;
+  }

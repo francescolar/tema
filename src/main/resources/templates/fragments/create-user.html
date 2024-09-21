@@ -1,0 +1,124 @@
+<div
+        class="modal fade"
+        id="modalId"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="modalTitleId"
+        aria-hidden="true"
+        th:fragment="create-user"
+>
+    <div class="modal-dialog" role="document">
+        <div style="background: none; border: none;" class="modal-content">
+            <div class="register-container">
+                <h2>Inserisci i dati del nuovo utente</h2>
+                <form id="registerForm" ref="registerForm" th:action="@{/admin/create-user}" th:object="${user}" method="post" @submit.prevent="validateForm" novalidate>
+                    <div class="form-floating mb-3">
+                        <input
+                                type="text"
+                                class="form-control"
+                                name="username"
+                                id="username"
+                                placeholder=""
+                                v-model="username"
+                        />
+                        <label for="username">Username</label>
+                    </div>
+                    <div
+                            th:if="${usernameExist}"
+                            class="alert alert-danger alert-dismissible fade show"
+                            role="alert"
+                    >
+                        <strong>Errore.</strong> L'username è già esistente
+                    </div>
+                    <div
+                            v-if="errors.username"
+                            class="alert alert-danger alert-dismissible fade show"
+                            role="alert"
+                    >
+                        <strong>Errore.</strong> L'username deve avere minimo 4 caratteri
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input
+                                type="email"
+                                class="form-control"
+                                name="email"
+                                id="email"
+                                placeholder=""
+                                v-model="email"
+                                required
+                        />
+                        <label for="email">Email</label>
+                    </div>
+                    <div
+                            th:if="${emailExist}"
+                            class="alert alert-danger alert-dismissible fade show"
+                            role="alert"
+                    >
+                        <strong>Errore.</strong> L'email è già esistente
+                    </div>
+                    <div
+                            v-if="errors.email"
+                            class="alert alert-danger alert-dismissible fade show"
+                            role="alert"
+                    >
+                        <strong>Errore.</strong>
+                        L'email presenta degli errori.
+                        <ul>
+                            <li>è vuota</li>
+                            <li>non ha un corretto formato</li>
+                        </ul>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input
+                                type="text"
+                                class="form-control"
+                                name="name"
+                                id="name"
+                                placeholder=""
+                                v-model="name"
+                        />
+                        <label for="name">Nome</label>
+                    </div>
+                    <div
+                            v-if="errors.name"
+                            class="alert alert-danger alert-dismissible fade show"
+                            role="alert"
+                    >
+                        <strong>Errore.</strong> Inserisci il nome.
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input
+                                type="text"
+                                class="form-control"
+                                name="surname"
+                                id="surname"
+                                placeholder=""
+                                v-model="surname"
+                        />
+                        <label for="surname">Cognome</label>
+                    </div>
+                    <div
+                            v-if="errors.surname"
+                            class="alert alert-danger alert-dismissible fade show"
+                            role="alert"
+                    >
+                        <strong>Errore.</strong> Inserisci il cognome.
+                    </div>
+                    <button
+                            type="submit"
+                            class="btn btn-primary"
+                    >
+                        Crea utente
+                    </button>
+                    <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                    >
+                        Close
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <link rel="icon" href="/img/site/favicon.png" type="image/x-icon" >
+    <link rel="shortcut icon" href="/img/site/favicon.png" type="image/x-icon" >
+    <meta http-equiv="Content-Language" content="IT">
+    <meta name="copyright" content="Frigotermica S.R.L.">
+    <meta charset="UTF-8" />
+    <title>TeMa | Tutte le sedi</title>
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="sites list">
+    <meta name="keywords" content="sites">
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+    />
+    <link id="theme-stylesheet-main" rel="stylesheet" type="text/css" href="/css/style.css" />
+    <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous" defer
+    ></script>
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous" defer
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+    <script src="/js/admin/SiteScript.js" type="text/javascript" defer></script>
+
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<main class="homepage" id="app" th:attr="data-auth-id=${authId}">
+    <h2>Tutte le sedi</h2>
+
+<!--    aggiungere stile flex box   -->
+    <div style="display:flex;">
+        <div v-if="sites.length === 0">
+            <p colspan="4">Nessuna sede disponibile.</p>
+        </div>
+    <div class="card text-start" v-for="site in sites" :key="site.id">
+        <div class="card-body">
+            <h4 class="card-title">(ID: {{ site.id }}) {{ site.name }}</h4>
+            <p class="card-text">{{ site.address }}</p>
+            <p class="card-text">Tot. h. manutenzioni: {{ site.totalWorkHours }}</p>
+            <p class="card-text">Impianti tot.: {{ site.totalSystems }}</p>
+            <div class="dropdown open">
+                <a
+                        class="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        id="triggerId"
+                        data-bs-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                >
+                    Azioni
+                </a>
+                <div class="dropdown-menu" aria-labelledby="triggerId">
+                    <form th:action="@{/admin/edit}" method="get">
+                        <input type="hidden" name="id" :value="site.id">
+                        <input type="hidden" name="tableName" th:value="'sites'" />
+                        <button type="submit" class="dropdown-item">Modifica</button>
+                    </form>
+                    <form th:action="@{/admin/toggle}" method="post">
+                        <input type="hidden" name="id" :value="site.id">
+                        <input type="hidden" name="tableName" th:value="'sites'" />
+                        <button type="submit" :class="site.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Disabilita</button>
+                    </form>
+                    <form th:action="@{/admin/toggle}" method="post">
+                        <input type="hidden" name="id" :value="site.id" />
+                        <input type="hidden" name="tableName" th:value="'sites'" />
+                        <button type="submit" :class="!site.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Abilita</button>
+                    </form>
+                    <form th:action="@{/admin/delete}" method="post">
+                        <input type="hidden" name="id" :value="site.id" />
+                        <input type="hidden" name="tableName" th:value="'sites'" />
+                        <button type="submit" class="dropdown-item">Elimina</button>
+                    </form>
+                    <button
+                            class="dropdown-item"
+                            type="button"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#Id1"
+                            aria-controls="Id1"
+                            @click="siteId = site.id"
+                    >
+                        Lista impianti
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div th:replace="~{fragments/insert-site :: insert-site}"></div>
+    <div th:replace="~{fragments/insert-system :: insert-system}"></div>
+
+
+
+    <div
+            class="offcanvas offcanvas-start"
+            style="width: 500px;"
+            data-bs-scroll="true"
+            tabindex="-1"
+            id="Id1"
+            aria-labelledby="Enable both scrolling & backdrop"
+    >
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="Enable both scrolling & backdrop">
+                Lista impianti
+            </h5>
+            <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="offcanvas"
+                    aria-label="Close"
+            ></button>
+        </div>
+        <div class="offcanvas-body">
+            <div>
+                <td colspan="3">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID Impianto</th>
+                            <th>Nome Impianto</th>
+                            <th>Ore totali manutenzioni</th>
+                            <th>Menù</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="system in getSystemsForSite()" :key="system.id">
+                            <td>{{ system.id }}</td>
+                            <td>{{ system.name }}</td>
+                            <td>{{ system.totalWorkHours }}</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button
+                                            class="btn btn-primary dropdown-toggle"
+                                            type="button"
+                                            id="triggerId2"
+                                            data-bs-toggle="dropdown"
+                                            aria-haspopup="true"
+                                            aria-expanded="false"
+                                    >
+                                        Azioni
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="triggerId2">
+                                        <form th:action="@{/admin/edit}" method="get">
+                                            <input type="hidden" name="id" :value="system.id">
+                                            <input type="hidden" name="tableName" th:value="'systems'" />
+                                            <button type="submit" class="dropdown-item">Modifica</button>
+                                        </form>
+                                        <form th:action="@{/admin/toggle}" method="post">
+                                            <input type="hidden" name="id" :value="system.id">
+                                            <input type="hidden" name="tableName" th:value="'systems'" />
+                                            <button type="submit" :class="system.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Disabilita</button>
+                                        </form>
+                                        <form th:action="@{/admin/toggle}" method="post">
+                                            <input type="hidden" name="id" :value="system.id" />
+                                            <input type="hidden" name="tableName" th:value="'systems'" />
+                                            <button type="submit" :class="!system.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Abilita</button>
+                                        </form>
+                                        <form th:action="@{/admin/delete}" method="post">
+                                            <input type="hidden" name="id" :value="system.id" />
+                                            <input type="hidden" name="tableName" th:value="'systems'" />
+                                            <button type="submit" class="dropdown-item">Elimina</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-if="getSystemsForSite().length === 0">
+                            <td colspan="4">Nessun impianto associato a questo sito.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

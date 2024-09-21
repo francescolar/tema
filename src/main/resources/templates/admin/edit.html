@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <link rel="icon" href="/img/site/favicon.png" type="image/x-icon" >
+    <link rel="shortcut icon" href="/img/site/favicon.png" type="image/x-icon" >
+    <meta http-equiv="Content-Language" content="IT">
+    <meta name="copyright" content="Frigotermica S.R.L.">
+    <meta charset="UTF-8" />
+    <th:block th:switch="${tableName}">
+        <title th:case="'operations'">TeMa | Modifica manutenzione</title>
+        <title th:case="'users'">TeMa | Modifica utente</title>
+        <title th:case="'sites'">TeMa | Modifica sede</title>
+        <title th:case="'systems'">TeMa | Modifica impianto</title>
+        <title th:case="*">TeMa | Modifica</title>
+    </th:block>
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="Users edit">
+    <meta name="keywords" content="Users">
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+    />
+    <link id="theme-stylesheet-main" rel="stylesheet" type="text/css" href="/css/style.css" />
+    <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous" defer
+    ></script>
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous" defer
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+    <span th:if="${tableName == 'users'}">
+        <script src="/js/admin/editUserValidation.js" type="text/javascript" defer></script>
+    </span>
+    <span th:if="${tableName == 'operations'}">
+            <script src="/js/admin/editOpsValidation.js" type="text/javascript" defer></script>
+    </span>
+    <span th:if="${tableName == 'sites'}">
+            <script src="/js/admin/editSitesValidation.js" type="text/javascript" defer></script>
+    </span>
+    <span th:if="${tableName == 'systems'}">
+            <script src="/js/admin/editSystemsValidation.js" type="text/javascript" defer></script>
+    </span>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<main id="app">
+    <th:block th:if="${tableName == 'users'}">
+        <div th:replace="~{fragments/editing/edit-user :: edit-user}"></div>
+    </th:block>
+
+    <th:block th:if="${tableName == 'operations'}">
+        <div th:replace="~{fragments/editing/edit-operation :: edit-operation}"></div>
+    </th:block>
+
+    <th:block th:if="${tableName == 'sites'}">
+        <div th:replace="~{fragments/editing/edit-site :: edit-site}"></div>
+    </th:block>
+
+    <th:block th:if="${tableName == 'systems'}">
+        <div th:replace="~{fragments/editing/edit-system :: edit-system}"></div>
+    </th:block>
+</main>

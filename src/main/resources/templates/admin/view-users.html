@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <link rel="icon" href="/img/site/favicon.png" type="image/x-icon" >
+    <link rel="shortcut icon" href="/img/site/favicon.png" type="image/x-icon" >
+    <meta http-equiv="Content-Language" content="IT">
+    <meta name="copyright" content="Frigotermica S.R.L.">
+    <meta charset="UTF-8" />
+    <title>TeMa | Lista utenti</title>
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="Users list">
+    <meta name="keywords" content="Users">
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+    />
+    <link id="theme-stylesheet-main" rel="stylesheet" type="text/css" href="/css/style.css" />
+    <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous" defer
+    ></script>
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous" defer
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+    <script src="/js/admin/UserScript.js" type="text/javascript" defer></script>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<main class="homepage" id="app" th:attr="data-auth-id=${authId}">
+    <div th:replace="~{fragments/create-user :: create-user}"></div>
+
+    <h2>Lista utenti</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Nome</th>
+            <th>Abilitato</th>
+            <th>Menù</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="user in filteredUsers" :key="user.id">
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.enabled ? 'Abilitato' : 'Disabilitato' }}</td>
+            <td>
+                <div class="dropdown">
+                    <button
+                            class="btn btn-primary dropdown-toggle"
+                            type="button"
+                            id="triggerId"
+                            data-bs-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                    >
+                        Azioni
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="triggerId">
+                        <form th:action="@{/admin/edit}" method="get">
+                            <input type="hidden" name="id" :value="user.id">
+                            <input type="hidden" name="tableName" th:value="'users'" />
+                            <button type="submit" class="dropdown-item">Modifica</button>
+                        </form>
+                        <form th:action="@{/admin/toggle}" method="post">
+                            <input type="hidden" name="id" :value="user.id">
+                            <input type="hidden" name="tableName" th:value="'users'" />
+                            <button type="submit" :class="user.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Disabilita</button>
+                        </form>
+                        <form th:action="@{/admin/toggle}" method="post">
+                            <input type="hidden" name="id" :value="user.id" />
+                            <input type="hidden" name="tableName" th:value="'users'" />
+                            <button type="submit" :class="!user.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Abilita</button>
+                        </form>
+                        <form th:action="@{/admin/delete}" method="post">
+                            <input type="hidden" name="id" :value="user.id" />
+                            <input type="hidden" name="tableName" th:value="'users'" />
+                            <button type="submit" class="dropdown-item">Elimina</button>
+                        </form>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <button
+            type="button"
+            class="btn btn-primary btn-lg"
+            data-bs-toggle="modal"
+            data-bs-target="#modalId"
+    >
+        Aggiungi utente
+    </button>
+</main>
+</body>
+
+</html>

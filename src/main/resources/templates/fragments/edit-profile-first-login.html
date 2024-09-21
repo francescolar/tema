@@ -1,0 +1,32 @@
+<div class="main-contact-card-container" th:fragment="edit-profile-first-login">
+    <form ref="editContactForm" action="#" th:action="@{/edit-profile}" method="post" @submit.prevent="validateFormFirstLogin" novalidate>
+        <input type="hidden" name="role" th:value="${true}" />
+        <input type="hidden" name="oldPassword" th:value="'none'" />
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <div class="contact-card-container">
+            <div>
+                <input class="text-field" name="newPassword" id="newPassword" v-model="newPassword" title="" type="password" placeholder="nuova password"/>
+                <span onclick="toggleNewPsw()" id="show-new-password" class="material-symbols-rounded">key_off</span>
+                <div class="error-message" style="text-align: left;" v-if="errors.newPassword">
+                    La password non rispetta i requisiti:
+                    <ul>
+                        <li>minimo 8 caratteri</li>
+                        <li>deve includere una lettera maiuscola</li>
+                        <li>deve includere una lettera minuscola</li>
+                        <li>deve includere un numero</li>
+                        <li>deve includere un carattere speciale</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <input class="text-field" name="confirmPassword" id="confirmPassword" v-model="confirmPassword" title="" type="password" placeholder="conferma nuova password"/>
+                <span onclick="toggleConfirmPsw()" id="show-password-confirm" class="material-symbols-rounded">key_off</span>
+                <div class="error-message" v-if="errors.confirmPassword">Le password non corrispondono</div>
+            </div>
+        </div>
+        <div class="edit-button-container">
+            <input class="edit-contact-button" type="submit" value="Salva" />
+        </div>
+    </form>
+</div>

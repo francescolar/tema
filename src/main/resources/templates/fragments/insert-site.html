@@ -1,0 +1,35 @@
+<div th:fragment="insert-site">
+    <form id="siteForm" ref="siteForm" th:action="@{/admin/insert-site}" th:object="${site}" method="post" novalidate>
+    <div class="mb-3">
+        <label for="name" class="form-label">Nome sede</label>
+        <input
+                type="text"
+                name="name"
+                id="name"
+                class="form-control"
+                placeholder="Es. Frigotermica srl"
+                aria-describedby="helpId"
+        />
+        <small id="helpId" class="text-muted">Inserisci il nome della nuova sede</small>
+    </div>
+    <div class="mb-3">
+        <label for="address" class="form-label">Indirizzo sede</label>
+        <input
+                type="text"
+                name="address"
+                id="address"
+                class="form-control"
+                placeholder="Es. Via Roma 14, Bologna (BO)"
+                aria-describedby="helpId"
+        />
+
+        <small id="helpId2" class="text-muted">Inserisci il l'indirizzo della nuova sede</small>
+    </div>
+    <button
+            type="submit"
+            class="btn btn-outline-primary"
+    >
+        Invia
+    </button>
+</form>
+</div>
