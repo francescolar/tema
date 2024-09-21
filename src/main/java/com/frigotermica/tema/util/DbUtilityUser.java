@@ -221,22 +221,4 @@ public class DbUtilityUser {
         DbUtility.closeConnection(c);
         return user;
     }
-
-    public static void updateDeletedWorkHoursLog(int id) throws SQLException {
-        int total_work_hours = 0;
-        Connection c = DbUtility.createConnection();
-        String sql = "SELECT total_work_hours FROM users WHERE id = ?;";
-        PreparedStatement stmt = c.prepareStatement(sql);
-        stmt.setInt(1, id);
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-            total_work_hours = rs.getInt("total_work_hours");
-        }
-        sql = "UPDATE deleted_log SET hours_log = hours_log + ? WHERE table_name = 'users';";
-        stmt = c.prepareStatement(sql);
-        stmt.setInt(1, total_work_hours);
-        stmt.executeUpdate();
-        stmt.close();
-        DbUtility.closeConnection(c);
-    }
 }

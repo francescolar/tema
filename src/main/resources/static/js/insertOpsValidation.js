@@ -6,8 +6,15 @@ document.addEventListener('DOMContentLoaded', function() {
             systems: [],
             counter: 1,
             selectedSiteId: '',
-            selectedSystemId: ''
-
+            selectedSystemId: '',
+            date: '',
+            description: '',
+            errors: {
+                selectedSiteId: false,
+                selectedSystemId: false,
+                date: false,
+                description: false,
+            }
         },
         mounted() {
             this.fetchSites(),
@@ -22,6 +29,33 @@ document.addEventListener('DOMContentLoaded', function() {
               }
             },
         methods: {
+            validateForm() {
+                this.clearErrors();
+                if (!this.selectedSiteId) {
+                    this.errors.selectedSiteId = true;
+                }
+                if (!this.selectedSystemId) {
+                    this.errors.selectedSystemId = true;
+                }
+                if (!this.date) {
+                    this.errors.date = true;
+                }
+                if (!this.description) {
+                    this.errors.description = true;
+                }
+
+                if (Object.values(this.errors).every(value => !value)) {
+                    this.$refs.operationForm.submit();
+                }
+            },
+            clearErrors() {
+                this.errors = {
+                    selectedSiteId: false,
+                    selectedSystemId: false,
+                    date: false,
+                    description: false,
+                };
+            },
             fetchSites() {
                 axios.get('/api/sites/all-enabled')
                 .then(response => {

@@ -55,14 +55,14 @@ public class AdminWebController implements WebMvcConfigurer {
         switch (registrazioneEffettuata) {
             case 1:
                 model.addAttribute("usernameExist", true);
-                return "admin/create-user";
+                return "admin/view-users";
             case 2:
                 model.addAttribute("emailExist", true);
-                return "admin/create-user";
+                return "admin/view-users";
             case 3:
                 model.addAttribute("afterRegistration", true); //non serve
                 model.addAttribute("user", user);
-                return "success";
+                return "admin/view-users";
             case 4:
                 return "error";
         }
@@ -231,7 +231,6 @@ public class AdminWebController implements WebMvcConfigurer {
                 case "users":
                     return "redirect:/admin/view-users";
                 case "sites":
-                    return "redirect:/admin/view-sites";
                 case "systems":
                     return "redirect:/admin/view-sites";
                 case "operations":

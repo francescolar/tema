@@ -66,7 +66,7 @@ public class DbUtilityFullOperation {
 
     public static List<FullOperationModel> findByOwned(int userId) throws SQLException {
         Connection c = DbUtility.createConnection();
-        String sql = "SELECT operations.*, users.username AS user_username, systems.name AS system_name, sites.name AS site_name FROM operations INNER JOIN users ON operations.user_id = users.id INNER JOIN systems ON operations.system_id = systems.id INNER JOIN sites ON operations.site_id = sites.id WHERE operations.user_id = ? ORDER BY id DESC;";
+        String sql = "SELECT operations.*, users.username AS user_username, systems.name AS system_name, sites.name AS site_name FROM operations INNER JOIN users ON operations.user_id = users.id INNER JOIN systems ON operations.system_id = systems.id INNER JOIN sites ON operations.site_id = sites.id WHERE operations.user_id = ? AND operations.deleted = FALSE ORDER BY operations.created_at DESC;";
         PreparedStatement stmt = c.prepareStatement(sql);
         stmt.setInt(1, userId);
         List<FullOperationModel> list = new LinkedList<>();

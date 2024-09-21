@@ -2,27 +2,30 @@ document.addEventListener('DOMContentLoaded', function() {
 new Vue({
     el: '#app',
     data: {
-        name: document.getElementById('name').value,
-        address: document.getElementById('address').value,
-        errors: {
-            name: false,
-            address: false,
+        siteName: '',
+        address: '',
+        siteErrors: {
+            siteName: false,
         }
     },
     methods: {
-        validateForm() {
-            this.errors.name = this.name.length < 4;
-            this.errors.address = !this.address;
+        validateSiteForm() {
+            this.clearSiteErrors();
+            if (!this.siteName) {
+                this.siteErrors.siteName = true;
+            }
 
-            if (!this.errors.name && !this.errors.address) {
+            if (Object.values(this.siteErrors).every(value => !value)) {
                 this.$refs.editSiteForm.submit();
             }
         },
+        clearSiteErrors() {
+            this.siteErrors = {
+                siteName: false,
+            };
+        },
         cancel() {
             this.$refs.cancel.submit();
-        },
-        submitForm() {
-            this.$refs.editSiteForm.submit();
         }
     }
 });

@@ -1,5 +1,5 @@
 <div th:fragment="insert-system">
-<form id="systemForm" ref="systemForm" th:action="@{/admin/insert-system}" th:object="${system}" method="post" novalidate>
+<form id="systemForm" ref="systemForm" th:action="@{/admin/insert-system}" th:object="${system}" method="post" @submit.prevent="validateSystemForm" novalidate>
     <div class="mb-3">
         <label for="name" class="form-label">Nome impianto</label>
         <input
@@ -9,8 +9,16 @@
                 class="form-control"
                 placeholder="Es. Impianto idraulico"
                 aria-describedby="helpId"
+                v-model="systemName"
         />
         <small id="helpId" class="text-muted">Inserisci il nome del nuovo impianto</small>
+        <div
+                v-if="systemErrors.systemName"
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+        >
+            <strong>Errore.</strong> Inserisci il nome per l'impianto.
+        </div>
     </div>
     <div class="mb-3">
         <label for="siteId" class="form-label">Sede</label>
@@ -18,10 +26,18 @@
                 class="form-select form-select-lg"
                 name="siteId"
                 id="siteId"
+                v-model="selectedSiteId"
         >
             <option selected>Seleziona una sede....</option>
             <option v-for="item in sites" :value="item.id" :key="item.id">{{ item.name }}</option>
         </select>
+        <div
+                v-if="systemErrors.selectedSiteId"
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+        >
+            <strong>Errore.</strong> Seleziona la sede.
+        </div>
     </div>
 
     <button

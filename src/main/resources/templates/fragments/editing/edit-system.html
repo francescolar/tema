@@ -1,10 +1,16 @@
 <div class="main-contact-card-container" th:fragment="edit-system">
-    <form ref="editSystemForm" action="#" th:action="@{/admin/edit}" th:object="${system}" method="post" @submit.prevent="validateForm" novalidate>
+    <form ref="editSystemForm" action="#" th:action="@{/admin/edit}" th:object="${system}" method="post" @submit.prevent="validateSystemForm" novalidate>
         <input type="hidden" name="tableName" th:value="'systems'" />
         <input type="hidden" th:field="*{id}" />
         <div class="view-contact-title">
-            <input class="text-field" th:field="*{name}" name="name" v-model="name" id="name" title="" type="text" placeholder="Nome" required/>
-            <div class="error-message" v-if="errors.name">Please enter your first name</div>
+            <input class="text-field" th:field="*{name}" name="name" v-model="systemName" id="name" title="" type="text" placeholder="Nome" required/>
+            <div
+                    v-if="systemErrors.systemName"
+                    class="alert alert-danger alert-dismissible fade show"
+                    role="alert"
+            >
+                <strong>Errore.</strong> Inserisci il nome per l'impianto.
+            </div>
 
             <div class="mb-3">
                 <label for="siteId" class="form-label">Sede</label>
@@ -12,10 +18,18 @@
                         class="form-select form-select-lg"
                         name="siteId"
                         id="siteId"
+                        v-model="selectedSiteId"
                 >
                     <option selected>Seleziona una sede....</option>
                     <option v-for="site in sites" :value="site.id" :key="site.id">{{ site.name }}</option>
                 </select>
+                <div
+                        v-if="systemErrors.selectedSiteId"
+                        class="alert alert-danger alert-dismissible fade show"
+                        role="alert"
+                >
+                    <strong>Errore.</strong> Seleziona la sede.
+                </div>
             </div>
 
         </div>

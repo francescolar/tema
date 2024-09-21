@@ -89,14 +89,12 @@ public class DbUtilityOperation {
         stmt.setInt(5, operation.getSystemId());
         stmt.setInt(6, userId);
         stmt.executeUpdate();
-        updateTotalWorkHours(c, operation.getHoursSpent(), userId, operation.getSystemId(), operation.getSiteId());
         stmt.close();
         DbUtility.closeConnection(c);
     }
 
     public static void update(OperationModel op) throws SQLException {
         Connection c = DbUtility.createConnection();
-        updateWorkHours(op.getId());
         String sql = "UPDATE operations SET date = ?, description = ?, hours_spent = ?, site_id = ?, system_id = ?, user_id = ? WHERE id = ?;";
         PreparedStatement stmt = c.prepareStatement(sql);
         stmt.setTimestamp(1, Timestamp.valueOf(op.getDate()));
@@ -106,63 +104,6 @@ public class DbUtilityOperation {
         stmt.setInt(5, op.getSystemId());
         stmt.setInt(6, op.getUserId());
         stmt.setInt(7, op.getId());
-        stmt.executeUpdate();
-        updateTotalWorkHours(c, op.getHoursSpent(), op.getUserId(), op.getSystemId(), op.getSiteId());
-        stmt.close();
-        DbUtility.closeConnection(c);
-    }
-
-    public static void updateTotalWorkHours(Connection c, int hoursSpent, int user_id, int system_id, int site_id) throws SQLException {
-        String sql = "UPDATE users SET total_work_hours = total_work_hours + ? WHERE id = ?;";
-        PreparedStatement stmt = c.prepareStatement(sql);
-        stmt.setInt(1, hoursSpent);
-        stmt.setInt(2, user_id);
-        stmt.executeUpdate();
-
-        sql = "UPDATE systems SET total_work_hours = total_work_hours + ? WHERE id = ?;";
-        stmt = c.prepareStatement(sql);
-        stmt.setInt(1, hoursSpent);
-        stmt.setInt(2, system_id);
-        stmt.executeUpdate();
-
-        sql = "UPDATE sites SET total_work_hours = total_work_hours + ? WHERE id = ?;";
-        stmt = c.prepareStatement(sql);
-        stmt.setInt(1, hoursSpent);
-        stmt.setInt(2, site_id);
-        stmt.executeUpdate();
-
-        stmt.close();
-    }
-
-    public static void updateWorkHours(int operation_id) throws SQLException {
-        OperationModel op = new OperationModel();
-        Connection c = DbUtility.createConnection();
-        String sql = "SELECT * FROM operations WHERE id = ?;";
-        PreparedStatement stmt = c.prepareStatement(sql);
-        stmt.setInt(1, operation_id);
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-            int id = rs.getInt("id");
-            int hoursSpent = rs.getInt("hours_spent");
-            int siteId = rs.getInt("site_id");
-            int systemId = rs.getInt("system_id");
-            int userId = rs.getInt("user_id");
-            op = new OperationModel(id, hoursSpent, siteId, systemId, userId);
-        }
-        sql = "UPDATE sites SET total_work_hours = total_work_hours - ? WHERE id = ?;";
-        stmt = c.prepareStatement(sql);
-        stmt.setInt(1, op.getHoursSpent());
-        stmt.setInt(2, op.getSiteId());
-        stmt.executeUpdate();
-        sql = "UPDATE systems SET total_work_hours = total_work_hours - ? WHERE id = ?;";
-        stmt = c.prepareStatement(sql);
-        stmt.setInt(1, op.getHoursSpent());
-        stmt.setInt(2, op.getSystemId());
-        stmt.executeUpdate();
-        sql = "UPDATE users SET total_work_hours = total_work_hours - ? WHERE id = ?;";
-        stmt = c.prepareStatement(sql);
-        stmt.setInt(1, op.getHoursSpent());
-        stmt.setInt(2, op.getUserId());
         stmt.executeUpdate();
         stmt.close();
         DbUtility.closeConnection(c);

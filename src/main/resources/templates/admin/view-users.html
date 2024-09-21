@@ -37,7 +37,23 @@
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <main class="homepage" id="app" th:attr="data-auth-id=${authId}">
+
     <div th:replace="~{fragments/create-user :: create-user}"></div>
+
+    <div
+            th:if="${usernameExist}"
+            class="alert alert-danger alert-dismissible fade show"
+            role="alert"
+    >
+        <strong>Errore.</strong> L'username è già esistente
+    </div>
+    <div
+            th:if="${emailExist}"
+            class="alert alert-danger alert-dismissible fade show"
+            role="alert"
+    >
+        <strong>Errore.</strong> L'email è già esistente
+    </div>
 
     <h2>Lista utenti</h2>
 

@@ -4,13 +4,57 @@ document.addEventListener('DOMContentLoaded', function() {
     data: {
       sites: [],
       systems: [],
-      siteId: null
+      siteId: null,
+      siteName: '',
+      systemName: '',
+      selectedSiteId: '',
+      siteErrors: {
+        siteName: false,
+      },
+      systemErrors: {
+        systemName: false,
+        selectedSiteId: false,
+      }
     },
     mounted() {
       this.fetchSites();
       this.fetchSystems();
     },
     methods: {
+      validateSiteForm() {
+        this.clearSiteErrors();
+        if (!this.siteName) {
+          this.siteErrors.siteName = true;
+        }
+
+        if (Object.values(this.siteErrors).every(value => !value)) {
+          this.$refs.siteForm.submit();
+        }
+      },
+      clearSiteErrors() {
+        this.siteErrors = {
+          siteName: false,
+        };
+      },
+      validateSystemForm() {
+        this.clearSystemErrors();
+        if (!this.systemName) {
+          this.systemErrors.systemName = true;
+        }
+        if (!this.selectedSiteId) {
+          this.systemErrors.selectedSiteId = true;
+        }
+
+        if (Object.values(this.systemErrors).every(value => !value)) {
+          this.$refs.systemForm.submit();
+        }
+      },
+      clearSystemErrors() {
+        this.systemErrors = {
+          systemName: false,
+          selectedSiteId: false,
+        };
+      },
       fetchSites() {
         axios.get('/api/sites/all')
           .then(response => {

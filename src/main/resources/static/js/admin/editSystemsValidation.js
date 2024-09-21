@@ -3,24 +3,35 @@ new Vue({
     el: '#app',
     data: {
         sites: [],
-        name: document.getElementById('name').value,
-        siteId: document.getElementById('siteId').value,
-        errors: {
-            name: false,
-            siteId: false,
+        systemName: '',
+        selectedSiteId: '',
+        systemErrors: {
+            systemName: false,
+            selectedSiteId: false,
         }
     },
     mounted() {
         this.fetchSites();
     },
     methods: {
-        validateForm() {
-            this.errors.name = this.name.length < 4;
-            this.errors.siteId = !this.siteId;
+        validateSystemForm() {
+            this.clearSystemErrors();
+            if (!this.systemName) {
+                this.systemErrors.systemName = true;
+            }
+            if (!this.selectedSiteId) {
+                this.systemErrors.selectedSiteId = true;
+            }
 
-            if (!this.errors.name && !this.errors.siteId) {
+            if (Object.values(this.systemErrors).every(value => !value)) {
                 this.$refs.editSystemForm.submit();
             }
+        },
+        clearSystemErrors() {
+            this.systemErrors = {
+                systemName: false,
+                selectedSiteId: false,
+            };
         },
         fetchSites() {
             axios.get('/api/sites/all')
@@ -33,9 +44,6 @@ new Vue({
         },
         cancel() {
             this.$refs.cancel.submit();
-        },
-        submitForm() {
-            this.$refs.editSystemForm.submit();
         }
     }
 });

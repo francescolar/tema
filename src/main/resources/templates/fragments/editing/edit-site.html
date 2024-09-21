@@ -1,13 +1,18 @@
 <div class="main-contact-card-container" th:fragment="edit-site">
-    <form ref="editSiteForm" action="#" th:action="@{/admin/edit}" th:object="${site}" method="post" @submit.prevent="validateForm" novalidate>
+    <form ref="editSiteForm" action="#" th:action="@{/admin/edit}" th:object="${site}" method="post" @submit.prevent="validateSiteForm" novalidate>
         <input type="hidden" name="tableName" th:value="'sites'" />
         <input type="hidden" th:field="*{id}" />
         <div class="view-contact-title">
-            <input class="text-field" th:field="*{name}" name="name" v-model="name" id="name" title="" type="text" placeholder="Nome" required/>
-            <div class="error-message" v-if="errors.name">Please enter your first name</div>
+            <input class="text-field" th:field="*{name}" name="name" v-model="siteName" id="name" title="" type="text" placeholder="Nome sede" required/>
+            <div
+                    v-if="siteErrors.siteName"
+                    class="alert alert-danger alert-dismissible fade show"
+                    role="alert"
+            >
+                <strong>Errore.</strong> Inserisci il nome per la sede.
+            </div>
 
-            <input class="text-field" th:field="*{address}" name="address" v-model="address" id="address" title="" type="text" placeholder="Cognome" required/>
-            <div class="error-message" v-if="errors.address">Please enter your last name</div>
+            <input class="text-field" th:field="*{address}" name="address" v-model="address" id="address" title="" type="text" placeholder="Indirizzo" required/>
 
         </div>
 

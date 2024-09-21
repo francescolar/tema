@@ -9,79 +9,116 @@
 >
     <div class="modal-dialog" role="document">
         <div style="background: none; border: none;" class="modal-content">
-            <form id="operationForm" ref="operationForm" th:action="@{/admin/insert-operation}" th:object="${operation}" method="post" novalidate>
-                <div class="mb-3">
-                    <label for="date" class="form-label">Data e ora esecuzione</label>
-                    <input
-                            type="datetime-local"
-                            name="date"
-                            id="date"
-                            class="form-control"
-                            placeholder=""
-                            aria-describedby="helpId"
-                    />
-                    <small id="helpId" class="text-muted">Inserisci la data in cui è stata eseguita la manutenzione</small>
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Descrizione</label>
-                    <textarea class="form-control" name="description" id="description" rows="3"></textarea>
-                </div>
-                <div class="mb-3 counter-container">
-                    <label for="hoursSpent" class="form-label">Descrizione</label>
+            <form id="operationForm" ref="operationForm" th:action="@{/admin/insert-operation}" th:object="${operation}" method="post" @submit.prevent="validateForm" novalidate>
+                    <div class="mb-3">
+                        <input type="hidden" name="tableName" th:value="'operations'" />
+                        <label for="date" class="form-label">Data e ora esecuzione</label>
+                        <input
+                                type="datetime-local"
+                                name="date"
+                                id="date"
+                                class="form-control"
+                                placeholder=""
+                                aria-describedby="helpId"
+                                v-model="date"
+                        />
+                        <small id="helpId" class="text-muted">Inserisci la data in cui è stata eseguita la manutenzione</small>
+                        <div
+                                v-if="errors.date"
+                                class="alert alert-danger alert-dismissible fade show"
+                                role="alert"
+                        >
+                            <strong>Errore.</strong> Inserisci una data.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descrizione</label>
+                        <textarea v-model="description" class="form-control" name="description" id="description" rows="3"></textarea>
+                        <div
+                                v-if="errors.description"
+                                class="alert alert-danger alert-dismissible fade show"
+                                role="alert"
+                        >
+                            <strong>Errore.</strong> Inserisci una descrizione.
+                        </div>
+                    </div>
+                    <div class="mb-3 counter-container">
+                        <label for="hoursSpent" class="form-label">Descrizione</label>
 
-                    <div class="counter-button" tabindex="0" @click="decrease(5)">-5</div>
-                    <div class="counter-button" tabindex="0" @click="decrease(1)">-1</div>
+                        <div class="counter-button" tabindex="0" @click="decrease(5)">-5</div>
+                        <div class="counter-button" tabindex="0" @click="decrease(1)">-1</div>
 
-                    <input class="counter-input" type="number" name="hoursSpent" id="hoursSpent" :value="counter" readonly>
+                        <input class="counter-input" type="number" name="hoursSpent" id="hoursSpent" :value="counter" readonly>
 
-                    <div class="counter-button" tabindex="0" @click="increase(1)">+1</div>
-                    <div class="counter-button" tabindex="0" @click="increase(5)">+5</div>
-                </div>
-                <div class="mb-3">
-                    <label for="siteId" class="form-label">Sede</label>
-                    <select
-                            class="form-select form-select-lg"
-                            name="siteId"
-                            id="siteId"
-                            v-model="selectedSiteId"
+                        <div class="counter-button" tabindex="0" @click="increase(1)">+1</div>
+                        <div class="counter-button" tabindex="0" @click="increase(5)">+5</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="siteId" class="form-label">Sede</label>
+                        <select
+                                class="form-select form-select-lg"
+                                name="siteId"
+                                id="siteId"
+                                v-model="selectedSiteId"
+                        >
+                            <option value="" selected>Seleziona una...</option>
+                            <option v-for="site in sites" :value="site.id" :key="site.id">{{ site.name }}</option>
+                        </select>
+                        <div
+                                v-if="errors.selectedSiteId"
+                                class="alert alert-danger alert-dismissible fade show"
+                                role="alert"
+                        >
+                            <strong>Errore.</strong> Seleziona una sede.
+                        </div>
+                    </div>
+                    <div class="mb-3" v-if="filteredSystems.length > 0">
+                        <label for="systemId" class="form-label">Impianto</label>
+                        <select
+                                class="form-select form-select-lg"
+                                name="systemId"
+                                id="systemId"
+                                v-model="selectedSystemId"
+                        >
+                            <option value="" selected>Seleziona una...</option>
+                            <option v-for="system in filteredSystems" :value="system.id" :key="system.id">{{ system.name }}</option>
+                        </select>
+                        <div
+                                v-if="errors.selectedSystemId"
+                                class="alert alert-danger alert-dismissible fade show"
+                                role="alert"
+                        >
+                            <strong>Errore.</strong> Seleziona un impianto.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="userId" class="form-label">Utente</label>
+                        <select
+                                class="form-select form-select-lg"
+                                name="userId"
+                                id="userId"
+                                v-model="selectedUserId"
+                        >
+                            <option value="" selected>Seleziona una...</option>
+                            <option v-for="user in users" :value="user.id" :key="user.id">({{ user.id }}) {{ user.username }}: {{ user.name }} {{ user.surname }}</option>
+                        </select>
+                        <div
+                                v-if="errors.selectedUserId"
+                                class="alert alert-danger alert-dismissible fade show"
+                                role="alert"
+                        >
+                            <strong>Errore.</strong> Seleziona un utente.
+                        </div>
+                    </div>
+
+                    <button
+                            type="submit"
+                            class="btn btn-outline-primary"
                     >
-                        <option value="" selected>Seleziona una...</option>
-                        <option v-for="site in sites" :value="site.id" :key="site.id">{{ site.name }}</option>
-                    </select>
-                </div>
-                <div class="mb-3" v-if="filteredSystems.length > 0">
-                    <label for="systemId" class="form-label">Impianto</label>
-                    <select
-                            class="form-select form-select-lg"
-                            name="systemId"
-                            id="systemId"
-                            v-model="selectedSystemId"
-                    >
-                        <option value="" selected>Seleziona una...</option>
-                        <option v-for="system in filteredSystems" :value="system.id" :key="system.id">{{ system.name }}</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="userId" class="form-label">Utente</label>
-                    <select
-                            class="form-select form-select-lg"
-                            name="userId"
-                            id="userId"
-                            v-model="selectedUserId"
-                    >
-                        <option value="" selected>Seleziona una...</option>
-                        <option v-for="user in users" :value="user.id" :key="user.id">({{ user.id }}) {{ user.username }}: {{ user.name }} {{ user.surname }}</option>
-                    </select>
-                </div>
+                        Invia
+                    </button>
 
-                <button
-                        type="submit"
-                        class="btn btn-outline-primary"
-                >
-                    Invia
-                </button>
-
-            </form>
+                </form>
         </div>
     </div>
 </div>

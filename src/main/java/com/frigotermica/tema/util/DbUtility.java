@@ -38,21 +38,8 @@ public class DbUtility {
         stmt.setInt(2, id);
         stmt.executeUpdate();
 
-        switch (tableName) {
-            case "systems":
-                DbUtilitySite.removeTotalSystems(id);
-                DbUtilitySite.updateDeletedWorkHoursLog("systems", id);
-                break;
-            case "sites":
-                DbUtilitySystem.deleteAfterSiteDeleted(id);
-                DbUtilitySite.updateDeletedWorkHoursLog("sites", id);
-                break;
-            case "operations":
-                DbUtilityOperation.updateWorkHours(id);
-                break;
-            case "users":
-                DbUtilityUser.updateDeletedWorkHoursLog(id);
-                break;
+        if (tableName.equals("sites")) {
+            DbUtilitySystem.deleteAfterSiteDeleted(id);
         }
 
         stmt.close();

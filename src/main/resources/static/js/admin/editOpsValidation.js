@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
         el: '#app',
         data: {
             date: '',
+            description: '',
             ops: [],
             searchOps: '',
             sites: [],
@@ -12,7 +13,14 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedSiteId: '',
             selectedSystemId: '',
             selectedUserId: '',
-            authId: null
+            authId: null,
+            errors: {
+                selectedSiteId: false,
+                selectedSystemId: false,
+                selectedUserId: false,
+                date: false,
+                description: false,
+            }
         },
         mounted() {
             this.date = this.$refs.dataDiv.getAttribute('data-date');
@@ -42,6 +50,37 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
         methods: {
+            validateForm() {
+                this.clearErrors();
+                if (!this.selectedSiteId) {
+                    this.errors.selectedSiteId = true;
+                }
+                if (!this.selectedSystemId) {
+                    this.errors.selectedSystemId = true;
+                }
+                if (!this.selectedUserId) {
+                    this.errors.selectedUserId = true;
+                }
+                if (!this.date) {
+                    this.errors.date = true;
+                }
+                if (!this.description) {
+                    this.errors.description = true;
+                }
+
+                if (Object.values(this.errors).every(value => !value)) {
+                    this.$refs.operationForm.submit();
+                }
+            },
+            clearErrors() {
+                this.errors = {
+                    selectedSiteId: false,
+                    selectedSystemId: false,
+                    selectedUserId: false,
+                    date: false,
+                    description: false,
+                };
+            },
             fetchOps() {
                 axios.get('/api/operations/all')
                     .then(response => {

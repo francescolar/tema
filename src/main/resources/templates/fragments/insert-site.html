@@ -1,5 +1,5 @@
 <div th:fragment="insert-site">
-    <form id="siteForm" ref="siteForm" th:action="@{/admin/insert-site}" th:object="${site}" method="post" novalidate>
+    <form id="siteForm" ref="siteForm" th:action="@{/admin/insert-site}" th:object="${site}" method="post" @submit.prevent="validateSiteForm" novalidate>
     <div class="mb-3">
         <label for="name" class="form-label">Nome sede</label>
         <input
@@ -9,8 +9,16 @@
                 class="form-control"
                 placeholder="Es. Frigotermica srl"
                 aria-describedby="helpId"
+                v-model="siteName"
         />
         <small id="helpId" class="text-muted">Inserisci il nome della nuova sede</small>
+        <div
+                v-if="siteErrors.siteName"
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+        >
+            <strong>Errore.</strong> Inserisci il nome per la sede.
+        </div>
     </div>
     <div class="mb-3">
         <label for="address" class="form-label">Indirizzo sede</label>
