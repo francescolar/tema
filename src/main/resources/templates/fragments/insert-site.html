@@ -1,43 +1,23 @@
-<div th:fragment="insert-site">
-    <form id="siteForm" ref="siteForm" th:action="@{/admin/insert-site}" th:object="${site}" method="post" @submit.prevent="validateSiteForm" novalidate>
-    <div class="mb-3">
-        <label for="name" class="form-label">Nome sede</label>
-        <input
-                type="text"
-                name="name"
-                id="name"
-                class="form-control"
-                placeholder="Es. Frigotermica srl"
-                aria-describedby="helpId"
-                v-model="siteName"
-        />
-        <small id="helpId" class="text-muted">Inserisci il nome della nuova sede</small>
-        <div
-                v-if="siteErrors.siteName"
-                class="alert alert-danger alert-dismissible fade show"
-                role="alert"
-        >
-            <strong>Errore.</strong> Inserisci il nome per la sede.
+<div class="form-container" th:fragment="insert-site">
+    <h2>Inserisci sede</h2>
+    <form @submit.prevent="validateSiteForm" id="siteForm" method="post" novalidate ref="siteForm"
+          th:action="@{/admin/insert-site}" th:object="${site}">
+        <div class="mb-3">
+            <label class="form-label" for="name">Nome sede</label>
+            <input aria-describedby="helpId" class="form-control" id="name" name="name"
+                   placeholder="Es. Frigotermica srl"
+                   type="text" v-model="siteName"/>
+            <small class="text-muted" id="helpId">Inserisci il nome della nuova sede</small>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" v-if="siteErrors.siteName">
+                <strong>Errore.</strong> Inserisci il nome per la sede.
+            </div>
         </div>
-    </div>
-    <div class="mb-3">
-        <label for="address" class="form-label">Indirizzo sede</label>
-        <input
-                type="text"
-                name="address"
-                id="address"
-                class="form-control"
-                placeholder="Es. Via Roma 14, Bologna (BO)"
-                aria-describedby="helpId"
-        />
-
-        <small id="helpId2" class="text-muted">Inserisci il l'indirizzo della nuova sede</small>
-    </div>
-    <button
-            type="submit"
-            class="btn btn-outline-primary"
-    >
-        Invia
-    </button>
-</form>
+        <div class="mb-3">
+            <label class="form-label" for="address">Indirizzo sede</label>
+            <input aria-describedby="helpId" class="form-control" id="address" name="address"
+                   placeholder="Es. Via Roma 14, Bologna (BO)" type="text"/>
+            <small class="text-muted" id="helpId2">Inserisci il l'indirizzo della nuova sede</small>
+        </div>
+        <button class="btn btn-outline-primary" type="submit">Invia</button>
+    </form>
 </div>

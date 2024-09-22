@@ -3,6 +3,7 @@ package com.frigotermica.tema.models;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class OperationModel {
@@ -17,7 +18,7 @@ public class OperationModel {
     private String description;
 
     @NotNull(message = "hoursSpent")
-    private int hoursSpent;
+    private BigDecimal hoursSpent;
 
     @NotNull(message = "site_id")
     private int siteId;
@@ -31,8 +32,8 @@ public class OperationModel {
     private boolean deleted;
 
     public OperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
-            @NotNull @Size(min = 1, max = 100) int hoursSpent, @NotNull int siteId, @NotNull int systemId,
-            @NotNull int userId) {
+                          @NotNull @Size(min = 1, max = 100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
+                          @NotNull int userId) {
         this.id = id;
         this.date = date;
         this.description = description;
@@ -43,8 +44,8 @@ public class OperationModel {
     }
 
     public OperationModel(@NotNull LocalDateTime date, @NotNull String description,
-            @NotNull @Size(min = 1, max = 100) int hoursSpent, @NotNull int siteId, @NotNull int systemId,
-            @NotNull int userId) {
+                          @NotNull @Size(min = 1, max = 100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
+                          @NotNull int userId) {
         this.date = date;
         this.description = description;
         this.hoursSpent = hoursSpent;
@@ -54,8 +55,8 @@ public class OperationModel {
     }
 
     public OperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
-            @NotNull @Size(min = 1, max = 100) int hoursSpent, @NotNull int siteId, @NotNull int systemId,
-            @NotNull int userId, boolean deleted) {
+                          @NotNull @Size(min = 1, max = 100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
+                          @NotNull int userId, boolean deleted) {
         this.id = id;
         this.date = date;
         this.description = description;
@@ -69,7 +70,7 @@ public class OperationModel {
     public OperationModel() {
     }
 
-    public OperationModel(int id, int hoursSpent, int siteId, int systemId, int userId) {
+    public OperationModel(int id, BigDecimal hoursSpent, int siteId, int systemId, int userId) {
         this.id = id;
         this.hoursSpent = hoursSpent;
         this.siteId = siteId;
@@ -101,11 +102,11 @@ public class OperationModel {
         this.description = description;
     }
 
-    public int getHoursSpent() {
+    public BigDecimal getHoursSpent() {
         return hoursSpent;
     }
 
-    public void setHoursSpent(int hoursSpent) {
+    public void setHoursSpent(BigDecimal hoursSpent) {
         this.hoursSpent = hoursSpent;
     }
 

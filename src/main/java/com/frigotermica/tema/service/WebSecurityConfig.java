@@ -31,6 +31,19 @@ import java.io.IOException;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
+    private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public static boolean checkPassword(UserModel user, String rawPassword) {
+        return passwordEncoder.matches(rawPassword, user.getPassword());
+    }
+
+    public static void logout() {
+        HttpServletRequest request =
+                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                        .getRequest();
+        new SecurityContextLogoutHandler().logout(request, null, null);
+    }
+
     @Bean
     public UserDetailsService userDetailsService(DataSource dataSource) {
         JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
@@ -65,22 +78,9 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    private static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    public static boolean checkPassword(UserModel user, String rawPassword) {
-        return passwordEncoder.matches(rawPassword, user.getPassword());
-    }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    public static void logout() {
-        HttpServletRequest request =
-                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-                        .getRequest();
-        new SecurityContextLogoutHandler().logout(request, null, null);
     }
 
     @Bean
@@ -90,24 +90,19 @@ public class WebSecurityConfig {
             protected void doFilterInternal(HttpServletRequest request,
                                             HttpServletResponse response,
                                             FilterChain filterChain) throws ServletException, IOException {
-                // Ottieni l'utente autenticato
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-                // Permetti l'accesso alle risorse statiche come CSS, JS, immagini, ecc.
                 String requestURI = request.getRequestURI();
                 if (requestURI.startsWith("/css/") || requestURI.startsWith("/js/") ||
                         requestURI.startsWith("/images/") || requestURI.startsWith("/static/")) {
-                    filterChain.doFilter(request, response); // Continua con la normale catena di filtri
+                    filterChain.doFilter(request, response);
                     return;
                 }
 
-                // Se l'utente è autenticato
                 if (authentication != null && authentication.isAuthenticated()) {
-                    // Controlla se l'utente ha il ruolo "ROLE_USER_FIRSTLOGIN"
                     if (authentication.getAuthorities().stream()
                             .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_USER_FIRSTLOGIN"))) {
 
-                        // Se sta cercando di accedere a una pagina diversa da "/edit-profile", reindirizza
                         if (!requestURI.equals("/edit-profile")) {
                             response.sendRedirect("/edit-profile");
                             return;
@@ -115,7 +110,6 @@ public class WebSecurityConfig {
                     }
                 }
 
-                // Continua con la normale catena di filtri
                 filterChain.doFilter(request, response);
             }
         };

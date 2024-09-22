@@ -7,6 +7,8 @@ import com.frigotermica.tema.util.CryptoPassword;
 import com.frigotermica.tema.util.DbUtilityOperation;
 import com.frigotermica.tema.util.DbUtilityUser;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
@@ -25,7 +27,9 @@ import java.util.List;
 
 @Controller
 public class UserWebController implements WebMvcConfigurer {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(UserWebController.class);
+
     @Override
     public void addViewControllers(@NonNull ViewControllerRegistry registry) {
         registry.addViewController("/insert-operation").setViewName("insert-operation");
@@ -48,36 +52,33 @@ public class UserWebController implements WebMvcConfigurer {
         try {
             int userId = DbUtilityUser.getAuthenticatedUserId();
             DbUtilityOperation.insertPreparedStatement(operation, userId);
-            return "redirect:/view-operations"; 
+            return "redirect:/view-operations";
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }
 
     @GetMapping("/view-operations")
-	public String viewUserOperation(Model model) {
-		try {
+    public String viewUserOperation(Model model) {
+        try {
             int userId = DbUtilityUser.getAuthenticatedUserId();
-			List<OperationModel> ownedOperationList = DbUtilityOperation.findByOwned(userId);
-			model.addAttribute("ownedOps", ownedOperationList);
+            List<OperationModel> ownedOperationList = DbUtilityOperation.findByOwned(userId);
+            model.addAttribute("ownedOps", ownedOperationList);
             model.addAttribute("userId", userId);
             return "view-operations";
-		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
+        } catch (ClassNotFoundException | SQLException e) {
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
-		}
-	}
+        }
+    }
 
     @GetMapping("/edit-profile")
     public String editProfile(Model model) {
         try {
-            int authUserId = DbUtilityUser.getAuthenticatedUserId();
-            UserModel user = DbUtilityUser.findById(authUserId);
-            model.addAttribute("user", user);
             return "edit-profile";
-        } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("An error occurred while doing something", e);
             return "redirect:/homepage";
         }
     }
@@ -87,34 +88,25 @@ public class UserWebController implements WebMvcConfigurer {
         try {
             int authId = DbUtilityUser.getAuthenticatedUserId();
             UserModel dbUser = DbUtilityUser.getUserDetails(authId);
-            if (isFirstLogin) {
-                if (newPassword != null && !newPassword.isEmpty()) {
+            boolean isPasswordChangeValid = newPassword != null && !newPassword.isEmpty();
+
+            if (isFirstLogin || (WebSecurityConfig.checkPassword(dbUser, oldPassword) && isPasswordChangeValid)) {
+                String newCryptedPassword = dbUser.getPassword();
+                if (isPasswordChangeValid) {
                     String salt = BCrypt.gensalt();
-                    String newCryptedPassword = CryptoPassword.cryptoPasswordwithSalt(newPassword, salt);
-                    DbUtilityUser.updateExistingUser(dbUser, newCryptedPassword, true);
-                    WebSecurityConfig.logout();
-                    redirectAttrs.addFlashAttribute("afterChangePsw", true);
-                    return "redirect:/homepage";
+                    newCryptedPassword = CryptoPassword.cryptoPasswordwithSalt(newPassword, salt);
                 }
-                return "/edit-profile";
-            } else if (WebSecurityConfig.checkPassword(dbUser, oldPassword)) {
-                if (newPassword != null && !newPassword.isEmpty()) {
-                    String salt = BCrypt.gensalt();
-                    String newCryptedPassword = CryptoPassword.cryptoPasswordwithSalt(newPassword, salt);
-                    DbUtilityUser.updateExistingUser(dbUser, newCryptedPassword, false);
-                    WebSecurityConfig.logout();
-                    redirectAttrs.addFlashAttribute("afterChangePsw", true);
-                } else {
-                    DbUtilityUser.updateExistingUser(dbUser, dbUser.getPassword(), false);
-                }
+
+                DbUtilityUser.updateExistingUser(dbUser.getUsername(), newCryptedPassword, isFirstLogin);
+                WebSecurityConfig.logout();
+                redirectAttrs.addFlashAttribute("afterChangePsw", true);
                 return "redirect:/homepage";
-            } else {
-                model.addAttribute("pswCheck", true);
-                return "edit-profile";
             }
 
+            model.addAttribute("pswCheck", true);
+            return "/edit-profile";
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }

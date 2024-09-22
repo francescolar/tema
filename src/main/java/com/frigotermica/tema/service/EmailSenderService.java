@@ -19,19 +19,11 @@ public class EmailSenderService {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
-//        SimpleMailMessage message = new SimpleMailMessage();
-
-//        message.setFrom("frigotermicasrl1@gmail.com");
-//        message.setTo(toEmail);
-//        message.setSubject(subject);
-//        message.setText((message));
-
         helper.setFrom("frigotermicasrl1@gmail.com");
         helper.setTo(toEmail);
         helper.setSubject(subject);
         helper.setText(message, true);
 
-//        mailSender.send(message);
         mailSender.send(mimeMessage);
 
         System.out.println("Mail sent to: " + toEmail);

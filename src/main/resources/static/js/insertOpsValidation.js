@@ -20,14 +20,17 @@ document.addEventListener('DOMContentLoaded', function() {
             this.fetchSites(),
             this.fetchSystems()
         },
-           computed: {
-              filteredSystems() {
+        computed: {
+            formattedCounter() {
+                return parseFloat(this.counter).toFixed(2);  // Assicurati che il counter sia sempre formattato con due decimali
+            },
+            filteredSystems() {
                 if (!this.selectedSiteId) {
-                  return [];
+                    return [];
                 }
                 return this.systems.filter(system => system.siteId === parseInt(this.selectedSiteId));
-              }
-            },
+            }
+        },
         methods: {
             validateForm() {
                 this.clearErrors();
@@ -58,30 +61,36 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             fetchSites() {
                 axios.get('/api/sites/all-enabled')
-                .then(response => {
+                    .then(response => {
                     this.sites = response.data;
                 })
-                .catch(error => {
+                    .catch(error => {
                     console.error('Error fetching sites:', error);
                 })
             },
             fetchSystems() {
                 axios.get('/api/systems/all-enabled')
-                .then(response => {
+                    .then(response => {
                     this.systems = response.data;
                 })
-                .catch(error => {
+                    .catch(error => {
                     console.error('Error fetching sites:', error);
                 })
             },
             increase(value) {
-                this.counter += value;
-              },
-              decrease(value) {
-                if (this.counter - value >= 1) {
-                  this.counter -= value;
+                this.counter = parseFloat(this.counter);
+                if (this.counter - parseFloat(value) <= 100) {
+                    this.counter += parseFloat(value);
                 } else {
-                  this.counter = 1;
+                    this.counter = 100;
+                }
+            },
+            decrease(value) {
+                this.counter = parseFloat(this.counter);
+                if (this.counter - parseFloat(value) >= 1) {
+                    this.counter -= parseFloat(value);
+                } else {
+                    this.counter = 1;
                 }
             }
         }

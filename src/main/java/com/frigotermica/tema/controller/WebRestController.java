@@ -8,6 +8,8 @@ import com.frigotermica.tema.util.DbUtilityFullOperation;
 import com.frigotermica.tema.util.DbUtilitySite;
 import com.frigotermica.tema.util.DbUtilitySystem;
 import com.frigotermica.tema.util.DbUtilityUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,12 +24,17 @@ import java.util.List;
 @RequestMapping("/api")
 public class WebRestController {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebRestController.class);
+
+    @Value("${API_GOOGLE}")
+    private String apiKey;
+
     @GetMapping("/users/all")
     public List<UserModel> getAllUser() throws SQLException {
         try {
             return DbUtilityUser.getAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return new ArrayList<>();
         }
     }
@@ -37,7 +44,7 @@ public class WebRestController {
         try {
             return DbUtilityUser.getAllNoAdmin();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return new ArrayList<>();
         }
     }
@@ -47,7 +54,7 @@ public class WebRestController {
         try {
             return DbUtilityFullOperation.getAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return new ArrayList<>();
         }
     }
@@ -58,7 +65,7 @@ public class WebRestController {
             int authId = DbUtilityUser.getAuthenticatedUserId();
             return DbUtilityFullOperation.findByOwned(authId);
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return new ArrayList<>();
         }
     }
@@ -68,7 +75,7 @@ public class WebRestController {
         try {
             return DbUtilitySite.getAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return new ArrayList<>();
         }
     }
@@ -78,7 +85,7 @@ public class WebRestController {
         try {
             return DbUtilitySite.getAllEnabled();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return new ArrayList<>();
         }
     }
@@ -88,7 +95,7 @@ public class WebRestController {
         try {
             return DbUtilitySystem.getAll();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return new ArrayList<>();
         }
     }
@@ -98,7 +105,7 @@ public class WebRestController {
         try {
             return DbUtilitySystem.getAllEnabled();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return new ArrayList<>();
         }
     }
@@ -108,13 +115,10 @@ public class WebRestController {
         try {
             return DbUtilitySystem.findBySiteId(siteId);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return new ArrayList<>();
         }
     }
-
-    @Value("${API_GOOGLE}")
-    private String apiKey;
 
     @GetMapping("/google-maps-key")
     public String getGoogleMapsApiKey() {

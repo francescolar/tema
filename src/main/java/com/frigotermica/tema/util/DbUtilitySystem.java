@@ -2,6 +2,7 @@ package com.frigotermica.tema.util;
 
 import com.frigotermica.tema.models.SystemModel;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,7 +23,7 @@ public class DbUtilitySystem {
             int id = rs.getInt("id");
             String name = rs.getString("name");
             int siteId = rs.getInt("site_id");
-            int totalWorkHours = rs.getInt("total_work_hours");
+            BigDecimal totalWorkHours = rs.getBigDecimal("total_work_hours");
             boolean enabled = rs.getBoolean("enabled");
             SystemModel system = new SystemModel(id, name, siteId, totalWorkHours, enabled);
             list.add(system);
@@ -43,7 +44,7 @@ public class DbUtilitySystem {
             int id = rs.getInt("id");
             String name = rs.getString("name");
             int siteId = rs.getInt("site_id");
-            int totalWorkHours = rs.getInt("total_work_hours");
+            BigDecimal totalWorkHours = rs.getBigDecimal("total_work_hours");
             boolean enabled = rs.getBoolean("enabled");
             SystemModel system = new SystemModel(id, name, siteId, totalWorkHours, enabled);
             list.add(system);
@@ -64,7 +65,7 @@ public class DbUtilitySystem {
         while (rs.next()) {
             String name = rs.getString("name");
             int siteId = rs.getInt("site_id");
-            int totalWorkHours = rs.getInt("total_work_hours");
+            BigDecimal totalWorkHours = rs.getBigDecimal("total_work_hours");
             boolean enabled = rs.getBoolean("enabled");
             system = new SystemModel(id, name, siteId, totalWorkHours, enabled);
         }
@@ -122,7 +123,7 @@ public class DbUtilitySystem {
 
     public static void deleteAfterSiteDeleted(int siteId) throws SQLException {
         Connection c = DbUtility.createConnection();
-        String sql = "UPDATE systems SET deleted = TRUE WHERE site_id = ?;";
+        String sql = "UPDATE systems SET deleted = TRUE, enabled = FALSE WHERE site_id = ?;";
         PreparedStatement stmt = c.prepareStatement(sql);
         stmt.setInt(1, siteId);
         stmt.executeUpdate();

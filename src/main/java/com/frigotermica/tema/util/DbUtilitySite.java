@@ -2,6 +2,7 @@ package com.frigotermica.tema.util;
 
 import com.frigotermica.tema.models.SiteModel;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class DbUtilitySite {
 
-     public static List<SiteModel> getAll() throws SQLException {
+    public static List<SiteModel> getAll() throws SQLException {
         Connection c = DbUtility.createConnection();
         String sql = "SELECT * FROM sites WHERE deleted = FALSE ORDER BY name;";
         PreparedStatement stmt = c.prepareStatement(sql);
@@ -22,7 +23,7 @@ public class DbUtilitySite {
             int id = rs.getInt("id");
             String name = rs.getString("name");
             String address = rs.getString("address");
-            int totalWorkHours = rs.getInt("total_work_hours");
+            BigDecimal totalWorkHours = rs.getBigDecimal("total_work_hours");
             int totalSystems = rs.getInt("total_systems");
             boolean enabled = rs.getBoolean("enabled");
             SiteModel site = new SiteModel(id, name, address, totalWorkHours, totalSystems, enabled);
@@ -44,7 +45,7 @@ public class DbUtilitySite {
             int id = rs.getInt("id");
             String name = rs.getString("name");
             String address = rs.getString("address");
-            int totalWorkHours = rs.getInt("total_work_hours");
+            BigDecimal totalWorkHours = rs.getBigDecimal("total_work_hours");
             int totalSystems = rs.getInt("total_systems");
             boolean enabled = rs.getBoolean("enabled");
             SiteModel site = new SiteModel(id, name, address, totalWorkHours, totalSystems, enabled);
@@ -66,7 +67,7 @@ public class DbUtilitySite {
         while (rs.next()) {
             String name = rs.getString("name");
             String address = rs.getString("address");
-            int totalWorkHours = rs.getInt("total_work_hours");
+            BigDecimal totalWorkHours = rs.getBigDecimal("total_work_hours");
             int totalSystems = rs.getInt("total_systems");
             boolean enabled = rs.getBoolean("enabled");
             site = new SiteModel(id, name, address, totalWorkHours, totalSystems, enabled);
@@ -76,7 +77,7 @@ public class DbUtilitySite {
         DbUtility.closeConnection(c);
         return site;
     }
-    
+
     public static void insertPreparedStatement(SiteModel site) throws SQLException {
         Connection c = DbUtility.createConnection();
         String sql = "INSERT INTO sites (name, address) VALUES (?, ?);";

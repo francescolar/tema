@@ -1,41 +1,79 @@
-<div class="main-contact-card-container" th:fragment="edit-user">
-    <form ref="editContactForm" action="#" th:action="@{/admin/edit}" th:object="${user}" method="post" @submit.prevent="validateForm" novalidate>
-        <input type="hidden" name="tableName" th:value="'users'" />
-        <input type="hidden" th:field="*{id}" />
-        <div class="view-contact-title">
-            <input class="text-field" th:field="*{name}" name="name" v-model="name" id="name" title="" type="text" placeholder="Nome" required/>
-            <div class="error-message" v-if="errors.name">Please enter your first name</div>
-
-            <input class="text-field" th:field="*{surname}" name="surname" v-model="surname" id="surname" title="" type="text" placeholder="Cognome" required/>
-            <div class="error-message" v-if="errors.surname">Please enter your last name</div>
-
+<div class="register-container" th:fragment="edit-user">
+    <h2>Modifica dati utente</h2>
+    <form @submit.prevent="validateForm" action="#" method="post" novalidate ref="editContactForm"
+          th:action="@{/admin/edit}" th:object="${user}">
+        <input name="tableName" th:value="'users'" type="hidden"/>
+        <input th:field="*{id}" type="hidden"/>
+        <div class="form-floating mb-3">
+            <input class="form-control" id="username" name="username" placeholder="" required th:field="*{username}"
+                   title="" type="text" v-model="username"/>
+            <label for="username">Username</label>
         </div>
-        <div class="contact-card-container">
-
-            <div>
-                <input class="text-field" th:field="*{username}" v-model="username" id="username" name="username" title="" type="text" placeholder="Username" required/>
-                <div class="error-message" v-if="errors.username">Username must be at least 4 characters</div>
-                <div th:if="${usernameCheck}">Username already existing</div>
-            </div>
-
-            <div>
-                <input class="text-field" th:field="*{email}" v-model="email" id="email" name="email" title="" type="text" placeholder="Email" required/>
-                <div class="error-message" v-if="errors.email">Username must be at least 4 characters</div>
-            </div>
-            <div>
-                <!-- <input type="hidden" name="reset-psw" value="false"> -->
-                <label for="reset-psw" class="view-label">Reset password?</label>
-                <input class="text-field" id="reset-psw" name="reset-psw" type="checkbox" value="true" />
+        <div
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+                v-if="errors.username"
+        >
+            <strong>Errore.</strong> L'username deve avere minimo 4 caratteri
+        </div>
+        <div
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+                th:if="${usernameCheck}"
+        >
+            <strong>Errore.</strong> L'username è già esistente
+        </div>
+        <div class="form-floating mb-3">
+            <input class="form-control" id="email" name="email" placeholder="" required th:field="*{email}" title=""
+                   type="text" v-model="email"/>
+            <label for="email">Email</label>
+        </div>
+        <div
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+                v-if="errors.email"
+        >
+            <strong>Errore.</strong>
+            L'email presenta degli errori.
+            <ul>
+                <li>è vuota</li>
+                <li>non ha un corretto formato</li>
+            </ul>
+        </div>
+        <div class="form-floating mb-3">
+            <input class="form-control" id="name" name="name" placeholder="" required th:field="*{name}" title=""
+                   type="text" v-model="name"/>
+            <label for="name">Nome</label>
+        </div>
+        <div
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+                v-if="errors.name"
+        >
+            <strong>Errore.</strong> Inserisci il nome.
+        </div>
+        <div class="form-floating mb-3">
+            <input class="form-control" id="surname" name="surname" placeholder="" required th:field="*{surname}"
+                   title="" type="text" v-model="surname"/>
+            <label for="surname">Cognome</label>
+        </div>
+        <div
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+                v-if="errors.surname"
+        >
+            <strong>Errore.</strong> Inserisci il cognome.
+        </div>
+        <div class="d-flex justify-content-center">
+            <div class="form-check form-switch content">
+                <label class="form-check-label" for="reset-psw">Reset password?</label>
+                <input class="form-check-input" id="reset-psw" name="reset-psw" type="checkbox" value="true"/>
             </div>
         </div>
-        <div class="edit-button-container">
-            <input class="edit-contact-button" type="submit" value="Save" />
+        <div class="d-flex gap-2">
+            <input class="form-control btn btn-outline-primary" type="submit" value="Salva"/>
+            <input @click="cancel" class="form-control btn btn-outline-danger" type="button" value="Annulla"/>
         </div>
     </form>
-    <div class="edit-button-container">
-        <input class="edit-contact-button" type="submit" @click="cancel" value="Cancel" />
-        <input class="edit-contact-button delete-btn" type="submit" @click="submitDeleteForm" value="Delete" />
-    </div>
-    <form ref="cancel" action="/admin/view-users" method="get"></form>
-
+    <form action="/admin/view-users" method="get" ref="cancel"></form>
 </div>

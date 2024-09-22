@@ -41,6 +41,9 @@ document.addEventListener('DOMContentLoaded', function() {
             this.authId = this.$el.getAttribute('data-auth-id');
         },
         computed: {
+            formattedCounter() {
+                return parseFloat(this.counter).toFixed(2);  // Assicurati che il counter sia sempre formattato con due decimali
+            },
             filteredOps() {
                 if (!this.searchOps) return this.ops;
                 return this.ops.filter(op =>
@@ -144,11 +147,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
             },
             increase(value) {
-                this.counter += value;
+                this.counter = parseFloat(this.counter);
+                if (this.counter - parseFloat(value) <= 100) {
+                    this.counter += parseFloat(value);
+                } else {
+                    this.counter = 100;
+                }
             },
             decrease(value) {
-                if (this.counter - value >= 1) {
-                    this.counter -= value;
+                this.counter = parseFloat(this.counter);
+                if (this.counter - parseFloat(value) >= 1) {
+                    this.counter -= parseFloat(value);
                 } else {
                     this.counter = 1;
                 }

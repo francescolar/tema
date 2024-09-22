@@ -1,152 +1,179 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<html xmlns:th="https://www.thymeleaf.org">
 <head>
-    <link rel="icon" href="/img/site/favicon.png" type="image/x-icon" >
-    <link rel="shortcut icon" href="/img/site/favicon.png" type="image/x-icon" >
-    <meta http-equiv="Content-Language" content="IT">
-    <meta name="copyright" content="Frigotermica S.R.L.">
-    <meta charset="UTF-8" />
+    <link href="/img/site/favicon.png" rel="icon" type="image/x-icon">
+    <link href="/img/site/favicon.png" rel="shortcut icon" type="image/x-icon">
+    <meta content="IT" http-equiv="Content-Language">
+    <meta content="Frigotermica S.R.L." name="copyright">
+    <meta charset="UTF-8"/>
     <title>TeMa | Tutte le manutenzioni</title>
     <meta
-            name="viewport"
             content="width=device-width, initial-scale=1, shrink-to-fit=no"
+            name="viewport"
     />
-    <meta name="description" content="Ops list">
-    <meta name="keywords" content="operations">
+    <meta content="Ops list" name="description">
+    <meta content="operations" name="keywords">
     <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
             crossorigin="anonymous"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            rel="stylesheet"
     />
-    <link id="theme-stylesheet-main" rel="stylesheet" type="text/css" href="/css/style.css" />
+    <link href="/css/style.css" id="theme-stylesheet-main" rel="stylesheet" type="text/css"/>
     <script
-            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            crossorigin="anonymous"
+            defer
             integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-            crossorigin="anonymous" defer
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
     ></script>
     <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            crossorigin="anonymous"
+            defer
             integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-            crossorigin="anonymous" defer
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
     ></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
-    <script src="/js/admin/OpsScript.js" type="text/javascript" defer></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script defer src="/js/admin/OpsScript.js" type="text/javascript"></script>
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<main class="homepage" id="app" th:attr="data-auth-id=${authId}">
-
+<main id="app" th:attr="data-auth-id=${authId}">
     <div th:replace="~{fragments/insert-operation :: insert-operation}"></div>
-
-    <h2>Tutte le manutenzioni</h2>
-
-    <div id="filters">
-        <!-- Filtro per data (inizio - fine) -->
-        <label>Data (inizio):</label>
-        <input type="date" v-model="startDate" @change="applyFilter" />
-
-        <label>Data (fine):</label>
-        <input type="date" v-model="endDate" @change="applyFilter" />
-
-        <!-- Filtro per sede -->
-        <label for="site-select">Sede:</label>
-        <select id="site-select" v-model="selectedSiteFilter" @change="applyFilter">
-            <option value="">Tutte</option>
-            <option v-for="site in sites" :value="site.id" :key="site.id">{{ site.name }}</option>
-        </select>
-
-        <!-- Filtro per impianto (disponibile solo dopo selezione sede) -->
-        <label for="system-select">Impianto:</label>
-        <select id="system-select" v-model="selectedSystemFilter" :disabled="!selectedSiteFilter" @change="applyFilter">
-            <option value="">Tutti</option>
-            <option v-for="system in filteredSystems" :value="system.id" :key="system.id">{{ system.name }}</option>
-        </select>
-
-        <!-- Filtro per ore impiegate -->
-        <label for="work-hours">Ore impiegate:</label>
-        <select v-model="hoursCondition" @change="applyFilter">
-            <option value="equal">Uguale a</option>
-            <option value="less">Minore di</option>
-            <option value="greater">Maggiore di</option>
-        </select>
-        <input type="number" v-model="hoursValue" @input="applyFilter" placeholder="Inserisci ore" />
-
-        <!-- Filtro per descrizione -->
-        <label for="description">Descrizione:</label>
-        <input type="text" v-model="descriptionFilter" @input="applyFilter" placeholder="Cerca descrizione" />
-
-        <!-- Filtro per utente -->
-        <label for="user-select">Utente:</label>
-        <select id="user-select" v-model="selectedUserFilter" @change="applyFilter">
-            <option value="">Tutti</option>
-            <option v-for="user in users" :value="user.id" :key="user.id">{{ user.username }}</option>
-        </select>
-
-        <!-- Filtro per data di creazione (inizio - fine) -->
-        <label>Data di creazione (inizio):</label>
-        <input type="date" v-model="createdStartDate" @change="applyFilter" />
-
-        <label>Data di creazione (fine):</label>
-        <input type="date" v-model="createdEndDate" @change="applyFilter" />
-        <button @click="resetFilters" class="btn btn-secondary">Reset Filtri</button>
+    <div class="operations-container">
+        <h2 class="operations-title">Lista manutenzioni</h2>
+        <div class="filters-container">
+            <label>Data (inizio):</label>
+            <input @change="applyFilter" type="date" v-model="startDate">
+            <label>Data (fine):</label>
+            <input @change="applyFilter" type="date" v-model="endDate">
+            <label>Sede:</label>
+            <select @change="applyFilter" v-model="selectedSiteFilter">
+                <option value="">Tutte</option>
+                <option :key="site.id" :value="site.id" v-for="site in sites">{{ site.name }}</option>
+            </select>
+            <label>Impianto:</label>
+            <select :disabled="!selectedSiteFilter" @change="applyFilter" v-model="selectedSystemFilter">
+                <option value="">Tutti</option>
+                <option :key="system.id" :value="system.id" v-for="system in filteredSystems">{{ system.name }}</option>
+            </select>
+            <label>Ore impiegate:</label>
+            <select @change="applyFilter" v-model="hoursCondition">
+                <option value="equal">Uguale a</option>
+                <option value="less">Minore di</option>
+                <option value="greater">Maggiore di</option>
+            </select>
+            <input @input="applyFilter" placeholder="Inserisci ore" type="number" v-model="hoursValue">
+            <label>Descrizione:</label>
+            <input @input="applyFilter" placeholder="Cerca descrizione" type="text" v-model="descriptionFilter">
+            <label>Utente:</label>
+            <select @change="applyFilter" v-model="selectedUserFilter">
+                <option value="">Tutti</option>
+                <option :key="user.id" :value="user.id" v-for="user in users">{{ user.username }}</option>
+            </select>
+            <button @click="resetFilters" class="btn btn-secondary">Reset Filtri</button>
+        </div>
+        <table class="operations-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data</th>
+                <th>Sede</th>
+                <th>Impianto</th>
+                <th>Ore impiegate</th>
+                <th>Descrizione</th>
+                <th>ID Utente</th>
+                <th>Utente</th>
+                <th>Inserito il</th>
+                <th>Menù</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr :key="op.id" v-for="op in filteredOps">
+                <td class="info">{{ op.id }}</td>
+                <td class="info">{{ formatDate(op.date) }}</td>
+                <td class="info">{{ op.siteName }}</td>
+                <td class="info">{{ op.systemName }}</td>
+                <td class="info">{{ op.hoursSpent }}</td>
+                <td class="info">{{ op.description }}</td>
+                <td class="info">{{ op.userId }}</td>
+                <td class="info">{{ op.username }}</td>
+                <td class="info">{{ formatDate(op.createdAt) }}</td>
+                <td>
+                    <div class="dropdown">
+                        <button
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                class="btn btn-secondary dropdown-toggle"
+                                data-bs-toggle="dropdown"
+                                id="triggerId"
+                                type="button"
+                        >
+                            Azioni
+                        </button>
+                        <div aria-labelledby="triggerId" class="dropdown-menu">
+                            <form method="get" th:action="@{/admin/edit}">
+                                <input :value="op.id" name="id" type="hidden"/>
+                                <input name="tableName" th:value="'operations'" type="hidden"/>
+                                <button class="dropdown-item" type="submit">Modifica</button>
+                            </form>
+                            <form method="post" th:action="@{/admin/delete}">
+                                <input :value="op.id" name="id" type="hidden"/>
+                                <input name="tableName" th:value="'operations'" type="hidden"/>
+                                <button class="dropdown-item" type="submit">Elimina</button>
+                            </form>
+                            <div class="dropdown-divider"></div>
+                            <button
+                                    @click="showOpDetails(op)"
+                                    class="dropdown-item"
+                                    data-bs-target="#opDetailsModal"
+                                    data-bs-toggle="modal"
+                                    type="button"
+                            >
+                                Dettagli
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr v-if="filteredOps.length === 0">
+                <td colspan="10">Nessuna manutenzione disponibile.</td>
+            </tr>
+            </tbody>
+        </table>
+        <button
+                class="add-operation-btn"
+                data-bs-target="#modalId"
+                data-bs-toggle="modal"
+                type="button"
+        >
+            +
+        </button>
     </div>
-
-
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Data</th>
-            <th>Sede</th>
-            <th>Impianto</th>
-            <th>Ore impiegate</th>
-            <th>Descrizione</th>
-            <th>ID Utente</th>
-            <th>Utente</th>
-            <th>Inserito il</th>
-            <th>Modifica</th>
-            <th>Cancella</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="op in filteredOps" :key="op.id">
-            <td>{{ op.id }}</td>
-            <td>{{ formatDate(op.date) }}</td>
-            <td>{{ op.siteName }}</td>
-            <td>{{ op.systemName }}</td>
-            <td>{{ op.hoursSpent }}</td>
-            <td>{{ op.description }}</td>
-            <td>{{ op.userId }}</td>
-            <td>{{ op.username }}</td>
-            <td>{{ formatDate(op.createdAt) }}</td>
-            <td><form th:action="@{/admin/edit}" method="get">
-                <input type="hidden" name="id" :value="op.id" />
-                <input type="hidden" name="tableName" th:value="'operations'" />
-                <button type="submit" class="dropdown-item">Modifica</button>
-            </form></td>
-            <td><form th:action="@{/admin/delete}" method="post">
-                <input type="hidden" name="id" :value="op.id" />
-                <input type="hidden" name="tableName" th:value="'operations'" />
-                <button type="submit" class="dropdown-item">Elimina</button>
-            </form></td>
-        <tr v-if="filteredOps.length === 0">
-            <td colspan="11">Nessuna manutenzione disponibile.</td>
-        </tr>
-
-        </tr>
-        </tbody>
-    </table>
-
-    <button
-            type="button"
-            class="btn btn-primary btn-lg"
-            data-bs-toggle="modal"
-            data-bs-target="#modalId"
-    >
-        Aggiungi manutenzione
-    </button>
+    <div aria-hidden="true" aria-labelledby="opDetailsModalLabel" class="modal fade" id="opDetailsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="opDetailsModalLabel">Dettagli della manutenzione</h5>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>ID:</strong> {{ selectedOp.id }}</p>
+                    <p><strong>Data:</strong> {{ formatDate(selectedOp.date) }}</p>
+                    <p><strong>Sede:</strong> {{ selectedOp.siteName }}</p>
+                    <p><strong>Impianto:</strong> {{ selectedOp.systemName }}</p>
+                    <p><strong>Ore impiegate:</strong> {{ selectedOp.hoursSpent }}</p>
+                    <p><strong>Descrizione:</strong> {{ selectedOp.description }}</p>
+                    <p><strong>ID Utente:</strong> {{ selectedOp.userId }}</p>
+                    <p><strong>Utente:</strong> {{ selectedOp.username }}</p>
+                    <p><strong>Inserito il:</strong> {{ formatDate(selectedOp.createdAt) }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 </body>
 </html>

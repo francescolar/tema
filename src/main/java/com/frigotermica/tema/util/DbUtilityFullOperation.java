@@ -2,6 +2,7 @@ package com.frigotermica.tema.util;
 
 import com.frigotermica.tema.models.FullOperationModel;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,15 +23,15 @@ public class DbUtilityFullOperation {
             int id = rs.getInt("id");
             LocalDateTime date = rs.getTimestamp("date").toLocalDateTime();
             String description = rs.getString("description");
-            int hours_spent = rs.getInt("hours_spent");
-            int site_id = rs.getInt("site_id");
-            int system_id = rs.getInt("system_id");
-            int user_id = rs.getInt("user_id");
-            String system_name = rs.getString("system_name");
-            String site_name = rs.getString("site_name");
+            BigDecimal hoursSpent = rs.getBigDecimal("hours_spent");
+            int siteId = rs.getInt("site_id");
+            int systemId = rs.getInt("system_id");
+            int userId = rs.getInt("user_id");
+            String systemName = rs.getString("system_name");
+            String siteName = rs.getString("site_name");
             String username = rs.getString("username");
             LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
-            FullOperationModel operation = new FullOperationModel(id, date, description, hours_spent, site_id, system_id, user_id, system_name, site_name, username, createdAt);
+            FullOperationModel operation = new FullOperationModel(id, date, description, hoursSpent, siteId, systemId, userId, systemName, siteName, username, createdAt);
             list.add(operation);
         }
         rs.close();
@@ -50,7 +51,7 @@ public class DbUtilityFullOperation {
             op.setId(rs.getInt("id"));
             op.setDate(rs.getTimestamp("date").toLocalDateTime());
             op.setDescription(rs.getString("description"));
-            op.setHoursSpent(rs.getInt("hours_spent"));
+            op.setHoursSpent(rs.getBigDecimal("hours_spent"));
             op.setSiteId(rs.getInt("site_id"));
             op.setSystemId(rs.getInt("system_id"));
             op.setUserId(rs.getInt("user_id"));
@@ -75,7 +76,7 @@ public class DbUtilityFullOperation {
             int id = rs.getInt("id");
             LocalDateTime date = rs.getTimestamp("date").toLocalDateTime();
             String description = rs.getString("description");
-            int hours_spent = rs.getInt("hours_spent");
+            BigDecimal hours_spent = rs.getBigDecimal("hours_spent");
             int site_id = rs.getInt("site_id");
             int system_id = rs.getInt("system_id");
             int user_id = rs.getInt("user_id");

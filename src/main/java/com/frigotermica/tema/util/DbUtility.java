@@ -11,7 +11,7 @@ import java.util.List;
 
 @Component
 public class DbUtility {
-    
+
     private static DataSource dataSource;
 
     public DbUtility(DataSource dataSource) {
@@ -32,17 +32,25 @@ public class DbUtility {
         if (!allowedTables.contains(tableName)) {
             throw new IllegalArgumentException("Invalid tableName name provided.");
         }
-        String sql = "UPDATE " + tableName + " SET deleted = ? WHERE id = ?;";
-        PreparedStatement stmt = c.prepareStatement(sql);
-        stmt.setBoolean(1, true);
-        stmt.setInt(2, id);
-        stmt.executeUpdate();
+
+        if (!tableName.equals("operations")) {
+            String sql = "UPDATE " + tableName + " SET enabled = FALSE, deleted = TRUE WHERE id = ?;";
+            PreparedStatement stmt = c.prepareStatement(sql);
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+            stmt.close();
+        } else {
+            String sql = "UPDATE " + tableName + " SET deleted = TRUE WHERE id = ?;";
+            PreparedStatement stmt = c.prepareStatement(sql);
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+            stmt.close();
+        }
 
         if (tableName.equals("sites")) {
             DbUtilitySystem.deleteAfterSiteDeleted(id);
         }
 
-        stmt.close();
         DbUtility.closeConnection(c);
     }
 

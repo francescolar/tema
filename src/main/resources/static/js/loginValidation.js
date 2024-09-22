@@ -47,4 +47,4 @@ function togglePsw() {
         pswButton.innerHTML = "visibility";
 
     }
-  }
+}

@@ -1,11 +1,16 @@
 package com.frigotermica.tema.controller;
 
 import com.frigotermica.tema.models.*;
+import com.frigotermica.tema.service.BasicPasswordGenerator;
 import com.frigotermica.tema.service.UserService;
 import com.frigotermica.tema.util.*;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,10 +22,19 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.sql.SQLException;
-import java.util.List;
 
 @Controller
 public class AdminWebController implements WebMvcConfigurer {
+
+    private static final Logger logger = LoggerFactory.getLogger(AdminWebController.class);
+
+    @Autowired
+    private EmailMessageService messageService;
+
+    //    USER PART  -----------------------------------------------------------------------------------------------------------------------------------------------
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public void addViewControllers(@NonNull ViewControllerRegistry registry) {
@@ -31,17 +45,12 @@ public class AdminWebController implements WebMvcConfigurer {
         registry.addViewController("/admin/edit").setViewName("admin/edit");
     }
 
-//    USER PART
-
-    @Autowired
-    private UserService userService;
-
     @GetMapping("/admin/view-users")
-    public String viewUsers(Model model) {
+    public String viewUsers() {
         try {
             return "admin/view-users";
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }
@@ -67,45 +76,40 @@ public class AdminWebController implements WebMvcConfigurer {
         return "";
     }
 
-//    SITES PART
+//    SITES PART -----------------------------------------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/admin/insert-site")
-    public String insertNewSite(@Valid @ModelAttribute SiteModel site, BindingResult bindingResult, Model model) {
+    public String insertNewSite(@Valid @ModelAttribute SiteModel site, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "redirect:/error";
         }
         try {
-            //int user_id = DbUtilityUser.getAuthenticatedUserId();
             DbUtilitySite.insertPreparedStatement(site);
             return "redirect:/admin/view-sites";
-        } catch (/*ClassNotFoundException | */SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }
 
     @GetMapping("/admin/view-sites")
-    public String viewSites(Model model) {
+    public String viewSites() {
         try {
-            List<SiteModel> siteList = DbUtilitySite.getAll();
-            model.addAttribute("sites", siteList);
             return "admin/view-sites";
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }
 
-//    OPERATIONS PART
+//    OPERATIONS PART  -----------------------------------------------------------------------------------------------------------------------------------------------
 
     @GetMapping("/admin/view-operations")
-    public String viewUserOperation(Model model) {
+    public String viewUserOperation() {
         try {
-            List<FullOperationModel> operationList = DbUtilityFullOperation.getAll();
-            model.addAttribute("ops", operationList);
             return "admin/view-operations";
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }
@@ -119,12 +123,12 @@ public class AdminWebController implements WebMvcConfigurer {
             DbUtilityOperation.insertPreparedStatement(operation, userId);
             return "redirect:/admin/view-operations";
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }
 
-//    SYSTEM PART
+//    SYSTEM PART   -----------------------------------------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/admin/insert-system")
     public String insertNewOperation(@Valid @ModelAttribute SystemModel system, BindingResult bindingResult, Model model) {
@@ -132,16 +136,15 @@ public class AdminWebController implements WebMvcConfigurer {
             return "redirect:/error";
         }
         try {
-            //int user_id = DbUtilityUser.getAuthenticatedUserId();
             DbUtilitySystem.insertPreparedStatement(system);
             return "redirect:/admin/view-sites";
-        } catch (/*ClassNotFoundException | */SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }
 
-//    GENERAL PART
+//    GENERAL PART  -----------------------------------------------------------------------------------------------------------------------------------------------
 
     @GetMapping("/admin/edit")
     public String editGet(@RequestParam("id") Integer id, @RequestParam("tableName") String tableName, Model model) {
@@ -170,7 +173,7 @@ public class AdminWebController implements WebMvcConfigurer {
             }
             return "admin/edit";
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return "redirect:/homepage";
         }
     }
@@ -181,6 +184,7 @@ public class AdminWebController implements WebMvcConfigurer {
                            @ModelAttribute UserModel user,
                            @ModelAttribute SiteModel site,
                            @ModelAttribute SystemModel system,
+                           @RequestParam(name = "reset-psw", defaultValue = "false") boolean resetPsw,
                            BindingResult result,
                            Model model) {
         try {
@@ -190,7 +194,30 @@ public class AdminWebController implements WebMvcConfigurer {
                         model.addAttribute("tableName", "users");
                         return "/admin/edit";
                     }
-                    DbUtilityOperation.update(operation);
+                    boolean userExist = DbUtilityUser.checkUsername(user.getUsername());
+                    boolean emailExist = DbUtilityUser.checkEmail(user.getEmail());
+                    UserModel dbUser = DbUtilityUser.getUserDetails(user.getId());
+                    if (!user.getUsername().equals(dbUser.getUsername())) {
+                        if (!userExist) {
+                            model.addAttribute("usernameExist", true);
+                            return "redirect:/admin/edit?id=" + user.getId() + "&tableName=users";
+                        }
+                    }
+                    if (!user.getEmail().equals(dbUser.getEmail())) {
+                        if (!emailExist) {
+                            model.addAttribute("emailExist", true);
+                            return "redirect:/admin/edit?id=" + user.getId() + "&tableName=users";
+                        }
+                    }
+                    if (resetPsw) {
+                        String randomPassword = BasicPasswordGenerator.getRandomPassword();
+                        System.out.println(randomPassword);
+                        messageService.sendResetEmail(user.getEmail(), user.getUsername(), randomPassword);
+                        user.setPassword(CryptoPassword.cryptoPasswordwithSalt(randomPassword, BCrypt.gensalt()));
+                    } else {
+                        user.setPassword(dbUser.getPassword());
+                    }
+                    DbUtilityUser.adminUpdate(user, dbUser);
                     return "redirect:/admin/view-users";
                 case "sites":
                     if (result.hasErrors()) {
@@ -215,14 +242,14 @@ public class AdminWebController implements WebMvcConfigurer {
                     return "redirect:/admin/view-operations";
             }
             return "admin/edit";
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException | MessagingException | SQLException e) {
+            logger.error("An error occurred while doing something", e);
             return "redirect:/homepage";
         }
     }
 
     @PostMapping("/admin/delete")
-    public String delete(@RequestParam("id") Integer id, @RequestParam("tableName") String tableName){
+    public String delete(@RequestParam("id") Integer id, @RequestParam("tableName") String tableName) {
         try {
             DbUtility.softDeletePreparedStatement(id, tableName);
             switch (tableName) {
@@ -236,7 +263,7 @@ public class AdminWebController implements WebMvcConfigurer {
             }
             return "error";
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }
@@ -256,7 +283,7 @@ public class AdminWebController implements WebMvcConfigurer {
             }
             return "redirect:/error";
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }

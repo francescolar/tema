@@ -1,246 +1,287 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<html xmlns:th="https://www.thymeleaf.org">
 <head>
-    <link rel="icon" href="/img/site/favicon.png" type="image/x-icon" >
-    <link rel="shortcut icon" href="/img/site/favicon.png" type="image/x-icon" >
-    <meta http-equiv="Content-Language" content="IT">
-    <meta name="copyright" content="Frigotermica S.R.L.">
-    <meta charset="UTF-8" />
+    <link href="/img/site/favicon.png" rel="icon" type="image/x-icon">
+    <link href="/img/site/favicon.png" rel="shortcut icon" type="image/x-icon">
+    <meta content="IT" http-equiv="Content-Language">
+    <meta content="Frigotermica S.R.L." name="copyright">
+    <meta charset="UTF-8"/>
     <title>TeMa | Tutte le sedi</title>
     <meta
-            name="viewport"
             content="width=device-width, initial-scale=1, shrink-to-fit=no"
+            name="viewport"
     />
-    <meta name="description" content="sites list">
-    <meta name="keywords" content="sites">
+    <meta content="sites list" name="description">
+    <meta content="sites" name="keywords">
     <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
             crossorigin="anonymous"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            rel="stylesheet"
     />
-    <link id="theme-stylesheet-main" rel="stylesheet" type="text/css" href="/css/style.css" />
+    <link href="/css/style.css" id="theme-stylesheet-main" rel="stylesheet" type="text/css"/>
     <script
-            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            crossorigin="anonymous"
+            defer
             integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-            crossorigin="anonymous" defer
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
     ></script>
     <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            crossorigin="anonymous"
+            defer
             integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-            crossorigin="anonymous" defer
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
     ></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
-    <script src="/js/admin/SiteScript.js" type="text/javascript" defer></script>
-
+    <script defer src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script defer src="/js/admin/SiteScript.js" type="text/javascript"></script>
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<main class="homepage" id="app" th:attr="data-auth-id=${authId}">
-    <h2>Tutte le sedi</h2>
-
-    <div id="site-filters">
-        <label for="siteName">Nome sede:</label>
-        <input type="text" v-model="siteNameFilter" placeholder="Cerca per nome sede" @input="applySiteFilter" />
-
-        <label for="city">Città sede:</label>
-        <input type="text" v-model="cityFilter" placeholder="Cerca per città" @input="applySiteFilter" />
-
-        <label for="numImpianti">Numero impianti:</label>
-        <select v-model="numImpiantiCondition" @change="applySiteFilter">
-            <option value="equal">Uguale a</option>
-            <option value="less">Minore di</option>
-            <option value="greater">Maggiore di</option>
-        </select>
-        <input type="number" v-model="numImpiantiValue" @input="applySiteFilter" placeholder="Inserisci numero impianti" />
-
-        <label for="totManutenzione">Totale ore manutenzione:</label>
-        <select v-model="totManutenzioneCondition" @change="applySiteFilter">
-            <option value="equal">Uguale a</option>
-            <option value="less">Minore di</option>
-            <option value="greater">Maggiore di</option>
-        </select>
-        <input type="number" v-model="totManutenzioneValue" @input="applySiteFilter" placeholder="Inserisci ore manutenzione" />
-
-        <label>
-            Abilitato:
-            <input type="checkbox" v-model="excludeDisabledSites" @change="applySiteFilter" />
-        </label>
-
-        <label>
-            Sedi con 0 impianti:
-            <input type="checkbox" v-model="excludeZeroSystems" @change="applySiteFilter" />
-        </label>
-
-        <button @click="resetSiteFilters" class="btn btn-secondary">Reset Filtri</button>
-    </div>
-
-
-    <!--    aggiungere stile flex box   -->
-    <div style="display:flex;">
-        <div v-if="sites.length === 0">
-            <p colspan="4">Nessuna sede disponibile.</p>
-        </div>
-    <div class="card text-start" v-for="site in filteredSites" :key="site.id">
-        <div class="card-body">
-            <h4 class="card-title">(ID: {{ site.id }}) {{ site.name }}</h4>
-            <p class="card-text">{{ site.address }}</p>
-            <p class="card-text">Tot. h. manutenzioni: {{ site.totalWorkHours }}</p>
-            <p class="card-text">Impianti tot.: {{ site.totalSystems }}</p>
-            <p class="card-text">Abilitato: {{ site.enabled ? 'Sì' : 'No' }}</p>
-            <div class="dropdown open">
-                <a
-                        class="btn btn-secondary dropdown-toggle"
-                        type="button"
-                        id="triggerId"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                >
-                    Azioni
-                </a>
-                <div class="dropdown-menu" aria-labelledby="triggerId">
-                    <form th:action="@{/admin/edit}" method="get">
-                        <input type="hidden" name="id" :value="site.id">
-                        <input type="hidden" name="tableName" th:value="'sites'" />
-                        <button type="submit" class="dropdown-item">Modifica</button>
-                    </form>
-                    <form th:action="@{/admin/toggle}" method="post">
-                        <input type="hidden" name="id" :value="site.id">
-                        <input type="hidden" name="tableName" th:value="'sites'" />
-                        <button type="submit" :class="site.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Disabilita</button>
-                    </form>
-                    <form th:action="@{/admin/toggle}" method="post">
-                        <input type="hidden" name="id" :value="site.id" />
-                        <input type="hidden" name="tableName" th:value="'sites'" />
-                        <button type="submit" :class="!site.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Abilita</button>
-                    </form>
-                    <form th:action="@{/admin/delete}" method="post">
-                        <input type="hidden" name="id" :value="site.id" />
-                        <input type="hidden" name="tableName" th:value="'sites'" />
-                        <button type="submit" class="dropdown-item">Elimina</button>
-                    </form>
-                    <button
-                            class="dropdown-item"
-                            type="button"
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#Id1"
-                            aria-controls="Id1"
-                            @click="siteId = site.id"
-                    >
-                        Lista impianti
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
-
-    <div th:replace="~{fragments/insert-site :: insert-site}"></div>
-    <div th:replace="~{fragments/insert-system :: insert-system}"></div>
-
-    <div
-            class="offcanvas offcanvas-start"
-            style="width: 500px;"
-            data-bs-scroll="true"
-            tabindex="-1"
-            id="Id1"
-            aria-labelledby="Enable both scrolling & backdrop"
-    >
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="Enable both scrolling & backdrop">
-                Lista impianti
-            </h5>
-            <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="offcanvas"
-                    aria-label="Close"
-            ></button>
-        </div>
-        <div class="offcanvas-body">
-            <div id="system-filters">
-                <label for="systemName">Nome impianto:</label>
-                <input type="text" v-model="systemNameFilter" placeholder="Cerca per nome impianto" @input="applySystemFilter" />
-
-                <label for="totManutenzioneSystem">Totale ore manutenzione:</label>
-                <select v-model="totManutenzioneSystemCondition" @change="applySystemFilter">
+<main class="main-container" id="app" th:attr="data-auth-id=${authId}">
+    <div class="content-container">
+        <div class="left-section">
+            <h1>Tutte le sedi</h1>
+            <div class="filters-container">
+                <label for="siteName">Nome sede:</label>
+                <input @input="applySiteFilter" placeholder="Cerca per nome sede" type="text" v-model="siteNameFilter"/>
+                <label for="city">Città sede:</label>
+                <input @input="applySiteFilter" placeholder="Cerca per città" type="text" v-model="cityFilter"/>
+                <label for="numImpianti">Numero impianti:</label>
+                <select @change="applySiteFilter" v-model="numImpiantiCondition">
                     <option value="equal">Uguale a</option>
                     <option value="less">Minore di</option>
                     <option value="greater">Maggiore di</option>
                 </select>
-                <input type="number" v-model="totManutenzioneSystemValue" @input="applySystemFilter" placeholder="Inserisci ore manutenzione" />
-
+                <input @input="applySiteFilter" placeholder="Inserisci numero impianti" type="number"
+                       v-model="numImpiantiValue"/>
+                <div class="filter-group">
+                    <label for="totManutenzione">Totale ore manutenzione:</label>
+                    <select @change="applySiteFilter" v-model="totManutenzioneCondition">
+                        <option value="equal">Uguale a</option>
+                        <option value="less">Minore di</option>
+                        <option value="greater">Maggiore di</option>
+                    </select>
+                    <input @input="applySiteFilter" placeholder="Inserisci ore manutenzione" type="number"
+                           v-model="totManutenzioneValue"/>
+                </div>
                 <label>
                     Abilitato:
-                    <input type="checkbox" v-model="excludeDisabledSystems" @change="applySystemFilter" />
+                    <input @change="applySiteFilter" type="checkbox" v-model="excludeDisabledSites"/>
                 </label>
-
-                <button @click="resetSystemFilters" class="btn btn-secondary">Reset Filtri</button>
+                <label>
+                    Sedi con 0 impianti:
+                    <input @change="applySiteFilter" type="checkbox" v-model="excludeZeroSystems"/>
+                </label>
+                <button @click="resetSiteFilters" class="btn btn-secondary">Reset Filtri</button>
             </div>
-
-            <div>
-                <td colspan="3">
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>ID Impianto</th>
-                            <th>Nome Impianto</th>
-                            <th>Ore totali manutenzioni</th>
-                            <th>Abilitato</th>
-                            <th>Menù</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="system in filteredSystems" :key="system.id">
-                            <td>{{ system.id }}</td>
-                            <td>{{ system.name }}</td>
-                            <td>{{ system.totalWorkHours }}</td>
-                            <td>{{ system.enabled ? 'No' : 'Sì' }}</td>
-                            <td>
-                                <div class="dropdown">
-                                    <button
-                                            class="btn btn-primary dropdown-toggle"
-                                            type="button"
-                                            id="triggerId2"
-                                            data-bs-toggle="dropdown"
-                                            aria-haspopup="true"
-                                            aria-expanded="false"
-                                    >
-                                        Azioni
+            <div class="sites-container">
+                <div v-if="sites.length === 0">
+                    <p colspan="4">Nessuna sede disponibile.</p>
+                </div>
+                <div :class="['site-card', !site.enabled ? 'disabled' : '']" :key="site.id"
+                     v-for="site in filteredSites">
+                    <div class="site-card-body">
+                        <h4 class="site-card-title">(ID: {{ site.id }}) {{ site.name }}</h4>
+                        <p class="site-card-text">{{ site.address }}</p>
+                        <p class="site-card-text">Tot. h. manutenzioni: {{ site.totalWorkHours }}</p>
+                        <p class="site-card-text">Impianti tot.: {{ site.totalSystems }}</p>
+                        <p class="site-card-text">Abilitato: {{ site.enabled ? 'Sì' : 'No' }}</p>
+                    </div>
+                    <div class="actions-container">
+                        <div class="dropdown open">
+                            <a
+                                    aria-expanded="false"
+                                    aria-haspopup="true"
+                                    class="btn btn-secondary dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    id="triggerId"
+                                    type="button"
+                            >
+                                Azioni
+                            </a>
+                            <div aria-labelledby="triggerId" class="dropdown-menu">
+                                <form method="get" th:action="@{/admin/edit}">
+                                    <input :value="site.id" name="id" type="hidden">
+                                    <input name="tableName" th:value="'sites'" type="hidden"/>
+                                    <button class="dropdown-item" type="submit">Modifica</button>
+                                </form>
+                                <form method="post" th:action="@{/admin/toggle}">
+                                    <input :value="site.id" name="id" type="hidden">
+                                    <input name="tableName" th:value="'sites'" type="hidden"/>
+                                    <button :class="site.enabled ? 'dropdown-item' : 'dropdown-item disabled'"
+                                            type="submit">
+                                        Disabilita
                                     </button>
-                                    <div class="dropdown-menu" aria-labelledby="triggerId2">
-                                        <form th:action="@{/admin/edit}" method="get">
-                                            <input type="hidden" name="id" :value="system.id">
-                                            <input type="hidden" name="tableName" th:value="'systems'" />
-                                            <button type="submit" class="dropdown-item">Modifica</button>
-                                        </form>
-                                        <form th:action="@{/admin/toggle}" method="post">
-                                            <input type="hidden" name="id" :value="system.id">
-                                            <input type="hidden" name="tableName" th:value="'systems'" />
-                                            <button type="submit" :class="system.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Disabilita</button>
-                                        </form>
-                                        <form th:action="@{/admin/toggle}" method="post">
-                                            <input type="hidden" name="id" :value="system.id" />
-                                            <input type="hidden" name="tableName" th:value="'systems'" />
-                                            <button type="submit" :class="!system.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Abilita</button>
-                                        </form>
-                                        <form th:action="@{/admin/delete}" method="post">
-                                            <input type="hidden" name="id" :value="system.id" />
-                                            <input type="hidden" name="tableName" th:value="'systems'" />
-                                            <button type="submit" class="dropdown-item">Elimina</button>
-                                        </form>
-                                    </div>
+                                </form>
+                                <form method="post" th:action="@{/admin/toggle}">
+                                    <input :value="site.id" name="id" type="hidden"/>
+                                    <input name="tableName" th:value="'sites'" type="hidden"/>
+                                    <button :class="!site.enabled ? 'dropdown-item' : 'dropdown-item disabled'"
+                                            type="submit">Abilita
+                                    </button>
+                                </form>
+                                <form method="post" th:action="@{/admin/delete}">
+                                    <input :value="site.id" name="id" type="hidden"/>
+                                    <input name="tableName" th:value="'sites'" type="hidden"/>
+                                    <button class="dropdown-item" type="submit">Elimina</button>
+                                </form>
+                                <button
+                                        @click="siteId = site.id"
+                                        aria-controls="Id1"
+                                        class="dropdown-item"
+                                        data-bs-target="#Id1"
+                                        data-bs-toggle="offcanvas"
+                                        type="button"
+                                >
+                                    Lista impianti
+                                </button>
+                                <div class="dropdown-divider"></div>
+                                <button
+                                        @click="showSiteDetails(site)"
+                                        class="dropdown-item"
+                                        data-bs-target="#siteDetailsModal"
+                                        data-bs-toggle="modal"
+                                        type="button"
+                                >
+                                    Dettagli
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-section">
+            <div th:replace="~{fragments/insert-site :: insert-site}"></div>
+            <div th:replace="~{fragments/insert-system :: insert-system}"></div>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="siteDetailsModalLabel" class="modal fade" id="siteDetailsModal"
+         tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="siteDetailsModalLabel">Dettagli della sede</h5>
+                    <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>ID:</strong> {{ selectedSite.id }}</p>
+                    <p><strong>Nome:</strong> {{ selectedSite.name }}</p>
+                    <p><strong>Indirizzo:</strong> {{ selectedSite.address }}</p>
+                    <p><strong>Tot. h. manutenzioni:</strong> {{ selectedSite.totalWorkHours }}</p>
+                    <p><strong>Impianti tot.:</strong> {{ selectedSite.totalSystems }}</p>
+                    <p><strong>Abilitato:</strong> {{ selectedSite.enabled ? 'Sì' : 'No' }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div
+            aria-labelledby="Enable both scrolling & backdrop"
+            class="offcanvas offcanvas-start offcanvas-custom"
+            data-bs-scroll="true"
+            id="Id1"
+            tabindex="-1"
+    >
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title offcanvas-title-custom" id="Enable both scrolling & backdrop">
+                lista impianti
+            </h5>
+            <button
+                    aria-label="Close"
+                    class="btn-close"
+                    data-bs-dismiss="offcanvas"
+                    type="button"
+            ></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="system-filters-custom" id="system-filters">
+                <label class="system-filter-label" for="systemName">Nome impianto:</label>
+                <input @input="applySystemFilter" class="system-filter-input" placeholder="Cerca per nome impianto"
+                       type="text" v-model="systemNameFilter"/>
+                <label class="system-filter-label" for="totManutenzioneSystem">Totale ore manutenzione:</label>
+                <select @change="applySystemFilter" class="system-filter-select"
+                        v-model="totManutenzioneSystemCondition">
+                    <option value="equal">Uguale a</option>
+                    <option value="less">Minore di</option>
+                    <option value="greater">Maggiore di</option>
+                </select>
+                <input @input="applySystemFilter" class="system-filter-input" placeholder="Inserisci ore manutenzione"
+                       type="number" v-model="totManutenzioneSystemValue"/>
+                <label class="system-filter-label">
+                    Abilitato:
+                    <input @change="applySystemFilter" type="checkbox" v-model="excludeDisabledSystems"/>
+                </label>
+                <button @click="resetSystemFilters" class="system-filter-reset">Reset Filtri</button>
+            </div>
+            <div>
+                <table class="table-custom">
+                    <thead>
+                    <tr>
+                        <th>ID Impianto</th>
+                        <th>Nome Impianto</th>
+                        <th>Ore totali manutenzioni</th>
+                        <th>Abilitato</th>
+                        <th>Menù</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr :key="system.id" v-for="system in filteredSystems">
+                        <td>{{ system.id }}</td>
+                        <td>{{ system.name }}</td>
+                        <td>{{ system.totalWorkHours }}</td>
+                        <td>{{ system.enabled ? 'Sì' : 'No' }}</td>
+                        <td>
+                            <div class="dropdown">
+                                <button
+                                        aria-expanded="false"
+                                        aria-haspopup="true"
+                                        class="btn btn-primary dropdown-toggle"
+                                        data-bs-toggle="dropdown"
+                                        id="triggerId2"
+                                        type="button"
+                                >
+                                    Azioni
+                                </button>
+                                <div aria-labelledby="triggerId2" class="dropdown-menu">
+                                    <form method="get" th:action="@{/admin/edit}">
+                                        <input :value="system.id" name="id" type="hidden">
+                                        <input name="tableName" th:value="'systems'" type="hidden"/>
+                                        <button class="dropdown-item" type="submit">Modifica</button>
+                                    </form>
+                                    <form method="post" th:action="@{/admin/toggle}">
+                                        <input :value="system.id" name="id" type="hidden">
+                                        <input name="tableName" th:value="'systems'" type="hidden"/>
+                                        <button :class="system.enabled ? 'dropdown-item' : 'dropdown-item disabled'"
+                                                type="submit">
+                                            Disabilita
+                                        </button>
+                                    </form>
+                                    <form method="post" th:action="@{/admin/toggle}">
+                                        <input :value="system.id" name="id" type="hidden"/>
+                                        <input name="tableName" th:value="'systems'" type="hidden"/>
+                                        <button :class="!system.enabled ? 'dropdown-item' : 'dropdown-item disabled'"
+                                                type="submit">
+                                            Abilita
+                                        </button>
+                                    </form>
+                                    <form method="post" th:action="@{/admin/delete}">
+                                        <input :value="system.id" name="id" type="hidden"/>
+                                        <input name="tableName" th:value="'systems'" type="hidden"/>
+                                        <button class="dropdown-item" type="submit">Elimina</button>
+                                    </form>
                                 </div>
-                            </td>
-                        </tr>
-                        <tr v-if="getSystemsForSite().length === 0">
-                            <td colspan="4">Nessun impianto associato a questo sito.</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </td>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr v-if="getSystemsForSite().length === 0">
+                        <td colspan="5">Nessun impianto associato a questo sito.</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

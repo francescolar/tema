@@ -11,7 +11,6 @@ public class GlobalControllerAdvice {
 
     @ModelAttribute("headerUsername")
     public String addUserToModel() {
-        // Ottieni l'utente autenticato
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
             return userDetails.getUsername();

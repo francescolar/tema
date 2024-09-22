@@ -1,123 +1,138 @@
 <div
-        class="modal fade"
-        id="modalId"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="modalTitleId"
         aria-hidden="true"
+        aria-labelledby="modalTitleId"
+        class="modal fade insert-operation-form-container"
+        id="modalId"
+        role="dialog"
+        tabindex="-1"
         th:fragment="insert-operation"
 >
     <div class="modal-dialog" role="document">
-        <div style="background: none; border: none;" class="modal-content">
-            <form id="operationForm" ref="operationForm" th:action="@{/admin/insert-operation}" th:object="${operation}" method="post" @submit.prevent="validateForm" novalidate>
-                    <div class="mb-3">
-                        <input type="hidden" name="tableName" th:value="'operations'" />
-                        <label for="date" class="form-label">Data e ora esecuzione</label>
+        <div class="modal-content" style="background: none; border: none;">
+            <form @submit.prevent="validateForm" class="insert-operation-form" id="operationForm"
+                  method="post" novalidate ref="operationForm"
+                  th:action="@{/admin/insert-operation}" th:object="${operation}">
+                <h1>Inserisci manutenzione</h1>
+                <div class="mb-3 form-group horizontal-layout">
+                    <input name="tableName" th:value="'operations'" type="hidden"/>
+                    <div class="form-item">
+                        <label class="form-label" for="date">Data e ora esecuzione</label>
                         <input
-                                type="datetime-local"
-                                name="date"
-                                id="date"
-                                class="form-control"
-                                placeholder=""
                                 aria-describedby="helpId"
+                                class="form-control"
+                                id="date"
+                                name="date"
+                                placeholder=""
+                                type="datetime-local"
                                 v-model="date"
                         />
-                        <small id="helpId" class="text-muted">Inserisci la data in cui è stata eseguita la manutenzione</small>
+                        <small class="text-muted" id="helpId">Inserisci la data in cui è stata eseguita la
+                            manutenzione</small>
                         <div
-                                v-if="errors.date"
                                 class="alert alert-danger alert-dismissible fade show"
                                 role="alert"
+                                v-if="errors.date"
                         >
                             <strong>Errore.</strong> Inserisci una data.
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Descrizione</label>
-                        <textarea v-model="description" class="form-control" name="description" id="description" rows="3"></textarea>
+                    <div class="mb-3 form-item">
+                        <label class="form-label" for="description">Descrizione</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"
+                                  v-model="description"></textarea>
                         <div
-                                v-if="errors.description"
                                 class="alert alert-danger alert-dismissible fade show"
                                 role="alert"
+                                v-if="errors.description"
                         >
                             <strong>Errore.</strong> Inserisci una descrizione.
                         </div>
                     </div>
-                    <div class="mb-3 counter-container">
-                        <label for="hoursSpent" class="form-label">Descrizione</label>
-
-                        <div class="counter-button" tabindex="0" @click="decrease(5)">-5</div>
-                        <div class="counter-button" tabindex="0" @click="decrease(1)">-1</div>
-
-                        <input class="counter-input" type="number" name="hoursSpent" id="hoursSpent" :value="counter" readonly>
-
-                        <div class="counter-button" tabindex="0" @click="increase(1)">+1</div>
-                        <div class="counter-button" tabindex="0" @click="increase(5)">+5</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="siteId" class="form-label">Sede</label>
+                </div>
+                <div class="mb-3 form-group horizontal-layout">
+                    <div class="form-item">
+                        <label class="form-label" for="siteId">Sede</label>
                         <select
                                 class="form-select form-select-lg"
-                                name="siteId"
                                 id="siteId"
+                                name="siteId"
                                 v-model="selectedSiteId"
                         >
-                            <option value="" selected>Seleziona una...</option>
-                            <option v-for="site in sites" :value="site.id" :key="site.id">{{ site.name }}</option>
+                            <option selected value="">Seleziona una...</option>
+                            <option :key="site.id" :value="site.id" v-for="site in sites">{{ site.name }}</option>
                         </select>
                         <div
-                                v-if="errors.selectedSiteId"
                                 class="alert alert-danger alert-dismissible fade show"
                                 role="alert"
+                                v-if="errors.selectedSiteId"
                         >
                             <strong>Errore.</strong> Seleziona una sede.
                         </div>
                     </div>
-                    <div class="mb-3" v-if="filteredSystems.length > 0">
-                        <label for="systemId" class="form-label">Impianto</label>
+                    <div class="mb-3 form-item">
+                        <label class="form-label" for="systemId">Impianto</label>
                         <select
                                 class="form-select form-select-lg"
-                                name="systemId"
                                 id="systemId"
+                                name="systemId"
                                 v-model="selectedSystemId"
                         >
-                            <option value="" selected>Seleziona una...</option>
-                            <option v-for="system in filteredSystems" :value="system.id" :key="system.id">{{ system.name }}</option>
+                            <option selected v-if="filteredSystems.length > 0" value="">Seleziona una...</option>
+                            <option disabled selected v-if="filteredSystems.length === 0" value="">Nessun impianto per
+                                la sede selezionata
+                            </option>
+                            <option :key="system.id" :value="system.id" v-for="system in filteredSystems">{{ system.name
+                                }}
+                            </option>
                         </select>
                         <div
-                                v-if="errors.selectedSystemId"
                                 class="alert alert-danger alert-dismissible fade show"
                                 role="alert"
+                                v-if="errors.selectedSystemId"
                         >
                             <strong>Errore.</strong> Seleziona un impianto.
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="userId" class="form-label">Utente</label>
+                    <div class="mb-3 form-item">
+                        <label class="form-label" for="userId">Utente</label>
                         <select
                                 class="form-select form-select-lg"
-                                name="userId"
                                 id="userId"
+                                name="userId"
                                 v-model="selectedUserId"
                         >
-                            <option value="" selected>Seleziona una...</option>
-                            <option v-for="user in users" :value="user.id" :key="user.id">({{ user.id }}) {{ user.username }}: {{ user.name }} {{ user.surname }}</option>
+                            <option selected value="">Seleziona una...</option>
+                            <option :key="user.id" :value="user.id" v-for="user in users">({{ user.id }}) {{
+                                user.username }}: {{ user.name }} {{ user.surname }}
+                            </option>
                         </select>
                         <div
-                                v-if="errors.selectedUserId"
                                 class="alert alert-danger alert-dismissible fade show"
                                 role="alert"
+                                v-if="errors.selectedUserId"
                         >
                             <strong>Errore.</strong> Seleziona un utente.
                         </div>
                     </div>
-
-                    <button
-                            type="submit"
-                            class="btn btn-outline-primary"
-                    >
-                        Invia
-                    </button>
-                </form>
+                </div>
+                <div class="mb-3 form-group counter-container">
+                    <label class="form-label" for="hoursSpent">Ore impiegate (massimo 100)</label>
+                    <div @click="decrease(5)" class="counter-button" tabindex="0">-5</div>
+                    <div @click="decrease(1)" class="counter-button" tabindex="0">-1</div>
+                    <div @click="decrease(0.5)" class="counter-button" tabindex="0">-0.5</div>
+                    <input :value="formattedCounter" class="counter-input" id="hoursSpent" name="hoursSpent"
+                           readonly type="number">
+                    <div @click="increase(0.5)" class="counter-button" tabindex="0">+0.5</div>
+                    <div @click="increase(1)" class="counter-button" tabindex="0">+1</div>
+                    <div @click="increase(5)" class="counter-button" tabindex="0">+5</div>
+                </div>
+                <button
+                        class="btn btn-outline-primary center-button-insert-op"
+                        type="submit"
+                >
+                    Invia
+                </button>
+            </form>
         </div>
     </div>
 </div>

@@ -1,151 +1,155 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<html xmlns:th="https://www.thymeleaf.org">
 <head>
-    <link rel="icon" href="/img/site/favicon.png" type="image/x-icon" >
-    <link rel="shortcut icon" href="/img/site/favicon.png" type="image/x-icon" >
-    <meta http-equiv="Content-Language" content="IT">
-    <meta name="copyright" content="Frigotermica S.R.L.">
-    <meta charset="UTF-8" />
+    <link href="/img/site/favicon.png" rel="icon" type="image/x-icon">
+    <link href="/img/site/favicon.png" rel="shortcut icon" type="image/x-icon">
+    <meta content="IT" http-equiv="Content-Language">
+    <meta content="Frigotermica S.R.L." name="copyright">
+    <meta charset="UTF-8"/>
     <title>TeMa | Lista utenti</title>
     <meta
-            name="viewport"
             content="width=device-width, initial-scale=1, shrink-to-fit=no"
+            name="viewport"
     />
-    <meta name="description" content="Users list">
-    <meta name="keywords" content="Users">
+    <meta content="Users list" name="description">
+    <meta content="Users" name="keywords">
     <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
             crossorigin="anonymous"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            rel="stylesheet"
     />
-    <link id="theme-stylesheet-main" rel="stylesheet" type="text/css" href="/css/style.css" />
+    <link href="/css/style.css" id="theme-stylesheet-main" rel="stylesheet" type="text/css"/>
     <script
-            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            crossorigin="anonymous"
+            defer
             integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-            crossorigin="anonymous" defer
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
     ></script>
     <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            crossorigin="anonymous"
+            defer
             integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-            crossorigin="anonymous" defer
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
     ></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
-    <script src="/js/admin/UserScript.js" type="text/javascript" defer></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script defer src="/js/admin/UserScript.js" type="text/javascript"></script>
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<main class="homepage" id="app" th:attr="data-auth-id=${authId}">
-
+<main class="users-list-container" id="app" th:attr="data-auth-id=${authId}">
     <div th:replace="~{fragments/create-user :: create-user}"></div>
-
     <div
-            th:if="${usernameExist}"
             class="alert alert-danger alert-dismissible fade show"
             role="alert"
+            th:if="${usernameExist}"
     >
         <strong>Errore.</strong> L'username è già esistente
     </div>
     <div
-            th:if="${emailExist}"
             class="alert alert-danger alert-dismissible fade show"
             role="alert"
+            th:if="${emailExist}"
     >
         <strong>Errore.</strong> L'email è già esistente
     </div>
-
-    <h2>Lista utenti</h2>
-
-    <div>
-        <label for="filter-select">Filtra per:</label>
-        <select id="filter-select" v-model="selectedFilter" @change="applyFilter">
-            <option value="">Tutti</option>
-            <option value="username">Username</option>
-            <option value="name">Nome</option>
-            <option value="surname">Cognome</option>
-            <option value="email">Email</option>
-        </select>
-
-        <input type="text" v-model="searchUser" placeholder="Cerca..." @input="applyFilter" />
-
-        <label>
-            Escludi disabilitati:
-            <input type="checkbox" v-model="excludeDisabled" @change="applyFilter" />
-        </label>
-
-        <!-- Filtro per totale ore manutenzione -->
-        <label for="work-hours">Totale ore manutenzione:</label>
-        <select v-model="workHoursCondition" @change="applyFilter">
-            <option value="equal">Uguale a</option>
-            <option value="less">Minore di</option>
-            <option value="greater">Maggiore di</option>
-        </select>
-        <input type="number" v-model="workHoursValue" @input="applyFilter" placeholder="Inserisci ore" />
-
-        <!-- Filtro per data di creazione -->
-        <label>Data di creazione (inizio):</label>
-        <input type="date" v-model="startDate" @change="applyFilter" />
-
-        <label>Data di creazione (fine):</label>
-        <input type="date" v-model="endDate" @change="applyFilter" />
-        <button @click="resetFilters" class="btn btn-secondary">Reset Filtri</button>
+    <div class="users-header-container">
+        <h2 class="users-list-title">Lista utenti</h2>
+        <div class="users-filters-container">
+            <div class="users-filters-row">
+                <label class="users-filter-label" for="filter-select">Filtra per:</label>
+                <select @change="applyFilter" class="users-filter-select" id="filter-select" v-model="selectedFilter">
+                    <option value="">Tutti</option>
+                    <option value="username">Username</option>
+                    <option value="name">Nome</option>
+                    <option value="surname">Cognome</option>
+                    <option value="email">Email</option>
+                </select>
+                <input @input="applyFilter" class="users-filter-input" placeholder="Cerca..." type="text"
+                       v-model="searchUser"/>
+            </div>
+            <div class="users-filters-row">
+                <label class="users-filter-label">Escludi disabilitati:</label>
+                <input @change="applyFilter" type="checkbox" v-model="excludeDisabled"/>
+            </div>
+            <div class="users-filters-row">
+                <label class="users-filter-label" for="work-hours">Totale ore manutenzione:</label>
+                <select @change="applyFilter" class="users-filter-select" v-model="workHoursCondition">
+                    <option value="equal">Uguale a</option>
+                    <option value="less">Minore di</option>
+                    <option value="greater">Maggiore di</option>
+                </select>
+                <input @input="applyFilter" class="users-filter-input" placeholder="Inserisci ore" type="number"
+                       v-model="workHoursValue"/>
+            </div>
+            <div class="users-filters-row">
+                <label class="users-filter-label">Data di creazione (inizio):</label>
+                <input @change="applyFilter" class="users-filter-date" type="date" v-model="startDate"/>
+                <label class="users-filter-label">Data di creazione (fine):</label>
+                <input @change="applyFilter" class="users-filter-date" type="date" v-model="endDate"/>
+            </div>
+            <button @click="resetFilters" class="btn btn-secondary users-filter-reset">Reset Filtri</button>
+        </div>
     </div>
-
-    <table>
+    <table class="users-table">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Nome</th>
-            <th>Totale ore manutenzione</th>
-            <th>Creato il</th>
-            <th>Abilitato</th>
-            <th>Menù</th>
+            <th class="users-table-header">ID</th>
+            <th class="users-table-header">Username</th>
+            <th class="users-table-header">Email</th>
+            <th class="users-table-header">Nome</th>
+            <th class="users-table-header">Totale ore manutenzione</th>
+            <th class="users-table-header">Creato il</th>
+            <th class="users-table-header">Abilitato</th>
+            <th class="users-table-header">Menù</th>
         </tr>
         </thead>
         <tbody>
-        <tr v-for="user in filteredUsers" :key="user.id">
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.name }} {{ user.surname }}</td>
-            <td>{{ user.totalWorkHours }}</td>
-            <td>{{ formatDate(user.createdAt) }}</td>
-            <td>{{ user.enabled ? 'Abilitato' : 'Disabilitato' }}</td>
-            <td>
+        <tr :key="user.id" v-for="user in filteredUsers">
+            <td class="users-table-cell">{{ user.id }}</td>
+            <td class="users-table-cell">{{ user.username }}</td>
+            <td class="users-table-cell">{{ user.email }}</td>
+            <td class="users-table-cell">{{ user.name }} {{ user.surname }}</td>
+            <td class="users-table-cell">{{ user.totalWorkHours }}</td>
+            <td class="users-table-cell">{{ formatDate(user.createdAt) }}</td>
+            <td class="users-table-cell">{{ user.enabled ? 'Abilitato' : 'Disabilitato' }}</td>
+            <td class="users-table-cell">
                 <div class="dropdown">
                     <button
-                            class="btn btn-primary dropdown-toggle"
-                            type="button"
-                            id="triggerId"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
                             aria-expanded="false"
+                            aria-haspopup="true"
+                            class="btn btn-primary dropdown-toggle"
+                            data-bs-toggle="dropdown"
+                            id="triggerId"
+                            type="button"
                     >
                         Azioni
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="triggerId">
-                        <form th:action="@{/admin/edit}" method="get">
-                            <input type="hidden" name="id" :value="user.id">
-                            <input type="hidden" name="tableName" th:value="'users'" />
-                            <button type="submit" class="dropdown-item">Modifica</button>
+                    <div aria-labelledby="triggerId" class="dropdown-menu">
+                        <form method="get" th:action="@{/admin/edit}">
+                            <input :value="user.id" name="id" type="hidden">
+                            <input name="tableName" th:value="'users'" type="hidden"/>
+                            <button class="dropdown-item" type="submit">Modifica</button>
                         </form>
-                        <form th:action="@{/admin/toggle}" method="post">
-                            <input type="hidden" name="id" :value="user.id">
-                            <input type="hidden" name="tableName" th:value="'users'" />
-                            <button type="submit" :class="user.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Disabilita</button>
+                        <form method="post" th:action="@{/admin/toggle}">
+                            <input :value="user.id" name="id" type="hidden">
+                            <input name="tableName" th:value="'users'" type="hidden"/>
+                            <button :class="user.enabled ? 'dropdown-item' : 'dropdown-item disabled'" type="submit">
+                                Disabilita
+                            </button>
                         </form>
-                        <form th:action="@{/admin/toggle}" method="post">
-                            <input type="hidden" name="id" :value="user.id" />
-                            <input type="hidden" name="tableName" th:value="'users'" />
-                            <button type="submit" :class="!user.enabled ? 'dropdown-item' : 'dropdown-item disabled'">Abilita</button>
+                        <form method="post" th:action="@{/admin/toggle}">
+                            <input :value="user.id" name="id" type="hidden"/>
+                            <input name="tableName" th:value="'users'" type="hidden"/>
+                            <button :class="!user.enabled ? 'dropdown-item' : 'dropdown-item disabled'" type="submit">
+                                Abilita
+                            </button>
                         </form>
-                        <form th:action="@{/admin/delete}" method="post">
-                            <input type="hidden" name="id" :value="user.id" />
-                            <input type="hidden" name="tableName" th:value="'users'" />
-                            <button type="submit" class="dropdown-item">Elimina</button>
+                        <form method="post" th:action="@{/admin/delete}">
+                            <input :value="user.id" name="id" type="hidden"/>
+                            <input name="tableName" th:value="'users'" type="hidden"/>
+                            <button class="dropdown-item" type="submit">Elimina</button>
                         </form>
                     </div>
                 </div>
@@ -156,16 +160,14 @@
         </tr>
         </tbody>
     </table>
-
     <button
-            type="button"
-            class="btn btn-primary btn-lg"
-            data-bs-toggle="modal"
+            class="btn btn-primary btn-lg users-add-button"
             data-bs-target="#modalId"
+            data-bs-toggle="modal"
+            type="button"
     >
-        Aggiungi utente
+        +
     </button>
 </main>
 </body>
-
 </html>

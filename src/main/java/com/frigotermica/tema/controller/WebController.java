@@ -2,6 +2,8 @@ package com.frigotermica.tema.controller;
 
 import com.frigotermica.tema.models.UserModel;
 import com.frigotermica.tema.util.DbUtilityUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +16,8 @@ import java.sql.SQLException;
 
 @Controller
 public class WebController implements WebMvcConfigurer {
+
+    private static final Logger logger = LoggerFactory.getLogger(WebController.class);
 
     @Override
     public void addViewControllers(@NonNull ViewControllerRegistry registry) {
@@ -31,7 +35,7 @@ public class WebController implements WebMvcConfigurer {
             model.addAttribute("user", user);
             return "homepage";
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }
@@ -44,7 +48,7 @@ public class WebController implements WebMvcConfigurer {
             model.addAttribute("user", user);
             return "homepage";
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }
@@ -56,16 +60,16 @@ public class WebController implements WebMvcConfigurer {
                 return "redirect:/homepage";
             }
             if (error != null) {
-                model.addAttribute("errorMessage", "Invalid username or password.");
+                model.addAttribute("errorMessage", "Username o password non validi.");
                 model.addAttribute("afterRegistration", false);
             }
             return "login";
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while doing something", e);
             return "redirect:/error";
         }
     }
-    
+
     @GetMapping("/error")
     public String errorPage() {
         return "error";

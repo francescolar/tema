@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
             createdStartDate: '',
             createdEndDate: '',
 
+            selectedOp: {},
             authId: null,
             errors: {
                 selectedSiteId: false,
@@ -43,6 +44,9 @@ document.addEventListener('DOMContentLoaded', function() {
             this.authId = this.$el.getAttribute('data-auth-id');
         },
         computed: {
+            formattedCounter() {
+                return parseFloat(this.counter).toFixed(2);  // Assicurati che il counter sia sempre formattato con due decimali
+            },
             filteredOps() {
                 let filtered = this.ops;
 
@@ -120,13 +124,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 return filtered;
             },
             filteredSystems() {
-                if (!this.selectedSiteFilter) {
+                if (!this.selectedSiteId) {
                     return [];
                 }
-                return this.systems.filter(system => system.siteId === parseInt(this.selectedSiteFilter));
+                return this.systems.filter(system => system.siteId === parseInt(this.selectedSiteId));
             }
         },
         methods: {
+            showOpDetails(op) {
+                this.selectedOp = op;
+            },
             validateForm() {
                 this.clearErrors();
                 if (!this.selectedSiteId) {
@@ -227,11 +234,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
             },
             increase(value) {
-                this.counter += value;
+                this.counter = parseFloat(this.counter);
+                if (this.counter - parseFloat(value) <= 100) {
+                    this.counter += parseFloat(value);
+                } else {
+                    this.counter = 100;
+                }
             },
             decrease(value) {
-                if (this.counter - value >= 1) {
-                    this.counter -= value;
+                this.counter = parseFloat(this.counter);
+                if (this.counter - parseFloat(value) >= 1) {
+                    this.counter -= parseFloat(value);
                 } else {
                     this.counter = 1;
                 }

@@ -1,50 +1,27 @@
-<div th:fragment="insert-system">
-<form id="systemForm" ref="systemForm" th:action="@{/admin/insert-system}" th:object="${system}" method="post" @submit.prevent="validateSystemForm" novalidate>
-    <div class="mb-3">
-        <label for="name" class="form-label">Nome impianto</label>
-        <input
-                type="text"
-                name="name"
-                id="name"
-                class="form-control"
-                placeholder="Es. Impianto idraulico"
-                aria-describedby="helpId"
-                v-model="systemName"
-        />
-        <small id="helpId" class="text-muted">Inserisci il nome del nuovo impianto</small>
-        <div
-                v-if="systemErrors.systemName"
-                class="alert alert-danger alert-dismissible fade show"
-                role="alert"
-        >
-            <strong>Errore.</strong> Inserisci il nome per l'impianto.
+<div class="form-container" th:fragment="insert-system">
+    <h2>Inserisci impianto</h2>
+    <form @submit.prevent="validateSystemForm" id="systemForm" method="post" novalidate ref="systemForm"
+          th:action="@{/admin/insert-system}" th:object="${system}">
+        <div class="mb-3">
+            <label class="form-label" for="name">Nome impianto</label>
+            <input aria-describedby="helpId" class="form-control" id="name" name="name"
+                   placeholder="Es. Impianto idraulico"
+                   type="text" v-model="systemName"/>
+            <small class="text-muted" id="helpId">Inserisci il nome del nuovo impianto</small>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" v-if="systemErrors.systemName">
+                <strong>Errore.</strong> Inserisci il nome per l'impianto.
+            </div>
         </div>
-    </div>
-    <div class="mb-3">
-        <label for="siteId" class="form-label">Sede</label>
-        <select
-                class="form-select form-select-lg"
-                name="siteId"
-                id="siteId"
-                v-model="selectedSiteId"
-        >
-            <option selected>Seleziona una sede....</option>
-            <option v-for="item in sites" :value="item.id" :key="item.id">{{ item.name }}</option>
-        </select>
-        <div
-                v-if="systemErrors.selectedSiteId"
-                class="alert alert-danger alert-dismissible fade show"
-                role="alert"
-        >
-            <strong>Errore.</strong> Seleziona la sede.
+        <div class="mb-3">
+            <label class="form-label" for="siteId">Sede</label>
+            <select class="form-select form-select-lg" id="siteId" name="siteId" v-model="selectedSiteId">
+                <option selected>Seleziona una sede....</option>
+                <option :key="item.id" :value="item.id" v-for="item in sites">{{ item.name }}</option>
+            </select>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" v-if="systemErrors.selectedSiteId">
+                <strong>Errore.</strong> Seleziona la sede.
+            </div>
         </div>
-    </div>
-
-    <button
-            type="submit"
-            class="btn btn-outline-primary"
-    >
-        Invia
-    </button>
-</form>
+        <button class="btn btn-outline-primary" type="submit">Invia</button>
+    </form>
 </div>

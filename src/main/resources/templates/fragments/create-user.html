@@ -1,52 +1,52 @@
 <div
+        aria-hidden="true"
+        aria-labelledby="modalTitleId"
         class="modal fade"
         id="modalId"
-        tabindex="-1"
         role="dialog"
-        aria-labelledby="modalTitleId"
-        aria-hidden="true"
+        tabindex="-1"
         th:fragment="create-user"
 >
     <div class="modal-dialog" role="document">
-        <div style="background: none; border: none;" class="modal-content">
+        <div class="modal-content" style="background: none; border: none;">
             <div class="register-container">
                 <h2>Inserisci i dati del nuovo utente</h2>
-                <form id="registerForm" ref="registerForm" th:action="@{/admin/create-user}" th:object="${user}" method="post" @submit.prevent="validateForm" novalidate>
+                <form @submit.prevent="validateForm" id="registerForm" method="post" novalidate
+                      ref="registerForm" th:action="@{/admin/create-user}" th:object="${user}">
                     <div class="form-floating mb-3">
                         <input
-                                type="text"
                                 class="form-control"
-                                name="username"
                                 id="username"
+                                name="username"
                                 placeholder=""
+                                type="text"
                                 v-model="username"
                         />
                         <label for="username">Username</label>
                     </div>
                     <div
-                            v-if="errors.username"
                             class="alert alert-danger alert-dismissible fade show"
                             role="alert"
+                            v-if="errors.username"
                     >
                         <strong>Errore.</strong> L'username deve avere minimo 4 caratteri
                     </div>
                     <div class="form-floating mb-3">
                         <input
-                                type="email"
                                 class="form-control"
-                                name="email"
                                 id="email"
+                                name="email"
                                 placeholder=""
-                                v-model="email"
                                 required
+                                type="email"
+                                v-model="email"
                         />
                         <label for="email">Email</label>
                     </div>
-
                     <div
-                            v-if="errors.email"
                             class="alert alert-danger alert-dismissible fade show"
                             role="alert"
+                            v-if="errors.email"
                     >
                         <strong>Errore.</strong>
                         L'email presenta degli errori.
@@ -57,50 +57,50 @@
                     </div>
                     <div class="form-floating mb-3">
                         <input
-                                type="text"
                                 class="form-control"
-                                name="name"
                                 id="name"
+                                name="name"
                                 placeholder=""
+                                type="text"
                                 v-model="name"
                         />
                         <label for="name">Nome</label>
                     </div>
                     <div
-                            v-if="errors.name"
                             class="alert alert-danger alert-dismissible fade show"
                             role="alert"
+                            v-if="errors.name"
                     >
                         <strong>Errore.</strong> Inserisci il nome.
                     </div>
                     <div class="form-floating mb-3">
                         <input
-                                type="text"
                                 class="form-control"
-                                name="surname"
                                 id="surname"
+                                name="surname"
                                 placeholder=""
+                                type="text"
                                 v-model="surname"
                         />
                         <label for="surname">Cognome</label>
                     </div>
                     <div
-                            v-if="errors.surname"
                             class="alert alert-danger alert-dismissible fade show"
                             role="alert"
+                            v-if="errors.surname"
                     >
                         <strong>Errore.</strong> Inserisci il cognome.
                     </div>
                     <button
-                            type="submit"
                             class="btn btn-primary"
+                            type="submit"
                     >
                         Crea utente
                     </button>
                     <button
-                            type="button"
                             class="btn btn-secondary"
                             data-bs-dismiss="modal"
+                            type="button"
                     >
                         Close
                     </button>

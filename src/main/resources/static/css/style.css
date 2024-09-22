@@ -1,5 +1,6 @@
-/* GENERAL */
-
+/*  ---------------------------------------------------------------------------------------------------------  GENERAL  ------------------------------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 :root {
     color-scheme: light;
 }
@@ -21,15 +22,21 @@ body {
 }
 main {
     padding-top: calc(80px + 20px);
-/*    opacity: 0;*/
-/*    animation: fadeIn 0.1s 0.1s forwards;
-da mettere per evitare di visuallizare strani campi vue prima che si carichi il dom,
-però nmella pagina view-operations fa scazzare il modal*/
+    /*    opacity: 0;*/
+    /*    animation: fadeIn 0.1s 0.1s forwards;
+    da mettere per evitare di visuallizare strani campi vue prima che si carichi il dom,
+    però nmella pagina view-operations fa scazzare il modal*/
+}
+
+.margin-for-editing {
+    margin: auto 200px auto 200px;
 }
 
 
 
-/* HOME PAGE */
+/*   -------------------------------------------------------   HOME PAGE   ---------------------------------------------------------------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 .homepage {
     margin: 200px 0px 0px 200px;
@@ -43,7 +50,9 @@ però nmella pagina view-operations fa scazzare il modal*/
     text-decoration: none;
 }
 
-/* LOGIN */
+/*  -------------------------------------------------------------- LOGIN  ----------------------------------------------------------------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 .login-container {
     display: flex;
@@ -66,14 +75,20 @@ però nmella pagina view-operations fa scazzare il modal*/
     text-align: center;
 }
 
-#show-password {
+#show-password,
+#show-new-password,
+#show-password-confirm,
+#show-old-password {
     position: absolute;
     margin: -40px 0 0 360px;
     z-index: 5;
     cursor: pointer;
 }
 
-/* REGISTER */
+
+/*  ---------------------------------------------------------------------------------------------   REGISTER  ------------------------------------------------------------------------------------------------ */
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 .register-container {
     display: flex;
@@ -103,57 +118,697 @@ però nmella pagina view-operations fa scazzare il modal*/
     cursor: pointer;
 }
 
-/* VIEW LIST USER */
+/* ------------------------------------------------------   VIEW LIST USER  ------------------------------------------------------------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-table {
-    width: 70%;
+.users-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.users-list-title {
+    font-size: 1.8em;
+    color: #333;
+    font-weight: bold;
+}
+
+.users-filters-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #c9c9c9;
+    padding: 10px;
+    border-radius: 10px;
+    width: 60%;
+}
+
+.users-filters-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.users-filter-label {
+    font-size: 1em;
+    font-weight: bold;
+    color: #333;
+}
+
+.users-filter-input,
+.users-filter-select,
+.users-filter-date {
+    padding: 8px;
+    font-size: 0.9em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 160px;
+}
+
+.users-filter-reset {
+    font-size: 0.9em;
+    padding: 6px 12px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.users-list-container {
+    padding: 20px;
+    max-width: 95%;
+    margin: 0 auto;
+    background-color: #a3d9f9;
+    border-radius: 20px;
+    margin-top: 80px;
+}
+
+.users-list-title {
+    text-align: left;
+    font-size: 1.8em;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.users-filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    background-color: #c9c9c9;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+.users-filters-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.users-filter-label {
+    font-size: 1em;
+    font-weight: bold;
+    color: #333;
+}
+
+.users-filter-input,
+.users-filter-select {
+    padding: 8px;
+    font-size: 0.9em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 160px;
+}
+
+.users-filter-date {
+    padding: 8px;
+    font-size: 0.9em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.users-filter-reset {
+    font-size: 0.9em;
+    padding: 6px 12px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.users-filter-date {
+    padding: 8px;
+    font-size: 0.9em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.users-table {
+    width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
+    background-color: #ffeca1;
+    border-radius: 10px;
+    overflow: hidden;
 }
-th, td {
+
+.users-table-header {
+    background-color: #ffcf48;
+    color: black;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.users-table-cell {
     padding: 12px 15px;
     border: 1px solid #ccc;
     text-align: left;
-}
-th {
-    background-color: #f2f2f2;
-}
-select {
-    padding: 5px;
+    font-size: 0.9em;
 }
 
-.link-button {
-    background: none;
-    color: inherit;
-    border: none;
-    padding: 0;
-    font: inherit;
-    cursor: pointer;
+.users-table-actions {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 1em;
+    text-align: center;
 }
 
-/* INSERT OPERATION */
+.users-table {
+    overflow: visible;
+}
 
-.counter-container {
+.users-add-button {
+    position: fixed;
+    bottom: 120px;
+    left: 120px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 20%;
+    width: 80px;
+    height: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 50px;
-  }
-  .counter-button {
-    font-size: 20px;
-    margin: 0 10px;
-    padding: 10px 20px;
-    background-color: #eee;
+    font-size: 2em;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+
+}
+
+.users-add-button:hover {
+    background-color: #0056b3;
+}
+
+
+/* --------------------------------------------------------------  INSERT OPERATION  ---------------------------------------------------------------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+.insert-operation-form-container {
+    margin: auto;
+}
+
+.modal {
+    --bs-modal-width: 800px !important;
+}
+
+.insert-operation-form {
+    background-color: #7cff8c;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 1400px;
+    margin: 50px auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
+    align-items: start;
+}
+
+.insert-operation-form h1 {
+    grid-column: 1 / span 2;
+    font-size: 1.8rem;
+    text-align: left;
+}
+
+textarea#description {
+    height: 120px;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.form-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-item label {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.form-item input,
+.form-item select,
+.form-item textarea {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    font-size: 1rem;
+}
+
+.counter-container {
+    grid-column: 1 / span 2;
+    text-align: center;
+}
+
+.center-button-insert-op {
+    grid-column: 1 / span 2;
+    text-align: center;
+}
+
+.counter-container label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.counter-button {
+    background-color: #6b6b6b;
+    color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    line-height: 50px;
+    font-size: 1.2rem;
+    margin: 5px;
+    display: inline-block;
     cursor: pointer;
     user-select: none;
-    border-radius: 5px;
+}
+
+.counter-button:hover {
+    background-color: #4a4a4a;
+}
+
+.counter-input {
     display: inline-block;
-  }
-  .counter-input {
-    font-size: 24px;
-    width: 100px;
+    width: 80px;
+    height: 50px;
     text-align: center;
-  }
-  .counter-button:focus {
-    outline: 2px solid blue;
-  }
+    border-radius: 10px;
+    font-size: 1.5rem;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #cccccc;
+}
+
+.insert-op-submit {
+    grid-column: 1 / span 2;
+    background-color: #0069d9;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    margin: 0 auto;
+    cursor: pointer;
+    display: block;
+    width: 200px;
+    text-align: center;
+}
+
+.insert-op-submit:hover {
+    background-color: #0056b3;
+}
+
+/*  ----------------------------------------------------- VIEW SITES PART ---------------------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+.main-container {
+    padding: 20px;
+    max-width: 90%;
+    margin: 0 auto;
+    background-color: #8df5b4;
+    border-radius: 20px;
+    margin-top: 80px;
+}
+
+.title {
+    text-align: left;
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.sites-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.site-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 22%;
+    margin: 10px;
+    padding: 15px;
+    position: relative;
+    min-height: 250px;
+}
+
+.site-card-body {
+    text-align: center;
+}
+
+.site-card-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.site-card-text {
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.actions-container {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    z-index: 1050;
+}
+
+.actions-container .btn {
+    width: 100%;
+    background-color: #6c757d;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.content-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    gap: 20px;
+}
+
+.left-section {
+    flex: 3;
+}
+
+.right-section {
+    flex: 1;
+}
+
+.form-container {
+    background-color: #d3f9d8;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.filters-container label {
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+
+/* Input e select dei filtri */
+.filters-container input[type="text"],
+.filters-container input[type="number"],
+.filters-container select {
+    padding: 5px 8px;
+    font-size: 0.9em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 150px;
+}
+
+.filters-container .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filters-container input[type="checkbox"] {
+    margin-left: 5px;
+}
+
+.filters-container button {
+    font-size: 0.9em;
+    padding: 6px 12px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.filters-container button:hover {
+    background-color: #5a636b;
+}
+
+.offcanvas-custom {
+    background-color: #f8b55f !important;
+    color: #333; /* Colore del testo */
+    width: 550px !important;
+    z-index: 1100 !important;
+}
+
+.offcanvas-title-custom {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-transform: capitalize;
+    color: #333;
+}
+
+.system-filters-custom {
+    background-color: #c9c9c9;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.system-filter-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.system-filter-input,
+.system-filter-select {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.system-filter-reset {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.table-custom {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table-custom th,
+.table-custom td {
+    padding: 10px;
+    text-align: left;
+}
+
+.table-custom th {
+    background-color: #f2f2f2;
+}
+
+.table-custom td {
+    background-color: #fff;
+}
+
+.modal-content {
+    border-radius: 10px !important;
+    overflow: hidden !important;
+}
+
+.modal-header {
+    background-color: #007bff;
+    color: white;
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+    padding: 15px;
+    margin: 0;
+}
+
+.modal-body p {
+    margin: 10px 0;
+    font-size: 1rem;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    padding: 10px;
+    text-align: right;
+}
+
+.site-card.disabled .site-card-body {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.site-card.disabled .actions-container {
+    opacity: 1;
+    pointer-events: all;
+}
+
+
+/*  ----------------------------------------------------- VIEW OPERATIONS PART ---------------------------------------------------------------------------------------- */
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+.operations-container {
+    padding: 20px;
+    background-color: #8ad0ff;
+    border-radius: 20px;
+    max-width: 90%;
+    margin: 0 auto;
+}
+
+.operations-title {
+    font-size: 2em;
+    color: #000;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+    align-items: center;
+    padding: 10px;
+    background-color: #d3d3d3;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.filters-container label,
+.filters-container input,
+.filters-container select,
+.filters-container button {
+    font-size: 0.9em;
+}
+
+.filters-container input,
+.filters-container select {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.filters-container button {
+    background-color: #6c757d;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.filters-container button:hover {
+    background-color: #5a636b;
+}
+
+.operations-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #ffecb3;
+}
+
+.operations-table th,
+.operations-table td {
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    text-align: left;
+
+}
+
+.operations-table th {
+    background-color: #ffd564;
+    font-size: 1.2em;
+    color: #000;
+}
+
+.operations-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.operations-table .info {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.operations-table td {
+    font-size: 1em;
+}
+
+.actions-container {
+    text-align: center;
+}
+
+.actions-container .dropdown {
+    display: inline-block;
+    position: relative;
+}
+
+.add-operation-btn {
+    position: fixed;
+    bottom: 120px;
+    left: 120px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 20%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.add-operation-btn:hover {
+    background-color: #0056b3;
+}

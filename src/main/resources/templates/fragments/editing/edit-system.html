@@ -1,47 +1,48 @@
-<div class="main-contact-card-container" th:fragment="edit-system">
-    <div th:data-info="|{'systemName': '${system.name}', 'selectedSiteId': '${system.siteId}'}|" ref="systemDiv">
-    <form ref="editSystemForm" action="#" th:action="@{/admin/edit}" th:object="${system}" method="post" @submit.prevent="validateSystemForm" novalidate>
-        <input type="hidden" name="tableName" th:value="'systems'" />
-        <input type="hidden" th:field="*{id}" />
-        <div class="view-contact-title">
-            <input class="text-field" th:field="*{name}" name="name" v-model="systemName" id="name" title="" type="text" placeholder="Nome" required/>
-            <div
-                    v-if="systemErrors.systemName"
-                    class="alert alert-danger alert-dismissible fade show"
-                    role="alert"
-            >
-                <strong>Errore.</strong> Inserisci il nome per l'impianto.
-            </div>
-
+<div th:fragment="edit-system">
+    <div class="form-container margin-for-editing"
+         ref="systemDiv" th:data-info="|{'systemName': '${system.name}', 'selectedSiteId': '${system.siteId}'}|">
+        <h2>Modifica impianto</h2>
+        <form @submit.prevent="validateSystemForm" action="#" method="post" novalidate ref="editSystemForm"
+              th:action="@{/admin/edit}" th:object="${system}">
+            <input name="tableName" th:value="'systems'" type="hidden"/>
+            <input th:field="*{id}" type="hidden"/>
             <div class="mb-3">
-                <label for="siteId" class="form-label">Sede</label>
+                <label class="form-label" for="name">Nome impianto</label>
+                <input class="form-control" id="name" name="name" placeholder="Nome" required th:field="*{name}"
+                       title="" type="text" v-model="systemName"/>
+                <small class="text-muted" id="helpId">Inserisci il nome del nuovo impianto</small>
+                <div
+                        class="alert alert-danger alert-dismissible fade show"
+                        role="alert"
+                        v-if="systemErrors.systemName"
+                >
+                    <strong>Errore.</strong> Inserisci il nome per l'impianto.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="siteId">Sede</label>
                 <select
                         class="form-select form-select-lg"
-                        name="siteId"
                         id="siteId"
+                        name="siteId"
                         v-model="selectedSiteId"
                 >
                     <option selected>Seleziona una sede....</option>
-                    <option v-for="site in sites" :value="site.id" :key="site.id">{{ site.name }}</option>
+                    <option :key="site.id" :value="site.id" v-for="site in sites">{{ site.name }}</option>
                 </select>
                 <div
-                        v-if="systemErrors.selectedSiteId"
                         class="alert alert-danger alert-dismissible fade show"
                         role="alert"
+                        v-if="systemErrors.selectedSiteId"
                 >
                     <strong>Errore.</strong> Seleziona la sede.
                 </div>
             </div>
-
-        </div>
-
-        <div class="edit-button-container">
-            <input class="edit-contact-button" type="submit" value="Save" />
-        </div>
-    </form>
-    <div class="edit-button-container">
-        <input class="edit-contact-button" type="submit" @click="cancel" value="Cancel" />
+            <div class="d-flex gap-2">
+                <input class="btn btn-outline-primary" type="submit" value="Salva"/>
+                <input @click="cancel" class="btn btn-outline-danger" type="button" value="Annulla"/>
+            </div>
+        </form>
+        <form action="/admin/view-sites" method="get" ref="cancel"></form>
     </div>
-    <form ref="cancel" action="/admin/view-sites" method="get"></form>
-
 </div>

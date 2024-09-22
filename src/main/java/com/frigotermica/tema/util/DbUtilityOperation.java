@@ -2,6 +2,7 @@ package com.frigotermica.tema.util;
 
 import com.frigotermica.tema.models.OperationModel;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -19,7 +20,7 @@ public class DbUtilityOperation {
             int id = rs.getInt("id");
             LocalDateTime date = rs.getTimestamp("date").toLocalDateTime();
             String description = rs.getString("description");
-            int hours_spent = rs.getInt("hours_spent");
+            BigDecimal hours_spent = rs.getBigDecimal("hours_spent");
             int site_id = rs.getInt("site_id");
             int system_id = rs.getInt("system_id");
             int user_id = rs.getInt("user_id");
@@ -32,7 +33,7 @@ public class DbUtilityOperation {
         return list;
     }
 
-    public static OperationModel findById(int id) throws SQLException, ClassNotFoundException {
+    public static OperationModel findById(int id) throws SQLException {
         Connection c = DbUtility.createConnection();
         String sql = "SELECT * FROM operations WHERE id = ?";
         PreparedStatement stmt = c.prepareStatement(sql);
@@ -43,7 +44,7 @@ public class DbUtilityOperation {
             op.setId(rs.getInt("id"));
             op.setDate(rs.getTimestamp("date").toLocalDateTime());
             op.setDescription(rs.getString("description"));
-            op.setHoursSpent(rs.getInt("hours_spent"));
+            op.setHoursSpent(rs.getBigDecimal("hours_spent"));
             op.setSiteId(rs.getInt("site_id"));
             op.setSystemId(rs.getInt("system_id"));
             op.setUserId(rs.getInt("user_id"));
@@ -65,7 +66,7 @@ public class DbUtilityOperation {
             int id = rs.getInt("id");
             LocalDateTime date = rs.getTimestamp("date").toLocalDateTime();
             String description = rs.getString("description");
-            int hours_spent = rs.getInt("hours_spent");
+            BigDecimal hours_spent = rs.getBigDecimal("hours_spent");
             int site_id = rs.getInt("site_id");
             int system_id = rs.getInt("system_id");
             int user_id = rs.getInt("user_id");
@@ -77,14 +78,14 @@ public class DbUtilityOperation {
         DbUtility.closeConnection(c);
         return list;
     }
-    
+
     public static void insertPreparedStatement(OperationModel operation, int userId) throws SQLException {
         Connection c = DbUtility.createConnection();
         String sql = "INSERT INTO operations (date, description, hours_spent, site_id, system_id, user_id) VALUES (?, ?, ?, ?, ?, ?);";
         PreparedStatement stmt = c.prepareStatement(sql);
         stmt.setTimestamp(1, Timestamp.valueOf(operation.getDate()));
         stmt.setString(2, operation.getDescription());
-        stmt.setInt(3, operation.getHoursSpent());
+        stmt.setBigDecimal(3, operation.getHoursSpent());
         stmt.setInt(4, operation.getSiteId());
         stmt.setInt(5, operation.getSystemId());
         stmt.setInt(6, userId);
@@ -99,7 +100,7 @@ public class DbUtilityOperation {
         PreparedStatement stmt = c.prepareStatement(sql);
         stmt.setTimestamp(1, Timestamp.valueOf(op.getDate()));
         stmt.setString(2, op.getDescription());
-        stmt.setInt(3, op.getHoursSpent());
+        stmt.setBigDecimal(3, op.getHoursSpent());
         stmt.setInt(4, op.getSiteId());
         stmt.setInt(5, op.getSystemId());
         stmt.setInt(6, op.getUserId());
@@ -108,6 +109,4 @@ public class DbUtilityOperation {
         stmt.close();
         DbUtility.closeConnection(c);
     }
-
-    /* implementazione modifica manutenzione (possibilmente in un altra tabella) */
 }

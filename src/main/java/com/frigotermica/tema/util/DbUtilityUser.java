@@ -6,6 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,7 +32,7 @@ public class DbUtilityUser {
             String surname = rs.getString("surname");
             boolean enabled = rs.getBoolean("enabled");
             String role = rs.getString("authority");
-            int totalWorkHours = rs.getInt("total_work_hours");
+            BigDecimal totalWorkHours = rs.getBigDecimal("total_work_hours");
             LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
             UserModel user = new UserModel(id, username, email, name, surname, totalWorkHours, createdAt, role, enabled);
             listUser.add(user);
@@ -56,7 +57,7 @@ public class DbUtilityUser {
             String surname = rs.getString("surname");
             boolean enabled = rs.getBoolean("enabled");
             String role = rs.getString("authority");
-            int totalWorkHours = rs.getInt("total_work_hours");
+            BigDecimal totalWorkHours = rs.getBigDecimal("total_work_hours");
             LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
             UserModel user = new UserModel(id, username, email, name, surname, totalWorkHours, createdAt, role, enabled);
             listUser.add(user);
@@ -153,34 +154,56 @@ public class DbUtilityUser {
         DbUtility.closeConnection(c);
     }
 
-    public static void updateExistingUser(UserModel user, String password, boolean isFirstLogin) throws SQLException {
+    public static void updateExistingUser(String username, String password, boolean isFirstLogin) throws SQLException {
         Connection c = DbUtility.createConnection();
-        String sql = "UPDATE users SET username = ?, email = ?, name = ?, surname = ? WHERE id = ?;";
-        PreparedStatement stmt =  c.prepareStatement(sql);
-        stmt.setString(1, user.getUsername());
-        stmt.setString(2, user.getEmail());
-        stmt.setString(3, user.getName());
-        stmt.setString(4, user.getSurname());
-        stmt.setInt(5, user.getId());
-        stmt.executeUpdate();
-        /* non sono sicuro che servi questa parte */
-        sql = "UPDATE soft_operation SET recon = ? WHERE username = ?;";
-        stmt = c.prepareStatement(sql);
+
+        String sql = "UPDATE soft_operation SET recon = ? WHERE username = ?;";
+        PreparedStatement stmt = c.prepareStatement(sql);
         stmt.setString(1, password);
-        stmt.setString(2, user.getUsername());
+        stmt.setString(2, username);
         stmt.executeUpdate();
+
         if (isFirstLogin) {
             sql = "UPDATE authorities SET authority = ? WHERE username = ?;";
             stmt = c.prepareStatement(sql);
             stmt.setString(1, "ROLE_USER");
-            stmt.setString(2, user.getUsername());
+            stmt.setString(2, username);
             stmt.executeUpdate();
         }
         stmt.close();
         c.close();
     }
 
-    public static int getUserIdByUsername(String username) throws SQLException, ClassNotFoundException {
+    public static void adminUpdate(UserModel user, UserModel dbUser) throws SQLException {
+        Connection c = DbUtility.createConnection();
+        String sql = "UPDATE users SET username = ?, email = ?, name = ?, surname = ? WHERE id = ?;";
+        PreparedStatement stmt = c.prepareStatement(sql);
+        stmt.setString(1, user.getUsername());
+        stmt.setString(2, user.getEmail());
+        stmt.setString(3, user.getName());
+        stmt.setString(4, user.getSurname());
+        stmt.setInt(5, user.getId());
+        stmt.executeUpdate();
+
+        sql = "UPDATE soft_operation SET recon = ?, username = ? WHERE username = ?;";
+        stmt = c.prepareStatement(sql);
+        stmt.setString(1, user.getPassword());
+        stmt.setString(2, user.getUsername());
+        stmt.setString(3, dbUser.getUsername());
+        stmt.executeUpdate();
+
+        sql = "UPDATE authorities SET username = ? WHERE username = ?;";
+        stmt = c.prepareStatement(sql);
+        stmt.setString(1, user.getUsername());
+        stmt.setString(2, dbUser.getUsername());
+        stmt.executeUpdate();
+
+
+        stmt.close();
+        c.close();
+    }
+
+    public static int getUserIdByUsername(String username) throws SQLException {
         String sql = "SELECT id FROM users WHERE username = ?";
         Connection c = DbUtility.createConnection();
         PreparedStatement stmt = c.prepareStatement(sql);

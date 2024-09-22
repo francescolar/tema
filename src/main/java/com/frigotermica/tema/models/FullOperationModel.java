@@ -3,13 +3,14 @@ package com.frigotermica.tema.models;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class    FullOperationModel {
+public class FullOperationModel {
 
     @NotNull
     private int id;
-    
+
     @NotNull
     private LocalDateTime date;
 
@@ -17,7 +18,7 @@ public class    FullOperationModel {
     private String description;
 
     @NotNull
-    private int hoursSpent;
+    private BigDecimal hoursSpent;
 
     @NotNull
     private int siteId;
@@ -38,6 +39,76 @@ public class    FullOperationModel {
 
     private LocalDateTime createdAt;
 
+
+    public FullOperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
+                              @NotNull @Size(min = 1, max = 100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
+                              @NotNull int userId, String systemName, String siteName, String username, LocalDateTime createdAt) {
+        this.id = id;
+        this.date = date;
+        this.description = description;
+        this.hoursSpent = hoursSpent;
+        this.siteId = siteId;
+        this.systemId = systemId;
+        this.userId = userId;
+        this.systemName = systemName;
+        this.siteName = siteName;
+        this.username = username;
+        this.createdAt = createdAt;
+    }
+
+    public FullOperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
+                              @NotNull @Size(min = 1, max = 100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
+                              @NotNull int userId, String systemName, String siteName, String username) {
+        this.id = id;
+        this.date = date;
+        this.description = description;
+        this.hoursSpent = hoursSpent;
+        this.siteId = siteId;
+        this.systemId = systemId;
+        this.userId = userId;
+        this.systemName = systemName;
+        this.siteName = siteName;
+        this.username = username;
+    }
+
+    public FullOperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
+                              @NotNull @Size(min = 1, max = 100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
+                              @NotNull int userId) {
+        this.id = id;
+        this.date = date;
+        this.description = description;
+        this.hoursSpent = hoursSpent;
+        this.siteId = siteId;
+        this.systemId = systemId;
+        this.userId = userId;
+    }
+
+    public FullOperationModel(@NotNull LocalDateTime date, @NotNull String description,
+                              @NotNull @Size(min = 1, max = 100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
+                              @NotNull int userId) {
+        this.date = date;
+        this.description = description;
+        this.hoursSpent = hoursSpent;
+        this.siteId = siteId;
+        this.systemId = systemId;
+        this.userId = userId;
+    }
+
+    public FullOperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
+                              @NotNull @Size(min = 1, max = 100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
+                              @NotNull int userId, boolean deleted) {
+        this.id = id;
+        this.date = date;
+        this.description = description;
+        this.hoursSpent = hoursSpent;
+        this.siteId = siteId;
+        this.systemId = systemId;
+        this.userId = userId;
+        this.deleted = deleted;
+    }
+
+    public FullOperationModel() {
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -71,79 +142,6 @@ public class    FullOperationModel {
         this.username = username;
     }
 
-
-    
-
-    public FullOperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
-            @NotNull @Size(min = 1, max = 100) int hoursSpent, @NotNull int siteId, @NotNull int systemId,
-            @NotNull int userId, String systemName, String siteName, String username, LocalDateTime createdAt) {
-        this.id = id;
-        this.date = date;
-        this.description = description;
-        this.hoursSpent = hoursSpent;
-        this.siteId = siteId;
-        this.systemId = systemId;
-        this.userId = userId;
-        this.systemName = systemName;
-        this.siteName = siteName;
-        this.username = username;
-        this.createdAt = createdAt;
-    }
-
-    public FullOperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
-                              @NotNull @Size(min = 1, max = 100) int hoursSpent, @NotNull int siteId, @NotNull int systemId,
-                              @NotNull int userId, String systemName, String siteName, String username) {
-        this.id = id;
-        this.date = date;
-        this.description = description;
-        this.hoursSpent = hoursSpent;
-        this.siteId = siteId;
-        this.systemId = systemId;
-        this.userId = userId;
-        this.systemName = systemName;
-        this.siteName = siteName;
-        this.username = username;
-    }
-
-    public FullOperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
-            @NotNull @Size(min = 1, max = 100) int hoursSpent, @NotNull int siteId, @NotNull int systemId,
-            @NotNull int userId) {
-        this.id = id;
-        this.date = date;
-        this.description = description;
-        this.hoursSpent = hoursSpent;
-        this.siteId = siteId;
-        this.systemId = systemId;
-        this.userId = userId;
-    }
-
-    public FullOperationModel(@NotNull LocalDateTime date, @NotNull String description,
-            @NotNull @Size(min = 1, max = 100) int hoursSpent, @NotNull int siteId, @NotNull int systemId,
-            @NotNull int userId) {
-        this.date = date;
-        this.description = description;
-        this.hoursSpent = hoursSpent;
-        this.siteId = siteId;
-        this.systemId = systemId;
-        this.userId = userId;
-    }
-
-    public FullOperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
-            @NotNull @Size(min = 1, max = 100) int hoursSpent, @NotNull int siteId, @NotNull int systemId,
-            @NotNull int userId, boolean deleted) {
-        this.id = id;
-        this.date = date;
-        this.description = description;
-        this.hoursSpent = hoursSpent;
-        this.siteId = siteId;
-        this.systemId = systemId;
-        this.userId = userId;
-        this.deleted = deleted;
-    }
-
-    public FullOperationModel() {
-    }
-
     public int getId() {
         return id;
     }
@@ -168,11 +166,11 @@ public class    FullOperationModel {
         this.description = description;
     }
 
-    public int getHoursSpent() {
+    public BigDecimal getHoursSpent() {
         return hoursSpent;
     }
 
-    public void setHoursSpent(int hoursSpent) {
+    public void setHoursSpent(BigDecimal hoursSpent) {
         this.hoursSpent = hoursSpent;
     }
 

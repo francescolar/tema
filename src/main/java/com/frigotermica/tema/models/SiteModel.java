@@ -2,11 +2,13 @@ package com.frigotermica.tema.models;
 
 import jakarta.validation.constraints.NotNull;
 
+import java.math.BigDecimal;
+
 public class SiteModel {
 
     @NotNull
     private int id;
-    
+
     @NotNull
     private String name;
 
@@ -16,11 +18,11 @@ public class SiteModel {
 
     private boolean enabled;
 
-    private int totalWorkHours;
+    private BigDecimal totalWorkHours;
 
     private int totalSystems;
 
-    public SiteModel(@NotNull int id, @NotNull String name, String address, int totalWorkHours, int totalSystems, boolean enabled) {
+    public SiteModel(@NotNull int id, @NotNull String name, String address, BigDecimal totalWorkHours, int totalSystems, boolean enabled) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -84,11 +86,11 @@ public class SiteModel {
         this.deleted = deleted;
     }
 
-    public int getTotalWorkHours() {
+    public BigDecimal getTotalWorkHours() {
         return totalWorkHours;
     }
 
-    public void setTotalWorkHours(int totalWorkHours) {
+    public void setTotalWorkHours(BigDecimal totalWorkHours) {
         this.totalWorkHours = totalWorkHours;
     }
 
