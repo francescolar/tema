@@ -22,17 +22,15 @@ body {
 }
 main {
     padding-top: calc(80px + 20px);
-    /*    opacity: 0;*/
-    /*    animation: fadeIn 0.1s 0.1s forwards;
-    da mettere per evitare di visuallizare strani campi vue prima che si carichi il dom,
-    però nmella pagina view-operations fa scazzare il modal*/
 }
 
 .margin-for-editing {
     margin: auto 200px auto 200px;
 }
 
-
+[v-cloak] {
+    display: none;
+}
 
 /*   -------------------------------------------------------   HOME PAGE   ---------------------------------------------------------------------------------------------------------------------------------- */
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -194,6 +192,10 @@ main {
     font-weight: bold;
 }
 
+.pagination {
+    margin: 20px;
+}
+
 .users-filters-container {
     display: flex;
     flex-wrap: wrap;
@@ -270,7 +272,7 @@ main {
 }
 
 .users-table-cell {
-    padding: 12px 15px;
+    padding: 4px 10px;
     border: 1px solid #ccc;
     text-align: left;
     font-size: 0.9em;
@@ -496,7 +498,7 @@ textarea#description {
     transform: translateX(-50%);
     width: 100%;
     text-align: center;
-    z-index: 1050;
+    z-index: 1000;
 }
 
 .actions-container .btn {
@@ -541,7 +543,9 @@ textarea#description {
     margin-bottom: 20px;
 }
 
-.filters-container label {
+.filters-container label,
+.filters-container div span,
+.pagination span {
     font-size: 0.9em;
     font-weight: bold;
     color: #333;
@@ -549,7 +553,6 @@ textarea#description {
     align-items: center;
 }
 
-/* Input e select dei filtri */
 .filters-container input[type="text"],
 .filters-container input[type="number"],
 .filters-container select {
@@ -724,7 +727,8 @@ textarea#description {
 .filters-container label,
 .filters-container input,
 .filters-container select,
-.filters-container button {
+.filters-container button,
+.filters-container div span {
     font-size: 0.9em;
 }
 
@@ -757,7 +761,7 @@ textarea#description {
 
 .operations-table th,
 .operations-table td {
-    padding: 12px 15px;
+    padding: 4px 10px;
     border: 1px solid #ccc;
     text-align: left;
 
@@ -794,6 +798,7 @@ textarea#description {
 }
 
 .add-operation-btn {
+    border: none;
     position: fixed;
     bottom: 120px;
     left: 120px;
@@ -811,4 +816,129 @@ textarea#description {
 
 .add-operation-btn:hover {
     background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .homepage {
+        margin: 150px 0 0 150px;
+    }
+
+    .login-container,
+    .register-container {
+        width: 400px;
+        padding: 80px 40px;
+    }
+
+    .insert-operation-form {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .system-filters-custom {
+        padding: 5px;
+    }
+
+    .table-custom th,
+    .table-custom td {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 992px) {
+    .homepage {
+        margin: 100px 0 0 100px;
+    }
+
+    .login-container,
+    .register-container {
+        width: 350px;
+        padding: 60px 30px;
+    }
+
+    .site-card {
+        width: 45%;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-container,
+    .register-container {
+        width: 300px;
+        padding: 40px 20px;
+    }
+
+    .insert-operation-form {
+        padding: 10px;
+    }
+
+    .site-card {
+        width: 100%;
+    }
+
+    .content-container {
+        flex-direction: column;
+    }
+
+    /* Responsive tables */
+    .users-table,
+    .operations-table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .users-table thead,
+    .operations-table thead {
+        display: none;
+    }
+
+    .users-table tr,
+    .operations-table tr {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .users-table td,
+    .operations-table td {
+        display: flex;
+        border-bottom: 1px solid #ccc;
+        font-size: 0.9em;
+    }
+
+    .users-table td::before,
+    .operations-table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .operations-table .info {
+        max-width: 600px;
+    }
+}
+
+@media (max-width: 576px) {
+    .login-container,
+    .register-container {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .users-list-container,
+    .operations-container {
+        padding: 10px;
+    }
+
+    .table-custom th,
+    .table-custom td {
+        padding: 5px;
+    }
+
+    .users-table td,
+    .operations-table td {
+        padding: 8px;
+        font-size: 0.8em;
+    }
 }

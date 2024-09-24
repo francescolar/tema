@@ -1,6 +1,6 @@
 <div class="main-contact-card-container" th:fragment="edit-operation">
     <div ref="dataDiv"
-         th:data-info="|{'date': '${op.date}', 'description': '${op.description}', 'counter': '${op.hoursSpent}', 'selectedSiteId': '${op.siteId}', 'selectedSystemId': '${op.systemId}', 'selectedUserId': '${op.userId}'}|">
+         th:data-info="|{'date': '${#strings.escapeJavaScript(op.date)}', 'counter': '${op.hoursSpent}', 'selectedSiteId': '${op.siteId}', 'selectedSystemId': '${op.systemId}', 'selectedUserId': '${op.userId}'}|">
         <div>
             <form @submit.prevent="validateForm" class="insert-operation-form" id="operationForm" method="post"
                   novalidate ref="operationForm" th:action="@{/admin/edit}" th:object="${operation}">
@@ -32,6 +32,7 @@
                     <div class="mb-3 form-item">
                         <label class="form-label" for="description">Descrizione</label>
                         <textarea class="form-control" id="description" name="description" rows="3"
+                                  th:field="${op.description}"
                                   v-model="description"></textarea>
                         <div
                                 class="alert alert-danger alert-dismissible fade show"

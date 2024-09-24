@@ -37,7 +37,7 @@ public class UserService {
             String randomPassword = BasicPasswordGenerator.getRandomPassword();
             user.setPassword(randomPassword);
             System.out.println(randomPassword);
-            emailMessageService.sendWelcomeEmail(user.getEmail(), user.getUsername(), randomPassword);
+            emailMessageService.sendWelcomeEmail(user.getEmail(), user.getUsername(), user.getName(), randomPassword);
             DbUtilityUser.insertPreparedStatement(user);
             return 3;
 

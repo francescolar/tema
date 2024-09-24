@@ -1,5 +1,12 @@
 package com.frigotermica.tema.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.frigotermica.tema.models.OperationModel;
+import com.frigotermica.tema.models.SiteModel;
+import com.frigotermica.tema.models.SystemModel;
+import com.frigotermica.tema.models.UserModel;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -74,5 +81,38 @@ public class DbUtility {
         }
         stmt.close();
         DbUtility.closeConnection(c);
+    }
+
+    public static void saveEditedLog(String tableName, int id) throws SQLException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        String jsonString = switch (tableName) {
+            case "users" -> {
+                UserModel user = DbUtilityUser.findById(id);
+                yield objectMapper.writeValueAsString(user);
+            }
+            case "operations" -> {
+                OperationModel operation = DbUtilityOperation.findById(id);
+                yield objectMapper.writeValueAsString(operation);
+            }
+            case "sites" -> {
+                SiteModel site = DbUtilitySite.findById(id);
+                yield objectMapper.writeValueAsString(site);
+            }
+            case "systems" -> {
+                SystemModel system = DbUtilitySystem.findById(id);
+                yield objectMapper.writeValueAsString(system);
+            }
+            default -> null;
+        };
+        Connection c = createConnection();
+        String sql = "INSERT INTO edit_log_table (table_name, item_id, serialized_data) VALUES (?, ?, ?::jsonb);";
+        PreparedStatement stmt = c.prepareStatement(sql);
+        stmt.setString(1, tableName);
+        stmt.setInt(2, id);
+        stmt.setString(3, jsonString);
+        stmt.executeUpdate();
+        stmt.close();
+        c.close();
     }
 }

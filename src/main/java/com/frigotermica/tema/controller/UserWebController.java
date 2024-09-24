@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -93,8 +92,7 @@ public class UserWebController implements WebMvcConfigurer {
             if (isFirstLogin || (WebSecurityConfig.checkPassword(dbUser, oldPassword) && isPasswordChangeValid)) {
                 String newCryptedPassword = dbUser.getPassword();
                 if (isPasswordChangeValid) {
-                    String salt = BCrypt.gensalt();
-                    newCryptedPassword = CryptoPassword.cryptoPasswordwithSalt(newPassword, salt);
+                    newCryptedPassword = CryptoPassword.cryptoPassword(newPassword);
                 }
 
                 DbUtilityUser.updateExistingUser(dbUser.getUsername(), newCryptedPassword, isFirstLogin);

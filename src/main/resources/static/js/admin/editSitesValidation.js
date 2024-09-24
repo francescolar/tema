@@ -2,21 +2,14 @@ document.addEventListener('DOMContentLoaded', function() {
     new Vue({
         el: '#app',
         data: {
-            siteName: '',
-            address: '',
+            siteName: document.getElementById("name").value,
+            address: document.getElementById("address").value,
             siteErrors: {
                 siteName: false,
             },
             googleApiKey: null
         },
         mounted() {
-            try {
-                const info = JSON.parse(this.$refs.siteDiv.getAttribute('data-info').replace(/'/g, '"'));
-                this.siteName = info.siteName;
-                this.address = info.address;
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-            }
             this.loadGoogleMapsApi();
         },
         methods: {

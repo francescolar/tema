@@ -71,7 +71,13 @@
                 <option value="">Tutti</option>
                 <option :key="user.id" :value="user.id" v-for="user in users">{{ user.username }}</option>
             </select>
-            <button @click="resetFilters" class="btn btn-secondary">Reset Filtri</button>
+            <div class="pagination">
+                <button :disabled="currentPage === 1" @click="currentPage--" class="btn btn-secondary">Indietro</button>
+                <span>Pagina {{ currentPage }} di {{ totalPages }}</span>
+                <button :disabled="currentPage === totalPages" @click="currentPage++" class="btn btn-secondary">Avanti
+                </button>
+            </div>
+            <button @click="resetFilters" class="btn btn-primary">Reset Filtri</button>
         </div>
         <table class="operations-table">
             <thead>
@@ -80,24 +86,22 @@
                 <th>Data</th>
                 <th>Sede</th>
                 <th>Impianto</th>
-                <th>Ore impiegate</th>
+                <th>Ore</th>
                 <th>Descrizione</th>
-                <th>ID Utente</th>
                 <th>Utente</th>
                 <th>Inserito il</th>
                 <th>Menù</th>
             </tr>
             </thead>
             <tbody>
-            <tr :key="op.id" v-for="op in filteredOps">
+            <tr :key="op.id" v-for="op in paginatedOps">
                 <td class="info">{{ op.id }}</td>
                 <td class="info">{{ formatDate(op.date) }}</td>
-                <td class="info">{{ op.siteName }}</td>
-                <td class="info">{{ op.systemName }}</td>
+                <td class="info">({{ op.siteId }}) {{ op.siteName }}</td>
+                <td class="info">({{ op.systemId }}) {{ op.systemName }}</td>
                 <td class="info">{{ op.hoursSpent }}</td>
                 <td class="info">{{ op.description }}</td>
-                <td class="info">{{ op.userId }}</td>
-                <td class="info">{{ op.username }}</td>
+                <td class="info">({{ op.userId }}) {{ op.username }}</td>
                 <td class="info">{{ formatDate(op.createdAt) }}</td>
                 <td>
                     <div class="dropdown">
@@ -136,11 +140,17 @@
                     </div>
                 </td>
             </tr>
-            <tr v-if="filteredOps.length === 0">
+            <tr v-if="paginatedOps.length === 0">
                 <td colspan="10">Nessuna manutenzione disponibile.</td>
             </tr>
             </tbody>
         </table>
+        <div class="pagination">
+            <button :disabled="currentPage === 1" @click="currentPage--" class="btn btn-secondary">Indietro</button>
+            <span>Pagina {{ currentPage }} di {{ totalPages }}</span>
+            <button :disabled="currentPage === totalPages" @click="currentPage++" class="btn btn-secondary">Avanti
+            </button>
+        </div>
         <button
                 class="add-operation-btn"
                 data-bs-target="#modalId"

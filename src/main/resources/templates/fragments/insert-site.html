@@ -6,18 +6,27 @@
             <label class="form-label" for="name">Nome sede</label>
             <input aria-describedby="helpId" class="form-control" id="name" name="name"
                    placeholder="Es. Frigotermica srl"
-                   type="text" v-model="siteName"/>
+                   @input="validateSiteName"
+                   type="text"
+                   v-model="siteName"
+            />
             <small class="text-muted" id="helpId">Inserisci il nome della nuova sede</small>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" v-if="siteErrors.siteName">
-                <strong>Errore.</strong> Inserisci il nome per la sede.
+            <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                 v-if="siteErrors.siteName.length > 0">
+                <strong>Errore:</strong>
+                <ul>
+                    <li :key="error" v-for="error in siteErrors.siteName">{{ error }}</li>
+                </ul>
             </div>
         </div>
         <div class="mb-3">
             <label class="form-label" for="address">Indirizzo sede</label>
             <input aria-describedby="helpId" class="form-control" id="address" name="address"
                    placeholder="Es. Via Roma 14, Bologna (BO)" type="text"/>
-            <small class="text-muted" id="helpId2">Inserisci il l'indirizzo della nuova sede</small>
+            <small class="text-muted" id="helpId2">Inserisci l'indirizzo della nuova sede</small>
         </div>
-        <button class="btn btn-outline-primary" type="submit">Invia</button>
+        <div class="text-center">
+            <button :disabled="isSiteFormInvalid" class="btn btn-primary" type="submit">Crea sede</button>
+        </div>
     </form>
 </div>

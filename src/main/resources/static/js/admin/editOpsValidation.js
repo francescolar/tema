@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
         el: '#app',
         data: {
             date: '',
-            description: '',
+            description: document.getElementById('description').value,
             ops: [],
             searchOps: '',
             sites: [],
@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const info = JSON.parse(this.$refs.dataDiv.getAttribute('data-info').replace(/'/g, '"'));
                 this.date = info.date;
-                this.description = info.description;
                 this.counter = info.counter;
                 this.selectedSiteId = info.selectedSiteId;
                 this.selectedSystemId = info.selectedSystemId;

@@ -1,6 +1,6 @@
 <div th:fragment="edit-system">
-    <div class="form-container margin-for-editing"
-         ref="systemDiv" th:data-info="|{'systemName': '${system.name}', 'selectedSiteId': '${system.siteId}'}|">
+    <div class="form-container margin-for-editing" ref="systemDiv"
+         th:data-info="|{'selectedSiteId': '${system.siteId}'}|">
         <h2>Modifica impianto</h2>
         <form @submit.prevent="validateSystemForm" action="#" method="post" novalidate ref="editSystemForm"
               th:action="@{/admin/edit}" th:object="${system}">

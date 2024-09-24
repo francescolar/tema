@@ -1,6 +1,5 @@
 <div th:fragment="edit-site">
-    <div class="form-container margin-for-editing" ref="siteDiv"
-         th:data-info="|{'siteName': '${site.name}', 'address': '${site.address}'}|">
+    <div class="form-container margin-for-editing">
         <h2>Modifica sede</h2>
         <form @submit.prevent="validateSiteForm" action="#" method="post" novalidate ref="editSiteForm"
               th:action="@{/admin/edit}" th:object="${site}">

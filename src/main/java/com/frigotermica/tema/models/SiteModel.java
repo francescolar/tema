@@ -1,5 +1,6 @@
 package com.frigotermica.tema.models;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
@@ -18,11 +19,12 @@ public class SiteModel {
 
     private boolean enabled;
 
+    @Min(0)
     private BigDecimal totalWorkHours;
 
     private int totalSystems;
 
-    public SiteModel(@NotNull int id, @NotNull String name, String address, BigDecimal totalWorkHours, int totalSystems, boolean enabled) {
+    public SiteModel(@NotNull int id, @NotNull String name, String address, @Min(0) BigDecimal totalWorkHours, int totalSystems, boolean enabled) {
         this.id = id;
         this.name = name;
         this.address = address;

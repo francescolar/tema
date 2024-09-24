@@ -1,5 +1,6 @@
 package com.frigotermica.tema.models;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -32,6 +33,7 @@ public class UserModel {
 
     private String role;
 
+    @Min(0)
     private BigDecimal totalWorkHours;
 
     private LocalDateTime createdAt;
@@ -54,7 +56,7 @@ public class UserModel {
 
     public UserModel(@NotNull int id, @NotNull @Size(min = 4, max = 30) String username,
                      @NotNull @Size(min = 2, max = 100) String email, @NotNull @Size(min = 2, max = 50) String name,
-                     @Size(min = 2, max = 50) String surname, BigDecimal totalWorkHours, LocalDateTime createdAt, String role, boolean enabled) {
+                     @Size(min = 2, max = 50) String surname, @Min(0) BigDecimal totalWorkHours, LocalDateTime createdAt, String role, boolean enabled) {
         this.id = id;
         this.username = username;
         this.email = email;

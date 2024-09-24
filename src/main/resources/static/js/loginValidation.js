@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     new Vue({
-        el: '#loginForm',
+        el: '#app',
         data: {
             username: '',
             password: '',
@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.handleError(error);
             }
         },
-
         methods: {
             validateForm() {
                 this.errors.username = !this.username;
@@ -28,12 +27,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             },
             handleError(error) {
-                if (error === 'true') {
-                    this.errorMessage = 'Invalid username or password.';
+                if (error === '1') {
+                    this.errorMessage = 'Utente non registrato.';
+                } else if (error === '2') {
+                    this.errorMessage = 'Password errata.';
+                } else if (error === '3') {
+                    this.errorMessage = 'Contatta l\'amministratore.';
                 }
             }
         }
-    })
+    });
 });
 
 function togglePsw() {

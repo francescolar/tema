@@ -1,5 +1,6 @@
 package com.frigotermica.tema.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.frigotermica.tema.models.*;
 import com.frigotermica.tema.service.BasicPasswordGenerator;
 import com.frigotermica.tema.service.UserService;
@@ -10,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -212,11 +212,12 @@ public class AdminWebController implements WebMvcConfigurer {
                     if (resetPsw) {
                         String randomPassword = BasicPasswordGenerator.getRandomPassword();
                         System.out.println(randomPassword);
-                        messageService.sendResetEmail(user.getEmail(), user.getUsername(), randomPassword);
-                        user.setPassword(CryptoPassword.cryptoPasswordwithSalt(randomPassword, BCrypt.gensalt()));
+                        messageService.sendResetEmail(user.getEmail(), user.getUsername(), user.getName(), randomPassword);
+                        user.setPassword(CryptoPassword.cryptoPassword(randomPassword));
                     } else {
                         user.setPassword(dbUser.getPassword());
                     }
+                    DbUtility.saveEditedLog("users", user.getId());
                     DbUtilityUser.adminUpdate(user, dbUser);
                     return "redirect:/admin/view-users";
                 case "sites":
@@ -224,6 +225,7 @@ public class AdminWebController implements WebMvcConfigurer {
                         model.addAttribute("tableName", "sites");
                         return "/admin/edit";
                     }
+                    DbUtility.saveEditedLog("sites", site.getId());
                     DbUtilitySite.updatePreparedStatement(site);
                     return "redirect:/admin/view-sites";
                 case "systems":
@@ -231,6 +233,7 @@ public class AdminWebController implements WebMvcConfigurer {
                         model.addAttribute("tableName", "systems");
                         return "/admin/edit";
                     }
+                    DbUtility.saveEditedLog("systems", system.getId());
                     DbUtilitySystem.updatePreparedStatement(system);
                     return "redirect:/admin/view-sites";
                 case "operations":
@@ -238,11 +241,12 @@ public class AdminWebController implements WebMvcConfigurer {
                         model.addAttribute("tableName", "operations");
                         return "/admin/edit";
                     }
+                    DbUtility.saveEditedLog("operations", operation.getId());
                     DbUtilityOperation.update(operation);
                     return "redirect:/admin/view-operations";
             }
             return "admin/edit";
-        } catch (ClassNotFoundException | MessagingException | SQLException e) {
+        } catch (JsonProcessingException | ClassNotFoundException | MessagingException | SQLException e) {
             logger.error("An error occurred while doing something", e);
             return "redirect:/homepage";
         }

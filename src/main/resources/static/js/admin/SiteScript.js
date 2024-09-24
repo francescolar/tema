@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
             siteId: null,
             siteName: '',
             systemName: '',
-            selectedSiteId: '',
-            // Filtri siti
+            selectedSiteId: null,
+
             siteNameFilter: '',
             cityFilter: '',
             numImpiantiCondition: 'equal',
@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
             excludeDisabledSites: false,
             excludeZeroSystems: false,
 
-            // Filtri impianti
             systemNameFilter: '',
             totManutenzioneSystemCondition: 'equal',
             totManutenzioneSystemValue: null,
@@ -26,13 +25,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
             selectedSite: {},
             siteErrors: {
-                siteName: false,
+                siteName: [],
             },
             systemErrors: {
-                systemName: false,
-                selectedSiteId: false,
+                systemName: [],
+                selectedSiteId: [],
             },
-            googleApiKey: null
+            googleApiKey: null,
+            currentPageSites: 1,
+            itemsPerPageSites: 8
         },
         mounted() {
             this.fetchSites();
@@ -43,17 +44,14 @@ document.addEventListener('DOMContentLoaded', function() {
             filteredSites() {
                 let filtered = this.sites;
 
-                // Filtro per nome sede
                 if (this.siteNameFilter) {
                     filtered = filtered.filter(site => site.name.toLowerCase().includes(this.siteNameFilter.toLowerCase()));
                 }
 
-                // Filtro per città
                 if (this.cityFilter) {
                     filtered = filtered.filter(site => site.address.toLowerCase().includes(this.cityFilter.toLowerCase()));
                 }
 
-                // Filtro per numero impianti
                 if (this.numImpiantiValue !== null) {
                     filtered = filtered.filter(site => {
                         if (this.numImpiantiCondition === 'greater') return site.totalSystems > this.numImpiantiValue;
@@ -62,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                // Filtro per ore manutenzione
                 if (this.totManutenzioneValue !== null) {
                     filtered = filtered.filter(site => {
                         if (this.totManutenzioneCondition === 'greater') return site.totalWorkHours > this.totManutenzioneValue;
@@ -71,27 +68,32 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                // Escludi sedi disabilitate
                 if (this.excludeDisabledSites) {
                     filtered = filtered.filter(site => site.enabled);
                 }
 
-                // Escludi sedi con 0 impianti
                 if (this.excludeZeroSystems) {
                     filtered = filtered.filter(site => site.totalSystems === 0);
                 }
 
                 return filtered;
             },
+            paginatedSites() {
+                let start = (this.currentPageSites - 1) * this.itemsPerPageSites;
+                let end = start + this.itemsPerPageSites;
+
+                return this.filteredSites.slice(start, end);
+            },
+            totalPagesSites() {
+                return Math.ceil(this.filteredSites.length / this.itemsPerPageSites);
+            },
             filteredSystems() {
                 let filtered = this.getSystemsForSite();
 
-                // Filtro per nome impianto
                 if (this.systemNameFilter) {
                     filtered = filtered.filter(system => system.name.toLowerCase().includes(this.systemNameFilter.toLowerCase()));
                 }
 
-                // Filtro per ore manutenzione
                 if (this.totManutenzioneSystemValue !== null) {
                     filtered = filtered.filter(system => {
                         if (this.totManutenzioneSystemCondition === 'greater') return system.totalWorkHours > this.totManutenzioneSystemValue;
@@ -100,60 +102,95 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                // Escludi impianti disabilitati
                 if (this.excludeDisabledSystems) {
                     filtered = filtered.filter(system => system.enabled);
                 }
 
                 return filtered;
+            },
+            isSiteFormInvalid() {
+                return (
+                !this.siteName || this.siteErrors.siteName.length > 0
+                );
+            },
+            isSystemFormInvalid() {
+                return (
+                !this.systemName || !this.selectedSiteId ||
+                this.systemErrors.systemName.length > 0 || this.systemErrors.selectedSiteId.length > 0
+                );
             }
         },
         methods: {
             showSiteDetails(site) {
-                this.selectedSite = site; // Imposta il sito selezionato nel modal
+                this.selectedSite = site;
             },
             validateSiteForm() {
                 this.clearSiteErrors();
-                if (!this.siteName) {
-                    this.siteErrors.siteName = true;
-                }
 
-                if (Object.values(this.siteErrors).every(value => !value)) {
+                this.validateSiteName();
+
+                if (Object.values(this.siteErrors).every(errorArray => errorArray.length === 0)) {
                     this.$refs.siteForm.submit();
+                }
+            },
+            validateSiteName() {
+                this.siteErrors.siteName = [];
+
+                if (!this.siteName) {
+                    this.siteErrors.siteName.push("Il nome della sede non può essere vuoto.");
+                } else {
+                    if (this.siteName.length < 4) {
+                        this.siteErrors.siteName.push("Il nome della sede deve avere almeno 4 caratteri.");
+                    }
+                    if (this.siteName.length > 50) {
+                        this.siteErrors.siteName.push("Il nome della sede può avere al massimo 50 caratteri.");
+                    }
                 }
             },
             clearSiteErrors() {
                 this.siteErrors = {
-                    siteName: false,
+                    siteName: [],
                 };
             },
             validateSystemForm() {
                 this.clearSystemErrors();
-                if (!this.systemName) {
-                    this.systemErrors.systemName = true;
-                }
+
+                this.validateSystemName();
+
                 if (!this.selectedSiteId) {
-                    this.systemErrors.selectedSiteId = true;
+                    this.systemErrors.selectedSiteId.push("Seleziona una sede.");
                 }
 
-                if (Object.values(this.systemErrors).every(value => !value)) {
+                if (Object.values(this.systemErrors).every(errorArray => errorArray.length === 0)) {
                     this.$refs.systemForm.submit();
+                }
+            },
+            validateSystemName() {
+                this.systemErrors.systemName = [];
+
+                if (!this.systemName) {
+                    this.systemErrors.systemName.push("Inserisci il nome per l'impianto.");
+                } else {
+                    if (this.systemName.length < 4) {
+                        this.systemErrors.systemName.push("Il nome dell'impianto deve avere almeno 4 caratteri.");
+                    }
+                    if (this.systemName.length > 50) {
+                        this.systemErrors.systemName.push("Il nome dell'impianto può avere al massimo 50 caratteri.");
+                    }
                 }
             },
             clearSystemErrors() {
                 this.systemErrors = {
-                    systemName: false,
-                    selectedSiteId: false,
+                    systemName: [],
+                    selectedSiteId: [],
                 };
             },
             applySiteFilter() {
-                this.filteredSites; // Forza il ricalcolo dei filtri
+                this.filteredSites;
             },
-            // Applica i filtri agli impianti
             applySystemFilter() {
-                this.filteredSystems; // Forza il ricalcolo dei filtri
+                this.filteredSystems;
             },
-            // Reset filtri siti
             resetSiteFilters() {
                 this.siteNameFilter = '';
                 this.cityFilter = '';
@@ -163,15 +200,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.totManutenzioneValue = null;
                 this.excludeDisabledSites = false;
                 this.excludeZeroSystems = false;
-                this.applySiteFilter(); // Ricalcola i dati filtrati
+                this.applySiteFilter();
             },
-            // Reset filtri impianti
             resetSystemFilters() {
                 this.systemNameFilter = '';
                 this.totManutenzioneSystemCondition = 'equal';
                 this.totManutenzioneSystemValue = null;
                 this.excludeDisabledSystems = false;
-                this.applySystemFilter(); // Ricalcola i dati filtrati
+                this.applySystemFilter();
             },
             fetchSites() {
                 axios.get('/api/sites/all')

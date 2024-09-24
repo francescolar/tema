@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
             createdStartDate: '',
             createdEndDate: '',
 
+            currentPage: 1,
+            itemsPerPage: 20,
+
             selectedOp: {},
             authId: null,
             errors: {
@@ -37,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
         mounted() {
+            this.startDate = this.getOneMonthAgoDate();
             this.fetchOps(),
             this.fetchUsers(),
             this.fetchSites(),
@@ -121,7 +125,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                return filtered;
+                return filtered; // Restituisce tutte le operazioni filtrate
+            },
+
+            paginatedOps() {
+                // Applica la paginazione sui dati filtrati
+                let start = (this.currentPage - 1) * this.itemsPerPage;
+                let end = start + this.itemsPerPage;
+                return this.filteredOps.slice(start, end);
+            },
+
+            totalPages() {
+                return Math.ceil(this.filteredOps.length / this.itemsPerPage);
             },
             filteredSystems() {
                 if (!this.selectedSiteId) {
@@ -131,6 +146,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
         methods: {
+            getOneMonthAgoDate() {
+                let today = new Date();
+                let oneMonthAgo = new Date();
+                oneMonthAgo.setMonth(today.getMonth() - 1);
+
+                // Formatta la data come "YYYY-MM-DD"
+                return oneMonthAgo.toISOString().split('T')[0];
+            },
             showOpDetails(op) {
                 this.selectedOp = op;
             },

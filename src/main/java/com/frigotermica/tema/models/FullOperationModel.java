@@ -1,5 +1,7 @@
 package com.frigotermica.tema.models;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -9,6 +11,7 @@ import java.time.LocalDateTime;
 public class FullOperationModel {
 
     @NotNull
+    @Min(0)
     private int id;
 
     @NotNull
@@ -18,6 +21,8 @@ public class FullOperationModel {
     private String description;
 
     @NotNull
+    @Min(0)
+    @Max(100)
     private BigDecimal hoursSpent;
 
     @NotNull

@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
         el: '#app',
         data: {
             sites: [],
-            systemName: '',
+            systemName: document.getElementById("name").value,
             selectedSiteId: '',
             systemErrors: {
                 systemName: false,
@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
         mounted() {
             try {
                 const info = JSON.parse(this.$refs.systemDiv.getAttribute('data-info').replace(/'/g, '"'));
-                this.systemName = info.systemName;
                 this.selectedSiteId = info.selectedSiteId;
             } catch (error) {
                 console.error('Error parsing JSON:', error);
