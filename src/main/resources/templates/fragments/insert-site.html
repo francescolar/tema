@@ -22,8 +22,17 @@
         <div class="mb-3">
             <label class="form-label" for="address">Indirizzo sede</label>
             <input aria-describedby="helpId" class="form-control" id="address" name="address"
+                   @input="validateSiteAddress"
+                   v-model="siteAddress"
                    placeholder="Es. Via Roma 14, Bologna (BO)" type="text"/>
             <small class="text-muted" id="helpId2">Inserisci l'indirizzo della nuova sede</small>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                 v-if="siteErrors.siteAddress.length > 0">
+                <strong>Errore:</strong>
+                <ul>
+                    <li :key="error" v-for="error in siteErrors.siteAddress">{{ error }}</li>
+                </ul>
+            </div>
         </div>
         <div class="text-center">
             <button :disabled="isSiteFormInvalid" class="btn btn-primary" type="submit">Crea sede</button>

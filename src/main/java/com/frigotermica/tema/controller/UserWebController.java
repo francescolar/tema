@@ -44,13 +44,16 @@ public class UserWebController implements WebMvcConfigurer {
     }
 
     @PostMapping("/insert-operation")
-    public String insertNewOperation(@Valid @ModelAttribute OperationModel operation, BindingResult bindingResult, Model model) {
+    public String insertNewOperation(@Valid @ModelAttribute OperationModel operation, BindingResult bindingResult, Model model,
+                                     RedirectAttributes redirectAttrs) {
         if (bindingResult.hasErrors()) {
-            return "insert-operation";
+            model.addAttribute("error", bindingResult.getAllErrors());
+            return "error";
         }
         try {
             int userId = DbUtilityUser.getAuthenticatedUserId();
             DbUtilityOperation.insertPreparedStatement(operation, userId);
+            redirectAttrs.addFlashAttribute("success", true);
             return "redirect:/view-operations";
         } catch (ClassNotFoundException | SQLException e) {
             logger.error("An error occurred while doing something", e);

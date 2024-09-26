@@ -65,17 +65,17 @@ public class WebSecurityConfig {
         http
                 .addFilterBefore(firstLoginRedirectFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/", "/homepage", "/css/**", "/js/**", "/fragments/**", "/static/**", "/success", "/login").permitAll()
+                        .requestMatchers("/", "/homepage", "/css/**", "/js/**", "/fragments/**", "/static/**", "/send-customer-email", "/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(login -> login
                         .loginPage("/login")
-                        .defaultSuccessUrl("/homepage")
+                        .defaultSuccessUrl("/homepage?loginSuccess=true")
                         .failureHandler(authenticationFailureHandler())
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/homepage")
+                        .logoutSuccessUrl("/homepage?logoutSuccess=true")
                         .permitAll());
 
         return http.build();

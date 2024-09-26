@@ -38,8 +38,8 @@
     <script defer src="/js/loginValidation.js" type="text/javascript"></script>
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
 <main id="app" v-cloak>
-    <div th:replace="~{fragments/header :: header}"></div>
     <div class="login-container">
         <h2>Inserisci i dati di login</h2>
         <form @submit.prevent="validateForm" id="loginForm" method="post" novalidate ref="loginForm"
@@ -96,6 +96,33 @@
             </button>
         </form>
     </div>
+
+    <div class="toast-container bottom-5 start-50 translate-middle-x p-3">
+        <div class="toast text-bg-danger" id="liveToast" role="alert">
+            <div class="toast-body">
+                <div class="d-flex gap-4">
+                    <span><i class="fa-solid fa-circle-exclamation fa-lg"></i></span>
+                    <div class="d-flex flex-grow-1 align-items-center">
+                        <span class="fw-semibold">Devi compilare tutti campi del form per inviare la mail.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="toast-container bottom-5 start-50 translate-middle-x p-3" th:if="${mailSent}">
+        <div class="toast text-bg-success" id="successToast" role="alert">
+            <div class="toast-body">
+                <div class="d-flex gap-4">
+                    <span><i class="fa-solid fa-circle-exclamation fa-lg"></i></span>
+                    <div class="d-flex flex-grow-1 align-items-center">
+                        <span class="fw-semibold">Form inviato! Sarai ricontattato appena possibile.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
 </main>
 </body>
 </html>

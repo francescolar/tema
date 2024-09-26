@@ -39,8 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 this.validateConfirmPassword();
 
-                if (this.errors.oldPassword.length === 0 && this.errors.newPassword.length === 0 && this.errors.confirmPassword.length === 0) {
-                    this.$refs.editContactForm.submit();
+                if (!this.isFormInvalid) {
+                    this.$refs.editForm.submit();
                 }
             },
 
@@ -68,6 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!/[@$!%*?&?]/.test(this.newPassword)) {
                         this.errors.newPassword.push("La password deve contenere almeno un carattere speciale (@$!%*?&?).");
                     }
+                    if (/[^A-Za-z\d@$!%*?&?]/.test(this.newPassword)) {
+                        this.errors.newPassword.push("La password contiene caratteri non consentiti.");
+                    }
                 }
             },
             validateConfirmPassword() {
@@ -75,10 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (this.newPassword !== this.confirmPassword) {
                     this.errors.confirmPassword.push("Le password non corrispondono.");
                 }
-            },
-            validatePassword(newPassword) {
-                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&?])[A-Za-z\d@$!%*?&?]{8,50}$/;
-                return passwordRegex.test(newPassword);
             },
             clearErrors() {
                 this.errors = {

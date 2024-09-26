@@ -53,4 +53,22 @@ public class EmailMessageService {
 
         senderService.sendEmail(userEmail, subject, message);
     }
+
+    public void sendCustomerEmail(String userEmail, String userName, String userMessage, String customerSubject) throws MessagingException {
+        String subject = "Segnalazione da parte di: " + userName;
+        String message = "<div style=\"border-radius: 15px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; overflow: hidden;\">" +
+                "<div style=\"background-color:#000000; color:white; padding: 10px; border-top-left-radius: 15px; border-top-right-radius: 15px;\">" +
+                "<h1 style=\"font-size:24px; font-weight:bold; margin: 0;\">Frigotermica S.R.L.</h1>" +
+                "</div>" +
+                "<div style=\"background-color:#fffde6; padding: 20px; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;\">" +
+                "<p>Hai ricevuto un messaggio da parte di: <strong>" + userName + "</strong>.</p>" +
+                "<p>Questo è il messaggio:</p>" +
+                "<p><strong>Oggetto:</strong> " + customerSubject + ".</p>" +
+                "<p><strong>Messaggio:</strong></p>" +
+                "<p>" + userMessage + "</p>" +
+                "</div>" +
+                "</div>";
+
+        senderService.sendEmail("frigotermicasrl1@gmail.com", subject, message);
+    }
 }

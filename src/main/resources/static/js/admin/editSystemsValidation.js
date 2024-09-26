@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
             systemName: document.getElementById("name").value,
             selectedSiteId: '',
             systemErrors: {
-                systemName: false,
-                selectedSiteId: false,
+                systemName: [],
+                selectedSiteId: []
             }
         },
         mounted() {
@@ -19,35 +19,66 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             this.fetchSites();
         },
+        computed: {
+            isSystemFormInvalid() {
+                return (
+                !this.systemName ||
+                this.systemErrors.systemName.length > 0 ||
+                this.systemErrors.selectedSiteId.length > 0 ||
+                !this.selectedSiteId
+                );
+            }
+        },
         methods: {
             validateSystemForm() {
                 this.clearSystemErrors();
-                if (!this.systemName) {
-                    this.systemErrors.systemName = true;
-                }
-                if (!this.selectedSiteId) {
-                    this.systemErrors.selectedSiteId = true;
-                }
+                this.validateSystemName();
+                this.validateSelectedSiteId();
 
-                if (Object.values(this.systemErrors).every(value => !value)) {
+                if (!this.isSystemFormInvalid) {
                     this.$refs.editSystemForm.submit();
                 }
             },
+
+            validateSystemName() {
+                this.systemErrors.systemName = [];
+
+                if (!this.systemName) {
+                    this.systemErrors.systemName.push("Il nome dell'impianto non può essere vuoto.");
+                } else if (this.systemName.length < 4) {
+                    this.systemErrors.systemName.push("Il nome dell'impianto deve avere almeno 4 caratteri.");
+                } else if (this.systemName.length > 50) {
+                    this.systemErrors.systemName.push("Il nome dell'impianto può avere al massimo 50 caratteri.");
+                } else if (/[^A-Za-z0-9\s'’\-@$!%*?&.]/.test(this.systemName)) {
+                    this.systemErrors.systemName.push("Il nome dell'impianto contiene caratteri non consentiti.");
+                }
+            },
+
+            validateSelectedSiteId() {
+                this.systemErrors.selectedSiteId = [];
+
+                if (!this.selectedSiteId) {
+                    this.systemErrors.selectedSiteId.push("Seleziona una sede.");
+                }
+            },
+
             clearSystemErrors() {
                 this.systemErrors = {
-                    systemName: false,
-                    selectedSiteId: false,
+                    systemName: [],
+                    selectedSiteId: []
                 };
             },
+
             fetchSites() {
                 axios.get('/api/sites/all')
                     .then(response => {
                     this.sites = response.data;
                 })
                     .catch(error => {
-                    console.error('Error fetching systems:', error);
+                    console.error('Error fetching sites:', error);
                 });
             },
+
             cancel() {
                 this.$refs.cancel.submit();
             }

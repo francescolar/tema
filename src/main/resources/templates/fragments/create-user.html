@@ -13,6 +13,7 @@
                 <h2>Inserisci i dati del nuovo utente</h2>
                 <form @submit.prevent="validateForm" id="registerForm" method="post" novalidate
                       ref="registerForm" th:action="@{/admin/create-user}" th:object="${user}">
+                    <input name="password" th:value="'7K%lKAhS*%q!&U!fg?'" type="hidden"/>
                     <div class="form-floating mb-3">
                         <input
                                 class="form-control"
@@ -31,6 +32,13 @@
                         <ul>
                             <li :key="error" v-for="error in errors.username">{{ error }}</li>
                         </ul>
+                    </div>
+                    <div
+                            class="alert alert-danger alert-dismissible fade show"
+                            role="alert"
+                            th:if="${usernameCheck}"
+                    >
+                        <strong>Errore.</strong> L'username è già esistente
                     </div>
                     <div class="form-floating mb-3">
                         <input

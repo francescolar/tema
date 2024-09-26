@@ -186,6 +186,18 @@
     >
         +
     </button>
+    <div class="toast-container bottom-0 end-0 translate-middle-x p-3" th:if="${userCreated}">
+        <div class="toast text-bg-success" id="userToast" role="alert">
+            <div class="toast-body">
+                <div class="d-flex gap-4">
+                    <span><i class="fa-solid fa-circle-exclamation fa-lg"></i></span>
+                    <div class="d-flex flex-grow-1 align-items-center">
+                        <span class="fw-semibold">Utente creato. Verrà inviata una mail con la password temporanea.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 </body>
 </html>

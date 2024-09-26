@@ -1,22 +1,25 @@
 package com.frigotermica.tema.models;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
 public class SystemModel {
 
-    @NotNull
+    @NotNull(message = "ID error")
+    @PositiveOrZero
     private int id;
 
-    @NotNull
+    @NotNull(message = "Name error")
+    @Pattern(regexp = "^[A-Za-z0-9\\s'’\\-@$!%*?&.]+$", message = "Invalid characters in name")
+    @Size(min = 4, max = 50)
     private String name;
 
-    @NotNull
+    @NotNull(message = "Site ID error")
+    @PositiveOrZero
     private int siteId;
 
-    @Min(0)
+    @PositiveOrZero
     private BigDecimal totalWorkHours;
 
     private boolean deleted;

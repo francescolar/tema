@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             username: '',
             password: '',
+            usernameMail: '',
+            emailHelpId: '',
+            message: '',
+            subject: '',
             errors: {
                 username: false,
                 password: false
@@ -16,8 +20,20 @@ document.addEventListener('DOMContentLoaded', function() {
             if (error) {
                 this.handleError(error);
             }
+            const successToast = document.getElementById('successToast');
+            if (successToast) {
+                const toast = new bootstrap.Toast(successToast);
+                toast.show();
+            }
         },
         methods: {
+            validateCustomerEmail() {
+                if (!this.usernameMail || !this.emailHelpId || !this.subject || !this.message) {
+                    this.handleErrorAssistance();
+                } else {
+                    this.$refs.customerEmail.submit();
+                }
+            },
             validateForm() {
                 this.errors.username = !this.username;
                 this.errors.password = !this.password;
@@ -34,6 +50,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else if (error === '3') {
                     this.errorMessage = 'Contatta l\'amministratore.';
                 }
+            },
+            handleErrorAssistance() {
+                const toastLiveExample = document.getElementById("liveToast");
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
             }
         }
     });

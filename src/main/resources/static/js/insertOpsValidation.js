@@ -17,40 +17,72 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
         mounted() {
-            this.fetchSites(),
-            this.fetchSystems()
+            this.fetchSites();
+            this.fetchSystems();
+
         },
         computed: {
             formattedCounter() {
-                return parseFloat(this.counter).toFixed(2);  // Assicurati che il counter sia sempre formattato con due decimali
+                return parseFloat(this.counter).toFixed(2);
             },
             filteredSystems() {
                 if (!this.selectedSiteId) {
                     return [];
                 }
                 return this.systems.filter(system => system.siteId === parseInt(this.selectedSiteId));
+            },
+            isFormInvalid() {
+                return (
+                this.errors.selectedSiteId ||
+                this.errors.selectedSystemId ||
+                this.errors.date ||
+                this.errors.description ||
+                !this.selectedSiteId ||
+                !this.selectedSystemId ||
+                !this.date ||
+                !this.description
+                );
             }
         },
         methods: {
             validateForm() {
                 this.clearErrors();
-                if (!this.selectedSiteId) {
-                    this.errors.selectedSiteId = true;
-                }
-                if (!this.selectedSystemId) {
-                    this.errors.selectedSystemId = true;
-                }
-                if (!this.date) {
-                    this.errors.date = true;
-                }
-                if (!this.description) {
-                    this.errors.description = true;
-                }
+                this.validateSite(false);
+                this.validateSystem();
+                this.validateDate();
+                this.validateDescription();
 
-                if (Object.values(this.errors).every(value => !value)) {
+                if (!this.isFormInvalid) {
                     this.$refs.operationForm.submit();
                 }
             },
+
+            validateSite(resetSystem = true) {
+                this.errors.selectedSiteId = !this.selectedSiteId;
+                if (resetSystem) {
+                    this.selectedSystemId = '';
+                }
+            },
+
+            validateSystem() {
+                this.errors.selectedSystemId = !this.selectedSystemId;
+            },
+
+            validateDate() {
+                this.errors.date = !this.date;
+            },
+
+            validateDescription() {
+                this.errors.description = false;
+                if (this.description.length < 1) {
+                    this.errors.description = "La descrizione non può essere vuota.";
+                } else if (this.description.length > 3000) {
+                    this.errors.description = "La descrizione può avere al massimo 3000 caratteri.";
+                } else if (/[^A-Za-z0-9\s'’\-@$!%*?&,.;:]/.test(this.description)) {
+                    this.errors.description = "La descrizione contiene caratteri non consentiti.";
+                }
+            },
+
             clearErrors() {
                 this.errors = {
                     selectedSiteId: false,
@@ -59,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     description: false,
                 };
             },
+
             fetchSites() {
                 axios.get('/api/sites/all-enabled')
                     .then(response => {
@@ -66,33 +99,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                     .catch(error => {
                     console.error('Error fetching sites:', error);
-                })
+                });
             },
+
             fetchSystems() {
                 axios.get('/api/systems/all-enabled')
                     .then(response => {
                     this.systems = response.data;
                 })
                     .catch(error => {
-                    console.error('Error fetching sites:', error);
-                })
+                    console.error('Error fetching systems:', error);
+                });
             },
+
             increase(value) {
-                this.counter = parseFloat(this.counter);
-                if (this.counter - parseFloat(value) <= 100) {
-                    this.counter += parseFloat(value);
-                } else {
-                    this.counter = 100;
-                }
+                this.counter = Math.min(100, this.counter + parseFloat(value));
             },
+
             decrease(value) {
-                this.counter = parseFloat(this.counter);
-                if (this.counter - parseFloat(value) >= 1) {
-                    this.counter -= parseFloat(value);
-                } else {
-                    this.counter = 1;
-                }
+                this.counter = Math.max(1, this.counter - parseFloat(value));
             }
         }
-    })
+    });
 });

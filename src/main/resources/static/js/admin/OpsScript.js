@@ -46,25 +46,28 @@ document.addEventListener('DOMContentLoaded', function() {
             this.fetchSites(),
             this.fetchSystems(),
             this.authId = this.$el.getAttribute('data-auth-id');
+
+            const opToast = document.getElementById('opSuccessToast');
+            if (opToast) {
+                const opSuccessToast = new bootstrap.Toast(opToast);
+                opSuccessToast.show();
+            }
         },
         computed: {
             formattedCounter() {
-                return parseFloat(this.counter).toFixed(2);  // Assicurati che il counter sia sempre formattato con due decimali
+                return parseFloat(this.counter).toFixed(2);
             },
             filteredOps() {
                 let filtered = this.ops;
 
-                // Filtro per sede
                 if (this.selectedSiteFilter) {
                     filtered = filtered.filter(op => op.siteId === parseInt(this.selectedSiteFilter));
                 }
 
-                // Filtro per impianto
                 if (this.selectedSystemFilter) {
                     filtered = filtered.filter(op => op.systemId === parseInt(this.selectedSystemFilter));
                 }
 
-                // Filtro per ore impiegate
                 if (this.hoursValue !== null && this.hoursValue !== '') {
                     filtered = filtered.filter(op => {
                         if (this.hoursCondition === 'greater') {
@@ -78,18 +81,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                // Filtro per descrizione
                 if (this.descriptionFilter) {
                     const searchTerm = this.descriptionFilter.toLowerCase();
                     filtered = filtered.filter(op => op.description.toLowerCase().includes(searchTerm));
                 }
 
-                // Filtro per utente
                 if (this.selectedUserFilter) {
                     filtered = filtered.filter(op => op.userId === parseInt(this.selectedUserFilter));
                 }
 
-                // Filtro per data (inizio - fine)
                 if (this.startDate || this.endDate) {
                     filtered = filtered.filter(op => {
                         const opDate = new Date(op.date);
@@ -107,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                // Filtro per data di creazione (inizio - fine)
                 if (this.createdStartDate || this.createdEndDate) {
                     filtered = filtered.filter(op => {
                         const createdDate = new Date(op.createdAt);
@@ -125,11 +124,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
 
-                return filtered; // Restituisce tutte le operazioni filtrate
+                return filtered;
             },
 
             paginatedOps() {
-                // Applica la paginazione sui dati filtrati
                 let start = (this.currentPage - 1) * this.itemsPerPage;
                 let end = start + this.itemsPerPage;
                 return this.filteredOps.slice(start, end);
@@ -143,6 +141,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     return [];
                 }
                 return this.systems.filter(system => system.siteId === parseInt(this.selectedSiteId));
+            },
+            isFormInvalid() {
+                return (
+                this.errors.selectedSiteId ||
+                this.errors.selectedSystemId ||
+                this.errors.selectedUserId ||
+                this.errors.date ||
+                this.errors.description ||
+                !this.selectedSiteId ||
+                !this.selectedSystemId ||
+                !this.selectedUserId ||
+                !this.date ||
+                !this.description
+                );
             }
         },
         methods: {
@@ -151,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 let oneMonthAgo = new Date();
                 oneMonthAgo.setMonth(today.getMonth() - 1);
 
-                // Formatta la data come "YYYY-MM-DD"
                 return oneMonthAgo.toISOString().split('T')[0];
             },
             showOpDetails(op) {
@@ -159,26 +170,47 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             validateForm() {
                 this.clearErrors();
-                if (!this.selectedSiteId) {
-                    this.errors.selectedSiteId = true;
-                }
-                if (!this.selectedSystemId) {
-                    this.errors.selectedSystemId = true;
-                }
-                if (!this.selectedUserId) {
-                    this.errors.selectedUserId = true;
-                }
-                if (!this.date) {
-                    this.errors.date = true;
-                }
-                if (!this.description) {
-                    this.errors.description = true;
-                }
+                this.validateSite(false);
+                this.validateSystem();
+                this.validateUser();
+                this.validateDate();
+                this.validateDescription();
 
-                if (Object.values(this.errors).every(value => !value)) {
+                if (!this.isFormInvalid) {
                     this.$refs.operationForm.submit();
                 }
             },
+
+            validateSite(resetSystem = true) {
+                this.errors.selectedSiteId = !this.selectedSiteId;
+                if (resetSystem) {
+                    this.selectedSystemId = '';
+                }
+            },
+
+            validateSystem() {
+                this.errors.selectedSystemId = !this.selectedSystemId;
+            },
+
+            validateUser() {
+                this.errors.selectedUserId = !this.selectedUserId;
+            },
+
+            validateDate() {
+                this.errors.date = !this.date;
+            },
+
+            validateDescription() {
+                this.errors.description = false;
+                if (this.description.length < 1) {
+                    this.errors.description = "La descrizione non può essere vuota.";
+                } else if (this.description.length > 3000) {
+                    this.errors.description = "La descrizione può avere al massimo 3000 caratteri.";
+                } else if (/[^A-Za-z0-9\s'’\-@$!%*?&,.;:]/.test(this.description)) {
+                    this.errors.description = "La descrizione contiene caratteri non consentiti.";
+                }
+            },
+
             clearErrors() {
                 this.errors = {
                     selectedSiteId: false,
@@ -199,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.endDate = '';
                 this.createdStartDate = '';
                 this.createdEndDate = '';
-                this.applyFilter(); // Per ricalcolare i dati filtrati
+                this.applyFilter();
             },
             fetchOps() {
                 axios.get('/api/operations/all')
@@ -243,12 +275,10 @@ document.addEventListener('DOMContentLoaded', function() {
             formatDate(dateString) {
                 if (!dateString) return '';
 
-                // Converti la stringa in oggetto Date
                 const date = new Date(dateString);
 
-                // Formatta la data in "YYYY-MM-DD HH:mm:ss"
                 const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');  // I mesi vanno da 0 a 11
+                const month = String(date.getMonth() + 1).padStart(2, '0');
                 const day = String(date.getDate()).padStart(2, '0');
                 const hours = String(date.getHours()).padStart(2, '0');
                 const minutes = String(date.getMinutes()).padStart(2, '0');

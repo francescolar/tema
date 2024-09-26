@@ -27,6 +27,12 @@ document.addEventListener('DOMContentLoaded', function() {
         mounted() {
             this.fetchUsers(),
             this.authId = this.$el.getAttribute('data-auth-id');
+
+            const userToast = document.getElementById('userToast');
+            if (userToast) {
+                const userToastSuccess = new bootstrap.Toast(userToast);
+                userToastSuccess.show();
+            }
         },
         computed: {
             paginatedUsers() {
@@ -146,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (this.username.length > 25) {
                         this.errors.username.push("L'username può avere al massimo 25 caratteri.");
                     }
-                    if (!/^[a-zA-Z0-9]+$/.test(this.username)) {
+                    if (!/^[a-zA-Z0-9.]+$/.test(this.username)) {
                         this.errors.username.push("L'username può contenere solo lettere e numeri.");
                     }
                 }
@@ -163,6 +169,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (this.email.length > 50) {
                         this.errors.email.push("L'email può avere al massimo 50 caratteri.");
                     }
+                    if (/[^A-Za-z0-9\s'’\-@$!%*?&.]/.test(this.email)) {
+                        this.errors.email.push("L'email contiene caratteri non consentiti.");
+                    }
                 }
             },
             validateName() {
@@ -170,8 +179,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (!this.name) {
                     this.errors.name.push("Inserisci il nome.");
-                } else if (this.name.length > 30) {
-                    this.errors.name.push("Il nome può avere al massimo 30 caratteri.");
+                } else {
+                    if (this.name.length > 30) {
+                        this.errors.name.push("Il nome può avere al massimo 30 caratteri.");
+                    }
+                    if (/[^A-Za-z0-9\s'’\-@$!%*?&.]/.test(this.name)) {
+                        this.errors.name.push("Il nome contiene caratteri non consentiti.");
+                    }
                 }
             },
             validateSurname() {
@@ -179,8 +193,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (!this.surname) {
                     this.errors.surname.push("Inserisci il cognome.");
-                } else if (this.surname.length > 30) {
-                    this.errors.surname.push("Il cognome può avere al massimo 30 caratteri.");
+                } else {
+                    if (this.surname.length > 30) {
+                        this.errors.surname.push("Il cognome può avere al massimo 30 caratteri.");
+                    }
+                    if (/[^A-Za-z0-9\s'’\-@$!%*?&.]/.test(this.surname)) {
+                        this.errors.surname.push("Il cognome contiene caratteri non consentiti.");
+                    }
                 }
             },
             formatDate(dateString) {
@@ -204,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     name: [],
                     surname: [],
                 };
-            },
+            }
         }
     });
 });

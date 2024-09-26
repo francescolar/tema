@@ -2,47 +2,41 @@
     <div class="form-container margin-for-editing" ref="systemDiv"
          th:data-info="|{'selectedSiteId': '${system.siteId}'}|">
         <h2>Modifica impianto</h2>
-        <form @submit.prevent="validateSystemForm" action="#" method="post" novalidate ref="editSystemForm"
+        <form @submit.prevent="validateSystemForm" id="editSystemForm" method="post" novalidate ref="editSystemForm"
               th:action="@{/admin/edit}" th:object="${system}">
             <input name="tableName" th:value="'systems'" type="hidden"/>
             <input th:field="*{id}" type="hidden"/>
             <div class="mb-3">
                 <label class="form-label" for="name">Nome impianto</label>
-                <input class="form-control" id="name" name="name" placeholder="Nome" required th:field="*{name}"
-                       title="" type="text" v-model="systemName"/>
-                <small class="text-muted" id="helpId">Inserisci il nome del nuovo impianto</small>
-                <div
-                        class="alert alert-danger alert-dismissible fade show"
-                        role="alert"
-                        v-if="systemErrors.systemName"
-                >
-                    <strong>Errore.</strong> Inserisci il nome per l'impianto.
+                <input @input="validateSystemName" aria-describedby="helpId" class="form-control" id="name"
+                       name="name" placeholder="Es. Impianto idraulico"
+                       th:field="*{name}" type="text" v-model="systemName"/>
+                <small class="text-muted" id="helpId">Modifica il nome dell'impianto</small>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                     v-if="systemErrors.systemName.length > 0">
+                    <strong>Errore:</strong>
+                    <ul>
+                        <li :key="error" v-for="error in systemErrors.systemName">{{ error }}</li>
+                    </ul>
                 </div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="siteId">Sede</label>
-                <select
-                        class="form-select form-select-lg"
-                        id="siteId"
-                        name="siteId"
-                        v-model="selectedSiteId"
-                >
-                    <option selected>Seleziona una sede....</option>
-                    <option :key="site.id" :value="site.id" v-for="site in sites">{{ site.name }}</option>
+                <select class="form-select form-select-lg" id="siteId" name="siteId" v-model="selectedSiteId">
+                    <option selected value="">Seleziona una sede....</option>
+                    <option :key="item.id" :value="item.id" v-for="item in sites">{{ item.name }}</option>
                 </select>
-                <div
-                        class="alert alert-danger alert-dismissible fade show"
-                        role="alert"
-                        v-if="systemErrors.selectedSiteId"
-                >
-                    <strong>Errore.</strong> Seleziona la sede.
+                <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                     v-if="systemErrors.selectedSiteId.length > 0">
+                    <strong>Errore:</strong>
+                    <ul>
+                        <li :key="error" v-for="error in systemErrors.selectedSiteId">{{ error }}</li>
+                    </ul>
                 </div>
             </div>
-            <div class="d-flex gap-2">
-                <input class="btn btn-outline-primary" type="submit" value="Salva"/>
-                <input @click="cancel" class="btn btn-outline-danger" type="button" value="Annulla"/>
+            <div class="text-center">
+                <button :disabled="isSystemFormInvalid" class="btn btn-primary" type="submit">Salva modifiche</button>
             </div>
         </form>
-        <form action="/admin/view-sites" method="get" ref="cancel"></form>
     </div>
 </div>

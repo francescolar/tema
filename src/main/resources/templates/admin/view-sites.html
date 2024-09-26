@@ -297,6 +297,30 @@
             </div>
         </div>
     </div>
+    <div class="toast-container bottom-0 end-0 translate-middle-x p-3" th:if="${siteSuccess}">
+        <div class="toast text-bg-success" id="siteSuccessToast" role="alert">
+            <div class="toast-body">
+                <div class="d-flex gap-4">
+                    <span><i class="fa-solid fa-circle-exclamation fa-lg"></i></span>
+                    <div class="d-flex flex-grow-1 align-items-center">
+                        <span class="fw-semibold">Sede inserita con successo.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="toast-container bottom-0 end-0 translate-middle-x p-3" th:if="${systemSuccess}">
+        <div class="toast text-bg-success" id="systemSuccessToast" role="alert">
+            <div class="toast-body">
+                <div class="d-flex gap-4">
+                    <span><i class="fa-solid fa-circle-exclamation fa-lg"></i></span>
+                    <div class="d-flex flex-grow-1 align-items-center">
+                        <span class="fw-semibold">Impianto inserito con successo.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 </body>
 </html>

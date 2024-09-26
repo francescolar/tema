@@ -1,7 +1,7 @@
 <div class="register-container" th:fragment="edit-profile-normal-login">
     <h2>Modifica la password</h2>
-    <form @submit.prevent="validateFormFirstLogin" action="#" method="post" novalidate
-          th:action="@{/edit-profile}">
+    <form @submit.prevent="validateForm" action="#" method="post" novalidate
+          ref="editForm" th:action="@{/edit-profile}">
         <input name="role" th:value="${false}" type="hidden"/>
         <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
         <div class="form-floating mb-3">

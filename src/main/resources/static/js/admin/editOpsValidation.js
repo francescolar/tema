@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         computed: {
             formattedCounter() {
-                return parseFloat(this.counter).toFixed(2);  // Assicurati che il counter sia sempre formattato con due decimali
+                return parseFloat(this.counter).toFixed(2);
             },
             filteredOps() {
                 if (!this.searchOps) return this.ops;
@@ -59,31 +59,66 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             formattedDate() {
                 return this.formatDate(this.date);
+            },
+            isFormInvalid() {
+                return (
+                this.errors.selectedSiteId ||
+                this.errors.selectedSystemId ||
+                this.errors.selectedUserId ||
+                this.errors.date ||
+                this.errors.description ||
+                !this.selectedSiteId ||
+                !this.selectedSystemId ||
+                !this.selectedUserId ||
+                !this.date ||
+                !this.description
+                );
             }
         },
         methods: {
             validateForm() {
                 this.clearErrors();
-                if (!this.selectedSiteId) {
-                    this.errors.selectedSiteId = true;
-                }
-                if (!this.selectedSystemId) {
-                    this.errors.selectedSystemId = true;
-                }
-                if (!this.selectedUserId) {
-                    this.errors.selectedUserId = true;
-                }
-                if (!this.date) {
-                    this.errors.date = true;
-                }
-                if (!this.description) {
-                    this.errors.description = true;
-                }
+                this.validateSite(false);
+                this.validateSystem();
+                this.validateUser();
+                this.validateDate();
+                this.validateDescription();
 
-                if (Object.values(this.errors).every(value => !value)) {
+                if (!this.isFormInvalid) {
                     this.$refs.operationForm.submit();
                 }
             },
+
+            validateSite(resetSystem = true) {
+                this.errors.selectedSiteId = !this.selectedSiteId;
+                if (resetSystem) {
+                    this.selectedSystemId = '';
+                }
+            },
+
+            validateSystem() {
+                this.errors.selectedSystemId = !this.selectedSystemId;
+            },
+
+            validateUser() {
+                this.errors.selectedUserId = !this.selectedUserId;
+            },
+
+            validateDate() {
+                this.errors.date = !this.date;
+            },
+
+            validateDescription() {
+                this.errors.description = false;
+                if (this.description.length < 1) {
+                    this.errors.description = "La descrizione non può essere vuota.";
+                } else if (this.description.length > 3000) {
+                    this.errors.description = "La descrizione può avere al massimo 3000 caratteri.";
+                } else if (/[^A-Za-z0-9\s'’\-@$!%*?&,.;:]/.test(this.description)) {
+                    this.errors.description = "La descrizione contiene caratteri non consentiti.";
+                }
+            },
+
             clearErrors() {
                 this.errors = {
                     selectedSiteId: false,
@@ -105,12 +140,10 @@ document.addEventListener('DOMContentLoaded', function() {
             formatDate(dateString) {
                 if (!dateString) return '';
 
-                // Converti la stringa in oggetto Date
                 const date = new Date(dateString);
 
-                // Formatta la data in "YYYY-MM-DD HH:mm:ss"
                 const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');  // I mesi vanno da 0 a 11
+                const month = String(date.getMonth() + 1).padStart(2, '0');
                 const day = String(date.getDate()).padStart(2, '0');
                 const hours = String(date.getHours()).padStart(2, '0');
                 const minutes = String(date.getMinutes()).padStart(2, '0');

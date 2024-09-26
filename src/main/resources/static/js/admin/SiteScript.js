@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
             siteName: '',
             systemName: '',
             selectedSiteId: null,
+            siteAddress: '',
 
             siteNameFilter: '',
             cityFilter: '',
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedSite: {},
             siteErrors: {
                 siteName: [],
+                siteAddress: [],
             },
             systemErrors: {
                 systemName: [],
@@ -39,6 +41,17 @@ document.addEventListener('DOMContentLoaded', function() {
             this.fetchSites();
             this.fetchSystems();
             this.loadGoogleMapsApi();
+
+            const siteSuccess = document.getElementById('siteSuccessToast');
+            if (siteSuccess) {
+                const siteSuccessToast = new bootstrap.Toast(siteSuccess);
+                siteSuccessToast.show();
+            }
+            const systemSuccess = document.getElementById('systemSuccessToast');
+            if (systemSuccess) {
+                const systemSuccessToast = new bootstrap.Toast(systemSuccess);
+                systemSuccessToast.show();
+            }
         },
         computed: {
             filteredSites() {
@@ -128,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.clearSiteErrors();
 
                 this.validateSiteName();
+                this.validateSiteAddress();
 
                 if (Object.values(this.siteErrors).every(errorArray => errorArray.length === 0)) {
                     this.$refs.siteForm.submit();
@@ -145,11 +159,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (this.siteName.length > 50) {
                         this.siteErrors.siteName.push("Il nome della sede può avere al massimo 50 caratteri.");
                     }
+                    if (/[^A-Za-z0-9\s'’\-@$!%*?&.]/.test(this.siteName)) {
+                        this.siteErrors.siteName.push("Il nome della sede contiene caratteri non consentiti.");
+                    }
+                }
+            },
+            validateSiteAddress() {
+                this.siteErrors.siteAddress = [];
+
+                if (this.siteAddress && /[^A-Za-z0-9\s'’\-,.]/.test(this.siteAddress)) {
+                    this.siteErrors.siteAddress.push("L'indirizzo contiene caratteri non consentiti.");
                 }
             },
             clearSiteErrors() {
                 this.siteErrors = {
                     siteName: [],
+                    siteAddress: [],
                 };
             },
             validateSystemForm() {
@@ -176,6 +201,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     if (this.systemName.length > 50) {
                         this.systemErrors.systemName.push("Il nome dell'impianto può avere al massimo 50 caratteri.");
+                    }
+                    if (/[^A-Za-z0-9\s'’\-@$!%*?&.]/.test(this.systemName)) {
+                        this.systemErrors.systemName.push("Il nome dell'impianto contiene caratteri non consentiti.");
                     }
                 }
             },
