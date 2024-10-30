@@ -1,6 +1,5 @@
 <div th:fragment="edit-site">
-    <div class="form-container margin-for-editing" ref="siteDiv"
-         th:data-info="|{'siteName': '${site.name}', 'address': '${site.address}'}|">
+    <div class="form-container margin-for-editing">
         <h2>Modifica sede</h2>
         <form @submit.prevent="validateSiteForm" action="#" method="post" novalidate ref="editSiteForm"
               th:action="@{/admin/edit}" th:object="${site}">
@@ -9,25 +8,31 @@
             <div class="mb-3">
                 <label class="form-label" for="name">Nome sede</label>
                 <input class="form-control" id="name" name="name" placeholder="Nome sede" required th:field="*{name}"
-                       title="" type="text" v-model="siteName"/>
+                       @input="validateSiteName" title="" type="text" v-model="siteName"/>
                 <small class="text-muted" id="helpId">Modifica il nome della sede</small>
-                <div
-                        class="alert alert-danger alert-dismissible fade show"
-                        role="alert"
-                        v-if="siteErrors.siteName"
-                >
-                    <strong>Errore.</strong> Inserisci il nome per la sede.
+                <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                     v-if="siteErrors.siteName.length > 0">
+                    <strong>Errore:</strong>
+                    <ul>
+                        <li :key="error" v-for="error in siteErrors.siteName">{{ error }}</li>
+                    </ul>
                 </div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="address">Indirizzo</label>
                 <input class="form-control" id="address" name="address" placeholder="Indirizzo" required
-                       th:field="*{address}"
-                       title="" type="text" v-model="address"/>
+                       @input="validateSiteAddress" th:field="*{address}" title="" type="text" v-model="siteAddress"/>
                 <small class="text-muted" id="helpId2">Modifica l'indirizzo della sede</small>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                     v-if="siteErrors.siteAddress.length > 0">
+                    <strong>Errore:</strong>
+                    <ul>
+                        <li :key="error" v-for="error in siteErrors.siteAddress">{{ error }}</li>
+                    </ul>
+                </div>
             </div>
             <div class="d-flex gap-2">
-                <input class="btn btn-outline-primary" type="submit" value="Salva"/>
+                <button :disabled="isSiteFormInvalid" class="btn btn-outline-primary" type="submit">Salva</button>
                 <input @click="cancel" class="btn btn-outline-danger" type="button" value="Annulla"/>
             </div>
         </form>

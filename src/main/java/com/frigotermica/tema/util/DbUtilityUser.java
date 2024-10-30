@@ -4,7 +4,6 @@ import com.frigotermica.tema.models.UserModel;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -91,6 +90,28 @@ public class DbUtilityUser {
         return user;
     }
 
+    public static UserModel findByUsername(String username) throws SQLException {
+        Connection c = DbUtility.createConnection();
+        String sql = "SELECT users.*, authorities.authority FROM users INNER JOIN authorities ON users.username = authorities.username WHERE ((users.username = ?) AND (deleted = FALSE))";
+        PreparedStatement stmt = c.prepareStatement(sql);
+        stmt.setString(1, username);
+        UserModel user = new UserModel();
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            String email = rs.getString("email");
+            String name = rs.getString("name");
+            String surname = rs.getString("surname");
+            boolean enabled = rs.getBoolean("enabled");
+            String role = rs.getString("authority");
+            user = new UserModel(id, username, email, name, surname, role, enabled);
+        }
+        rs.close();
+        stmt.close();
+        c.close();
+        return user;
+    }
+
     public static boolean checkUsername(String username) throws SQLException {
         Connection c = DbUtility.createConnection();
         String sql = "SELECT * FROM users WHERE username = ?;";
@@ -140,8 +161,7 @@ public class DbUtilityUser {
         stmt.executeUpdate();
         sql = "INSERT INTO soft_operation (recon, username) VALUES (?, ?);";
         stmt = c.prepareStatement(sql);
-        String salt = BCrypt.gensalt();
-        stmt.setString(1, CryptoPassword.cryptoPasswordwithSalt(user.getPassword(), salt));
+        stmt.setString(1, CryptoPassword.cryptoPassword(user.getPassword()));
         stmt.setString(2, user.getUsername());
         stmt.executeUpdate();
         sql = "INSERT INTO authorities (username, authority) VALUES(?, ?);";
@@ -243,6 +263,8 @@ public class DbUtilityUser {
             user.setName(rs.getString("name"));
             user.setSurname(rs.getString("surname"));
             user.setPassword(rs.getString("recon"));
+            user.setEnabled(rs.getBoolean("enabled"));
+            user.setDeleted(rs.getBoolean("deleted"));
         }
         rs.close();
         stmt.close();

@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
         mounted() {
             this.fetchOps(),
             this.authId = this.$el.getAttribute('data-auth-id');
+
+            const successToast = document.getElementById('successToast');
+            if (successToast) {
+                const toast = new bootstrap.Toast(successToast);
+                toast.show();
+            }
         },
         computed: {
             filteredOps() {

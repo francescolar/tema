@@ -62,7 +62,7 @@
                 <td>
                     <button
                             @click="showOpDetails(op)"
-                            class="dropdown-item"
+                            class="btn btn-secondary"
                             data-bs-target="#opDetailsModal"
                             data-bs-toggle="modal"
                             type="button"
@@ -94,6 +94,18 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="toast-container bottom-0 end-0 translate-middle-x p-3" th:if="${success}">
+        <div class="toast text-bg-success" id="successToast" role="alert">
+            <div class="toast-body">
+                <div class="d-flex gap-4">
+                    <span><i class="fa-solid fa-circle-exclamation fa-lg"></i></span>
+                    <div class="d-flex flex-grow-1 align-items-center">
+                        <span class="fw-semibold">Manutenzione inserita con successo.</span>
+                    </div>
                 </div>
             </div>
         </div>

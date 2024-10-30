@@ -7,12 +7,13 @@
         tabindex="-1"
         th:fragment="create-user"
 >
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog" role="document" v-cloak>
         <div class="modal-content" style="background: none; border: none;">
             <div class="register-container">
                 <h2>Inserisci i dati del nuovo utente</h2>
                 <form @submit.prevent="validateForm" id="registerForm" method="post" novalidate
                       ref="registerForm" th:action="@{/admin/create-user}" th:object="${user}">
+                    <input name="password" th:value="'7K%lKAhS*%q!&U!fg?'" type="hidden"/>
                     <div class="form-floating mb-3">
                         <input
                                 class="form-control"
@@ -21,15 +22,23 @@
                                 placeholder=""
                                 type="text"
                                 v-model="username"
+                                @input="validateUsername"
                         />
                         <label for="username">Username</label>
+                    </div>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                         v-if="errors.username.length > 0">
+                        <strong>Errore:</strong>
+                        <ul>
+                            <li :key="error" v-for="error in errors.username">{{ error }}</li>
+                        </ul>
                     </div>
                     <div
                             class="alert alert-danger alert-dismissible fade show"
                             role="alert"
-                            v-if="errors.username"
+                            th:if="${usernameCheck}"
                     >
-                        <strong>Errore.</strong> L'username deve avere minimo 4 caratteri
+                        <strong>Errore.</strong> L'username è già esistente
                     </div>
                     <div class="form-floating mb-3">
                         <input
@@ -40,19 +49,15 @@
                                 required
                                 type="email"
                                 v-model="email"
+                                @input="validateEmail"
                         />
                         <label for="email">Email</label>
                     </div>
-                    <div
-                            class="alert alert-danger alert-dismissible fade show"
-                            role="alert"
-                            v-if="errors.email"
-                    >
-                        <strong>Errore.</strong>
-                        L'email presenta degli errori.
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                         v-if="errors.email.length > 0">
+                        <strong>Errore:</strong>
                         <ul>
-                            <li>è vuota</li>
-                            <li>non ha un corretto formato</li>
+                            <li :key="error" v-for="error in errors.email">{{ error }}</li>
                         </ul>
                     </div>
                     <div class="form-floating mb-3">
@@ -63,15 +68,16 @@
                                 placeholder=""
                                 type="text"
                                 v-model="name"
+                                @input="validateName"
                         />
                         <label for="name">Nome</label>
                     </div>
-                    <div
-                            class="alert alert-danger alert-dismissible fade show"
-                            role="alert"
-                            v-if="errors.name"
-                    >
-                        <strong>Errore.</strong> Inserisci il nome.
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                         v-if="errors.name.length > 0">
+                        <strong>Errore:</strong>
+                        <ul>
+                            <li :key="error" v-for="error in errors.name">{{ error }}</li>
+                        </ul>
                     </div>
                     <div class="form-floating mb-3">
                         <input
@@ -81,19 +87,21 @@
                                 placeholder=""
                                 type="text"
                                 v-model="surname"
+                                @input="validateSurname"
                         />
                         <label for="surname">Cognome</label>
                     </div>
-                    <div
-                            class="alert alert-danger alert-dismissible fade show"
-                            role="alert"
-                            v-if="errors.surname"
-                    >
-                        <strong>Errore.</strong> Inserisci il cognome.
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                         v-if="errors.surname.length > 0">
+                        <strong>Errore:</strong>
+                        <ul>
+                            <li :key="error" v-for="error in errors.surname">{{ error }}</li>
+                        </ul>
                     </div>
                     <button
                             class="btn btn-primary"
                             type="submit"
+                            :disabled="isFormInvalid"
                     >
                         Crea utente
                     </button>

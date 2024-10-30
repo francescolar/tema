@@ -38,17 +38,19 @@
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<main class="main-container" id="app" th:attr="data-auth-id=${authId}">
+<main class="main-container" id="app" th:attr="data-auth-id=${authId}" v-cloak>
     <div class="content-container">
         <div class="left-section">
             <h1>Tutte le sedi</h1>
             <div class="filters-container">
                 <label for="siteName">Nome sede:</label>
-                <input @input="applySiteFilter" placeholder="Cerca per nome sede" type="text" v-model="siteNameFilter"/>
+                <input @input="applySiteFilter" id="siteName" placeholder="Cerca per nome sede" type="text"
+                       v-model="siteNameFilter"/>
                 <label for="city">Città sede:</label>
-                <input @input="applySiteFilter" placeholder="Cerca per città" type="text" v-model="cityFilter"/>
+                <input @input="applySiteFilter" id="city" placeholder="Cerca per città" type="text"
+                       v-model="cityFilter"/>
                 <label for="numImpianti">Numero impianti:</label>
-                <select @change="applySiteFilter" v-model="numImpiantiCondition">
+                <select @change="applySiteFilter" id="numImpianti" v-model="numImpiantiCondition">
                     <option value="equal">Uguale a</option>
                     <option value="less">Minore di</option>
                     <option value="greater">Maggiore di</option>
@@ -57,7 +59,7 @@
                        v-model="numImpiantiValue"/>
                 <div class="filter-group">
                     <label for="totManutenzione">Totale ore manutenzione:</label>
-                    <select @change="applySiteFilter" v-model="totManutenzioneCondition">
+                    <select @change="applySiteFilter" id="totManutenzione" v-model="totManutenzioneCondition">
                         <option value="equal">Uguale a</option>
                         <option value="less">Minore di</option>
                         <option value="greater">Maggiore di</option>
@@ -73,14 +75,23 @@
                     Sedi con 0 impianti:
                     <input @change="applySiteFilter" type="checkbox" v-model="excludeZeroSystems"/>
                 </label>
-                <button @click="resetSiteFilters" class="btn btn-secondary">Reset Filtri</button>
+                <div class="pagination">
+                    <button :disabled="currentPageSites === 1" @click="currentPageSites--" class="btn btn-secondary">
+                        Indietro
+                    </button>
+                    <span>Pagina {{ currentPageSites }} di {{ totalPagesSites }}</span>
+                    <button :disabled="currentPageSites === totalPagesSites" @click="currentPageSites++"
+                            class="btn btn-secondary">Avanti
+                    </button>
+                </div>
+                <button @click="resetSiteFilters" class="btn btn-primary">Reset Filtri</button>
             </div>
             <div class="sites-container">
-                <div v-if="sites.length === 0">
+                <div v-if="paginatedSites.length === 0">
                     <p colspan="4">Nessuna sede disponibile.</p>
                 </div>
                 <div :class="['site-card', !site.enabled ? 'disabled' : '']" :key="site.id"
-                     v-for="site in filteredSites">
+                     v-for="site in paginatedSites">
                     <div class="site-card-body">
                         <h4 class="site-card-title">(ID: {{ site.id }}) {{ site.name }}</h4>
                         <p class="site-card-text">{{ site.address }}</p>
@@ -200,10 +211,11 @@
         <div class="offcanvas-body">
             <div class="system-filters-custom" id="system-filters">
                 <label class="system-filter-label" for="systemName">Nome impianto:</label>
-                <input @input="applySystemFilter" class="system-filter-input" placeholder="Cerca per nome impianto"
+                <input @input="applySystemFilter" class="system-filter-input" id="systemName"
+                       placeholder="Cerca per nome impianto"
                        type="text" v-model="systemNameFilter"/>
                 <label class="system-filter-label" for="totManutenzioneSystem">Totale ore manutenzione:</label>
-                <select @change="applySystemFilter" class="system-filter-select"
+                <select @change="applySystemFilter" class="system-filter-select" id="totManutenzioneSystem"
                         v-model="totManutenzioneSystemCondition">
                     <option value="equal">Uguale a</option>
                     <option value="less">Minore di</option>
@@ -282,6 +294,30 @@
                     </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+    <div class="toast-container bottom-0 end-0 translate-middle-x p-3" th:if="${siteSuccess}">
+        <div class="toast text-bg-success" id="siteSuccessToast" role="alert">
+            <div class="toast-body">
+                <div class="d-flex gap-4">
+                    <span><i class="fa-solid fa-circle-exclamation fa-lg"></i></span>
+                    <div class="d-flex flex-grow-1 align-items-center">
+                        <span class="fw-semibold">Sede inserita con successo.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="toast-container bottom-0 end-0 translate-middle-x p-3" th:if="${systemSuccess}">
+        <div class="toast text-bg-success" id="systemSuccessToast" role="alert">
+            <div class="toast-body">
+                <div class="d-flex gap-4">
+                    <span><i class="fa-solid fa-circle-exclamation fa-lg"></i></span>
+                    <div class="d-flex flex-grow-1 align-items-center">
+                        <span class="fw-semibold">Impianto inserito con successo.</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

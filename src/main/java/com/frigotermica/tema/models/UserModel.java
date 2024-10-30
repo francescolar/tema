@@ -1,7 +1,6 @@
 package com.frigotermica.tema.models;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,29 +8,40 @@ import java.time.LocalDateTime;
 public class UserModel {
 
     @NotNull
+    @PositiveOrZero
     private int id;
 
-    @NotNull
-    @Size(min = 4, max = 30)
+    @NotNull(message = "Username is required")
+    @Size(min = 4, max = 25, message = "Username must be between 4 and 25 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9.]+$", message = "Username can contain only letters, numbers, and periods")
     private String username;
 
-    //    @NotNull
-//	@Size(min=2, max=200)
+    @NotNull(message = "Password is required")
+    @Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters")
+    @Pattern(
+            regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@$!%*?&?])[A-Za-z0-9@$!%*?&?]{8,50}$",
+            message = "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&?), and must only include Latin characters."
+    )
     private String password;
 
-    @NotNull
-    @Size(min = 2, max = 100)
+    @NotNull(message = "Email is required")
+    @Size(min = 2, max = 50, message = "Email must be between 2 and 50 characters")
+    @Email(message = "Invalid email format")
+    @Pattern(regexp = "^[A-Za-z0-9\\s'’\\-@$!%*?&.]+$", message = "Email contains invalid characters")
     private String email;
 
-    @NotNull
-    @Size(min = 2, max = 50)
+    @NotNull(message = "Name is required")
+    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
+    @Pattern(regexp = "^[A-Za-z0-9\\s'’\\-@$!%*?&.]+$", message = "Name contains invalid characters")
     private String name;
 
-    @Size(min = 2, max = 50)
+    @Size(min = 2, max = 50, message = "Surname must be between 2 and 50 characters")
+    @Pattern(regexp = "^[A-Za-z0-9\\s'’\\-@$!%*?&.]+$", message = "Surname contains invalid characters")
     private String surname;
 
     private String role;
 
+    @PositiveOrZero
     private BigDecimal totalWorkHours;
 
     private LocalDateTime createdAt;
@@ -54,7 +64,7 @@ public class UserModel {
 
     public UserModel(@NotNull int id, @NotNull @Size(min = 4, max = 30) String username,
                      @NotNull @Size(min = 2, max = 100) String email, @NotNull @Size(min = 2, max = 50) String name,
-                     @Size(min = 2, max = 50) String surname, BigDecimal totalWorkHours, LocalDateTime createdAt, String role, boolean enabled) {
+                     @Size(min = 2, max = 50) String surname, @Min(0) BigDecimal totalWorkHours, LocalDateTime createdAt, String role, boolean enabled) {
         this.id = id;
         this.username = username;
         this.email = email;

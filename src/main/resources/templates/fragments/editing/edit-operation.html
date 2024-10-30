@@ -1,6 +1,6 @@
 <div class="main-contact-card-container" th:fragment="edit-operation">
     <div ref="dataDiv"
-         th:data-info="|{'date': '${op.date}', 'description': '${op.description}', 'counter': '${op.hoursSpent}', 'selectedSiteId': '${op.siteId}', 'selectedSystemId': '${op.systemId}', 'selectedUserId': '${op.userId}'}|">
+         th:data-info="|{'date': '${#strings.escapeJavaScript(op.date)}', 'counter': '${op.hoursSpent}', 'selectedSiteId': '${op.siteId}', 'selectedSystemId': '${op.systemId}', 'selectedUserId': '${op.userId}'}|">
         <div>
             <form @submit.prevent="validateForm" class="insert-operation-form" id="operationForm" method="post"
                   novalidate ref="operationForm" th:action="@{/admin/edit}" th:object="${operation}">
@@ -18,6 +18,7 @@
                                 placeholder=""
                                 type="datetime-local"
                                 v-model="date"
+                                @input="validateDate"
                         />
                         <small class="text-muted" id="helpId">Inserisci la data in cui è stata eseguita la
                             manutenzione</small>
@@ -32,13 +33,14 @@
                     <div class="mb-3 form-item">
                         <label class="form-label" for="description">Descrizione</label>
                         <textarea class="form-control" id="description" name="description" rows="3"
-                                  v-model="description"></textarea>
+                                  th:field="${op.description}"
+                                  @input="validateDescription" v-model="description"></textarea>
                         <div
                                 class="alert alert-danger alert-dismissible fade show"
                                 role="alert"
                                 v-if="errors.description"
                         >
-                            <strong>Errore.</strong> Inserisci una descrizione.
+                            <strong>Errore.</strong> {{ errors.description }}
                         </div>
                     </div>
                 </div>
@@ -50,6 +52,7 @@
                                 id="siteId"
                                 name="siteId"
                                 v-model="selectedSiteId"
+                                @change="validateSite"
                         >
                             <option selected value="">Seleziona una...</option>
                             <option :key="site.id" :value="site.id" v-for="site in sites">{{ site.name }}</option>
@@ -69,6 +72,7 @@
                                 id="systemId"
                                 name="systemId"
                                 v-model="selectedSystemId"
+                                @change="validateSystem"
                         >
                             <option selected v-if="filteredSystems.length > 0" value="">Seleziona una...</option>
                             <option disabled selected v-if="filteredSystems.length === 0" value="">Nessun impianto per
@@ -93,6 +97,7 @@
                                 id="userId"
                                 name="userId"
                                 v-model="selectedUserId"
+                                @change="validateUser"
                         >
                             <option selected value="">Seleziona una...</option>
                             <option :key="user.id" :value="user.id" v-for="user in users">({{ user.id }}) {{
@@ -113,8 +118,8 @@
                     <div @click="decrease(5)" class="counter-button" tabindex="0">-5</div>
                     <div @click="decrease(1)" class="counter-button" tabindex="0">-1</div>
                     <div @click="decrease(0.5)" class="counter-button" tabindex="0">-0.5</div>
-                    <input :value="formattedCounter" class="counter-input" id="hoursSpent" name="hoursSpent"
-                           readonly type="number">
+                    <input :value="formattedCounter" class="counter-input" id="hoursSpent" name="hoursSpent" readonly
+                           type="number">
                     <div @click="increase(0.5)" class="counter-button" tabindex="0">+0.5</div>
                     <div @click="increase(1)" class="counter-button" tabindex="0">+1</div>
                     <div @click="increase(5)" class="counter-button" tabindex="0">+5</div>
@@ -122,6 +127,7 @@
                 <button
                         class="btn btn-outline-primary center-button-insert-op"
                         type="submit"
+                        :disabled="isFormInvalid"
                 >
                     Invia
                 </button>

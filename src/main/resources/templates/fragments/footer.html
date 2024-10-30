@@ -1,0 +1,129 @@
+<footer th:fragment="footer">
+    <div class="footer-container">
+        <div
+                aria-hidden="true"
+                aria-labelledby="modalTitleId"
+                class="modal fade"
+
+                id="modalId"
+                role="dialog"
+                tabindex="-1"
+        >
+            <div
+                    class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-s"
+                    role="document"
+            >
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitleId">
+                            Richiedi assistenza
+                        </h5>
+                        <button
+                                aria-label="Close"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                type="button"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="container">
+                            <form @submit.prevent="validateCustomerEmail" method="post" novalidate ref="customerEmail"
+                                  th:action="@{/send-customer-email}">
+                                <div class="mb-3 row">
+                                    <label
+                                            class="col-4 col-form-label"
+                                            for="usernameMail"
+                                    >Username</label
+                                    >
+                                    <div
+                                            class="col-8"
+                                    >
+                                        <input
+                                                class="form-control"
+                                                id="usernameMail"
+                                                name="usernameMail"
+                                                placeholder="username"
+                                                type="text"
+                                                v-model="usernameMail"
+                                        />
+                                    </div>
+                                </div>
+                                <fieldset class="mb-3 row">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="emailHelpId">Email</label>
+                                        <input
+                                                aria-describedby="emailHelpId"
+                                                class="form-control"
+                                                id="emailHelpId"
+                                                name="emailHelpId"
+                                                placeholder="email"
+                                                type="email"
+                                                v-model="emailHelpId"
+                                        />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="subject">Oggetto</label>
+                                        <input
+                                                aria-describedby="helpId"
+                                                class="form-control"
+                                                id="subject"
+                                                name="subject"
+                                                placeholder="oggetto"
+                                                type="text"
+                                                v-model="subject"
+                                        />
+                                    </div>
+
+
+                                </fieldset>
+                                <div class="mb-3">
+                                    <label class="form-label" for="message">Messaggio</label>
+                                    <textarea class="form-control" id="message" name="message" placeholder="Inserisci il tuo messaggio"
+                                              rows="3" v-model="message"></textarea>
+                                </div>
+
+                                <div class="mb-3 row">
+                                    <div class="col-sm-8">
+                                        <button @click="validateCustomerEmail" class="btn btn-primary" type="button">
+                                            Invia
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                                type="button"
+                        >
+                            Chiudi
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <nav class="navbar navbar-expand navbar-dark bg-dark fixed-bottom">
+            <div class="nav navbar-nav">
+
+                <button
+                        class="btn btn-outline-secondary btn-sm"
+                        data-bs-target="#modalId"
+                        data-bs-toggle="modal"
+                        type="button"
+                >
+                    Assistenza
+                </button>
+
+
+            </div>
+        </nav>
+    </div>
+</footer>

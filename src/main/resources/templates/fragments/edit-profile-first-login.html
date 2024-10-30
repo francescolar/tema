@@ -1,40 +1,37 @@
 <div class="register-container" th:fragment="edit-profile-first-login">
     <h2>Modifica la password</h2>
-    <form @submit.prevent="validateFormFirstLogin" action="#" method="post" novalidate
-          ref="editContactForm" th:action="@{/edit-profile}">
+    <form @submit.prevent="validateForm" action="#" method="post" novalidate
+          ref="editForm" th:action="@{/edit-profile}">
         <input name="role" th:value="${true}" type="hidden"/>
         <input name="oldPassword" th:value="'none'" type="hidden"/>
         <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
         <div class="form-floating mb-3">
-            <input class="form-control" id="newPassword" name="newPassword" placeholder="nuova password" title=""
-                   type="password" v-model="newPassword"/>
+            <input @input="handleNewPasswordInput" class="form-control" id="newPassword" name="newPassword"
+                   placeholder="nuova password" type="password" v-model="newPassword"/>
             <label for="newPassword">Nuova password</label>
             <span class="material-symbols-rounded" id="show-new-password" onclick="toggleNewPsw()">visibility</span>
-        </div>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="text-align: left;"
-             v-if="errors.newPassword">
-            La password non rispetta i requisiti:
-            <ul>
-                <li>minimo 8 caratteri</li>
-                <li>deve includere una lettera maiuscola</li>
-                <li>deve includere una lettera minuscola</li>
-                <li>deve includere un numero</li>
-                <li>deve includere un carattere speciale</li>
-            </ul>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                 v-if="errors.newPassword.length > 0">
+                <strong>Errore.</strong>
+                <ul>
+                    <li :key="error" v-for="error in errors.newPassword">{{ error }}</li>
+                </ul>
+            </div>
         </div>
         <div class="form-floating mb-3">
             <input class="form-control" id="confirmPassword" name="confirmPassword"
-                   placeholder="conferma nuova password" title=""
-                   type="password" v-model="confirmPassword"/>
+                   @input="validateConfirmPassword"
+                   placeholder="conferma nuova password" type="password" v-model="confirmPassword"/>
             <label for="confirmPassword">Conferma password</label>
             <span class="material-symbols-rounded" id="show-password-confirm"
                   onclick="toggleConfirmPsw()">visibility</span>
-        </div>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" v-if="errors.confirmPassword">Le
-            password non corrispondono
+            <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                 v-if="errors.confirmPassword.length > 0">
+                <strong>Errore.</strong> {{ errors.confirmPassword[0] }}
+            </div>
         </div>
         <div class="d-flex gap-2">
-            <input class="form-control btn btn-outline-primary" type="submit" value="Salva"/>
+            <input :disabled="isFormInvalid" class="form-control btn btn-outline-primary" type="submit" value="Salva"/>
         </div>
     </form>
 </div>

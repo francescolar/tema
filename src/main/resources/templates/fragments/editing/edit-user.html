@@ -6,15 +6,15 @@
         <input th:field="*{id}" type="hidden"/>
         <div class="form-floating mb-3">
             <input class="form-control" id="username" name="username" placeholder="" required th:field="*{username}"
-                   title="" type="text" v-model="username"/>
+                   @input="validateUsername" title="" type="text" v-model="username"/>
             <label for="username">Username</label>
         </div>
-        <div
-                class="alert alert-danger alert-dismissible fade show"
-                role="alert"
-                v-if="errors.username"
-        >
-            <strong>Errore.</strong> L'username deve avere minimo 4 caratteri
+        <div class="alert alert-danger alert-dismissible fade show" role="alert"
+             v-if="errors.username.length > 0">
+            <strong>Errore:</strong>
+            <ul>
+                <li :key="error" v-for="error in errors.username">{{ error }}</li>
+            </ul>
         </div>
         <div
                 class="alert alert-danger alert-dismissible fade show"
@@ -25,44 +25,46 @@
         </div>
         <div class="form-floating mb-3">
             <input class="form-control" id="email" name="email" placeholder="" required th:field="*{email}" title=""
-                   type="text" v-model="email"/>
+                   @input="validateEmail" type="text" v-model="email"/>
             <label for="email">Email</label>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert"
+             v-if="errors.email.length > 0">
+            <strong>Errore:</strong>
+            <ul>
+                <li :key="error" v-for="error in errors.email">{{ error }}</li>
+            </ul>
         </div>
         <div
                 class="alert alert-danger alert-dismissible fade show"
                 role="alert"
-                v-if="errors.email"
+                th:if="${emailExist}"
         >
-            <strong>Errore.</strong>
-            L'email presenta degli errori.
-            <ul>
-                <li>è vuota</li>
-                <li>non ha un corretto formato</li>
-            </ul>
+            <strong>Errore.</strong> L'email è già esistente
         </div>
         <div class="form-floating mb-3">
             <input class="form-control" id="name" name="name" placeholder="" required th:field="*{name}" title=""
-                   type="text" v-model="name"/>
+                   @input="validateName" type="text" v-model="name"/>
             <label for="name">Nome</label>
         </div>
-        <div
-                class="alert alert-danger alert-dismissible fade show"
-                role="alert"
-                v-if="errors.name"
-        >
-            <strong>Errore.</strong> Inserisci il nome.
+        <div class="alert alert-danger alert-dismissible fade show" role="alert"
+             v-if="errors.name.length > 0">
+            <strong>Errore:</strong>
+            <ul>
+                <li :key="error" v-for="error in errors.name">{{ error }}</li>
+            </ul>
         </div>
         <div class="form-floating mb-3">
             <input class="form-control" id="surname" name="surname" placeholder="" required th:field="*{surname}"
-                   title="" type="text" v-model="surname"/>
+                   @input="validateSurname" title="" type="text" v-model="surname"/>
             <label for="surname">Cognome</label>
         </div>
-        <div
-                class="alert alert-danger alert-dismissible fade show"
-                role="alert"
-                v-if="errors.surname"
-        >
-            <strong>Errore.</strong> Inserisci il cognome.
+        <div class="alert alert-danger alert-dismissible fade show" role="alert"
+             v-if="errors.surname.length > 0">
+            <strong>Errore:</strong>
+            <ul>
+                <li :key="error" v-for="error in errors.surname">{{ error }}</li>
+            </ul>
         </div>
         <div class="d-flex justify-content-center">
             <div class="form-check form-switch content">
@@ -71,7 +73,7 @@
             </div>
         </div>
         <div class="d-flex gap-2">
-            <input class="form-control btn btn-outline-primary" type="submit" value="Salva"/>
+            <input :disabled="isFormInvalid" class="form-control btn btn-outline-primary" type="submit" value="Salva"/>
             <input @click="cancel" class="form-control btn btn-outline-danger" type="button" value="Annulla"/>
         </div>
     </form>

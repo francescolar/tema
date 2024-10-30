@@ -43,6 +43,7 @@
         <form @submit.prevent="validateForm" class="insert-operation-form" id="operationForm" method="post"
               novalidate ref="operationForm" th:action="@{/insert-operation}" th:object="${operation}">
             <h1>Inserisci manutenzione</h1>
+
             <div class="form-group horizontal-layout">
                 <div class="form-item">
                     <label class="form-label" for="date">Data e ora esecuzione</label>
@@ -54,6 +55,7 @@
                             placeholder=""
                             type="datetime-local"
                             v-model="date"
+                            @input="validateDate"
                     />
                     <small class="text-muted" id="helpId">Inserisci la data in cui è stata eseguita la
                         manutenzione</small>
@@ -65,19 +67,27 @@
                         <strong>Errore.</strong> Inserisci una data.
                     </div>
                 </div>
+
                 <div class="form-item">
                     <label class="form-label" for="description">Descrizione</label>
-                    <textarea class="form-control" id="description" name="description" rows="3"
-                              v-model="description"></textarea>
+                    <textarea
+                            @input="validateDescription"
+                            class="form-control"
+                            id="description"
+                            name="description"
+                            rows="3"
+                            v-model="description"
+                    ></textarea>
                     <div
                             class="alert alert-danger alert-dismissible fade show"
                             role="alert"
                             v-if="errors.description"
                     >
-                        <strong>Errore.</strong> Inserisci una descrizione.
+                        <strong>Errore.</strong> {{ errors.description }}
                     </div>
                 </div>
             </div>
+
             <div class="form-group horizontal-layout">
                 <div class="form-item">
                     <label class="form-label" for="siteId">Sede</label>
@@ -86,6 +96,7 @@
                             id="siteId"
                             name="siteId"
                             v-model="selectedSiteId"
+                            @change="validateSite"
                     >
                         <option selected value="">Seleziona una...</option>
                         <option :key="site.id" :value="site.id" v-for="site in sites">{{ site.name }}</option>
@@ -98,6 +109,7 @@
                         <strong>Errore.</strong> Seleziona una sede.
                     </div>
                 </div>
+
                 <div class="form-item">
                     <label class="form-label" for="systemId">Impianto</label>
                     <select
@@ -105,6 +117,7 @@
                             id="systemId"
                             name="systemId"
                             v-model="selectedSystemId"
+                            @change="validateSystem"
                     >
                         <option selected v-if="filteredSystems.length > 0" value="">Seleziona una...</option>
                         <option disabled selected v-if="filteredSystems.length === 0" value="">Nessun impianto per la
@@ -123,6 +136,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="form-group counter-container">
                 <label class="form-label" for="hoursSpent">Ore impiegate (massimo 100)</label>
                 <div @click="decrease(5)" class="counter-button" tabindex="0">-5</div>
@@ -134,14 +148,17 @@
                 <div @click="increase(1)" class="counter-button" tabindex="0">+1</div>
                 <div @click="increase(5)" class="counter-button" tabindex="0">+5</div>
             </div>
+
             <button
                     class="btn btn-outline-primary center-button-insert-op"
                     type="submit"
+                    :disabled="isFormInvalid"
             >
                 Invia
             </button>
         </form>
     </div>
+
 </main>
 </body>
 </html>

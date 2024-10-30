@@ -1,38 +1,45 @@
 package com.frigotermica.tema.models;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class OperationModel {
 
-    @NotNull(message = "id")
+    @NotNull(message = "ID NotNull error")
+    @PositiveOrZero(message = "ID PositiveOrZero error")
     private int id;
 
-    @NotNull(message = "date")
+    @NotNull(message = "Date NotNull error")
     private LocalDateTime date;
 
-    @NotNull(message = "description")
+    @NotNull(message = "Description NotNull error")
+    @Size(min = 1, max = 3000, message = "Description size error")
+    @Pattern(regexp = "^[A-Za-z0-9\\s'’\\-@$!%*?&,.;:]+$", message = "Description regex error")
     private String description;
 
-    @NotNull(message = "hoursSpent")
+    @NotNull(message = "Hours spent NotNull error")
+    @Positive(message = "Hours spent Positive error")
+    @Max(100)
     private BigDecimal hoursSpent;
 
-    @NotNull(message = "site_id")
+    @NotNull(message = "Site ID NotNull error")
+    @PositiveOrZero(message = "Site ID NotNull error")
     private int siteId;
 
-    @NotNull(message = "system_id")
+    @NotNull(message = "System ID NotNull error")
+    @PositiveOrZero(message = "System ID PositiveOrZero error")
     private int systemId;
 
-    @NotNull(message = "user_id")
+    @NotNull(message = "User ID NotNull error")
+    @PositiveOrZero(message = "User ID PositiveOrZero error")
     private int userId;
 
     private boolean deleted;
 
     public OperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
-                          @NotNull @Size(min = 1, max = 100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
+                          @NotNull @Min(0) @Max(100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
                           @NotNull int userId) {
         this.id = id;
         this.date = date;
@@ -44,7 +51,7 @@ public class OperationModel {
     }
 
     public OperationModel(@NotNull LocalDateTime date, @NotNull String description,
-                          @NotNull @Size(min = 1, max = 100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
+                          @NotNull @Min(0) @Max(100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
                           @NotNull int userId) {
         this.date = date;
         this.description = description;
@@ -55,7 +62,7 @@ public class OperationModel {
     }
 
     public OperationModel(@NotNull int id, @NotNull LocalDateTime date, @NotNull String description,
-                          @NotNull @Size(min = 1, max = 100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
+                          @NotNull @Min(0) @Max(100) BigDecimal hoursSpent, @NotNull int siteId, @NotNull int systemId,
                           @NotNull int userId, boolean deleted) {
         this.id = id;
         this.date = date;
@@ -70,7 +77,7 @@ public class OperationModel {
     public OperationModel() {
     }
 
-    public OperationModel(int id, BigDecimal hoursSpent, int siteId, int systemId, int userId) {
+    public OperationModel(int id, @Min(0) @Max(100) BigDecimal hoursSpent, int siteId, int systemId, int userId) {
         this.id = id;
         this.hoursSpent = hoursSpent;
         this.siteId = siteId;

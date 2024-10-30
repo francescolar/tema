@@ -1,5 +1,6 @@
 package com.frigotermica.tema.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.frigotermica.tema.models.*;
 import com.frigotermica.tema.service.BasicPasswordGenerator;
 import com.frigotermica.tema.service.UserService;
@@ -10,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.SQLException;
 
@@ -56,35 +57,44 @@ public class AdminWebController implements WebMvcConfigurer {
     }
 
     @PostMapping("/admin/create-user")
-    public String createUser(@Valid @ModelAttribute("user") UserModel user, BindingResult bindingResult, Model model) {
-        int registrazioneEffettuata = userService.registerUser(user, bindingResult);
+    public String createUser(@Valid @ModelAttribute("user") UserModel user, BindingResult bindingResult, Model model,
+                             RedirectAttributes redirectAttrs) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("error", bindingResult.getAllErrors());
+            return "error";
+        } else {
+            int registrazioneEffettuata = userService.registerUser(user, bindingResult);
 
-        switch (registrazioneEffettuata) {
-            case 1:
-                model.addAttribute("usernameExist", true);
-                return "admin/view-users";
-            case 2:
-                model.addAttribute("emailExist", true);
-                return "admin/view-users";
-            case 3:
-                model.addAttribute("afterRegistration", true); //non serve
-                model.addAttribute("user", user);
-                return "admin/view-users";
-            case 4:
-                return "error";
+            switch (registrazioneEffettuata) {
+                case 1:
+                    model.addAttribute("usernameExist", true);
+                    return "admin/view-users";
+                case 2:
+                    model.addAttribute("emailExist", true);
+                    return "admin/view-users";
+                case 3:
+                    redirectAttrs.addFlashAttribute("userCreated", true);
+                    redirectAttrs.addFlashAttribute("user", user);
+                    return "redirect:/admin/view-users";
+                case 4:
+                    return "error";
+            }
+            return "";
         }
-        return "";
     }
 
 //    SITES PART -----------------------------------------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/admin/insert-site")
-    public String insertNewSite(@Valid @ModelAttribute SiteModel site, BindingResult bindingResult) {
+    public String insertNewSite(@Valid @ModelAttribute SiteModel site, BindingResult bindingResult, Model model,
+                                RedirectAttributes redirectAttrs) {
         if (bindingResult.hasErrors()) {
-            return "redirect:/error";
+            model.addAttribute("error", bindingResult.getAllErrors());
+            return "error";
         }
         try {
             DbUtilitySite.insertPreparedStatement(site);
+            redirectAttrs.addFlashAttribute("siteSuccess", true);
             return "redirect:/admin/view-sites";
         } catch (SQLException e) {
             logger.error("An error occurred while doing something", e);
@@ -115,12 +125,15 @@ public class AdminWebController implements WebMvcConfigurer {
     }
 
     @PostMapping("/admin/insert-operation")
-    public String insertNewOperation(@Valid @ModelAttribute OperationModel operation, @RequestParam("userId") int userId, BindingResult bindingResult, Model model) {
+    public String insertNewOperation(@Valid @ModelAttribute OperationModel operation, @RequestParam("userId") int userId,
+                                     BindingResult bindingResult, Model model, RedirectAttributes redirectAttrs) {
         if (bindingResult.hasErrors()) {
-            return "admin/insert-operation";
+            model.addAttribute("error", bindingResult.getAllErrors());
+            return "error";
         }
         try {
             DbUtilityOperation.insertPreparedStatement(operation, userId);
+            redirectAttrs.addFlashAttribute("opSuccess", true);
             return "redirect:/admin/view-operations";
         } catch (SQLException e) {
             logger.error("An error occurred while doing something", e);
@@ -131,12 +144,15 @@ public class AdminWebController implements WebMvcConfigurer {
 //    SYSTEM PART   -----------------------------------------------------------------------------------------------------------------------------------------------
 
     @PostMapping("/admin/insert-system")
-    public String insertNewOperation(@Valid @ModelAttribute SystemModel system, BindingResult bindingResult, Model model) {
+    public String insertNewOperation(@Valid @ModelAttribute SystemModel system, BindingResult bindingResult, Model model,
+                                     RedirectAttributes redirectAttrs) {
         if (bindingResult.hasErrors()) {
-            return "redirect:/error";
+            model.addAttribute("error", bindingResult.getAllErrors());
+            return "error";
         }
         try {
             DbUtilitySystem.insertPreparedStatement(system);
+            redirectAttrs.addFlashAttribute("systemSuccess", true);
             return "redirect:/admin/view-sites";
         } catch (SQLException e) {
             logger.error("An error occurred while doing something", e);
@@ -185,15 +201,15 @@ public class AdminWebController implements WebMvcConfigurer {
                            @ModelAttribute SiteModel site,
                            @ModelAttribute SystemModel system,
                            @RequestParam(name = "reset-psw", defaultValue = "false") boolean resetPsw,
-                           BindingResult result,
+                           BindingResult bindingResult,
                            Model model) {
         try {
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("error", bindingResult.getAllErrors());
+                return "error";
+            }
             switch (tableName) {
                 case "users":
-                    if (result.hasErrors()) {
-                        model.addAttribute("tableName", "users");
-                        return "/admin/edit";
-                    }
                     boolean userExist = DbUtilityUser.checkUsername(user.getUsername());
                     boolean emailExist = DbUtilityUser.checkEmail(user.getEmail());
                     UserModel dbUser = DbUtilityUser.getUserDetails(user.getId());
@@ -212,37 +228,29 @@ public class AdminWebController implements WebMvcConfigurer {
                     if (resetPsw) {
                         String randomPassword = BasicPasswordGenerator.getRandomPassword();
                         System.out.println(randomPassword);
-                        messageService.sendResetEmail(user.getEmail(), user.getUsername(), randomPassword);
-                        user.setPassword(CryptoPassword.cryptoPasswordwithSalt(randomPassword, BCrypt.gensalt()));
+                        messageService.sendResetEmail(user.getEmail(), user.getUsername(), user.getName(), randomPassword);
+                        user.setPassword(CryptoPassword.cryptoPassword(randomPassword));
                     } else {
                         user.setPassword(dbUser.getPassword());
                     }
+                    DbUtility.saveEditedLog("users", user.getId());
                     DbUtilityUser.adminUpdate(user, dbUser);
                     return "redirect:/admin/view-users";
                 case "sites":
-                    if (result.hasErrors()) {
-                        model.addAttribute("tableName", "sites");
-                        return "/admin/edit";
-                    }
+                    DbUtility.saveEditedLog("sites", site.getId());
                     DbUtilitySite.updatePreparedStatement(site);
                     return "redirect:/admin/view-sites";
                 case "systems":
-                    if (result.hasErrors()) {
-                        model.addAttribute("tableName", "systems");
-                        return "/admin/edit";
-                    }
+                    DbUtility.saveEditedLog("systems", system.getId());
                     DbUtilitySystem.updatePreparedStatement(system);
                     return "redirect:/admin/view-sites";
                 case "operations":
-                    if (result.hasErrors()) {
-                        model.addAttribute("tableName", "operations");
-                        return "/admin/edit";
-                    }
+                    DbUtility.saveEditedLog("operations", operation.getId());
                     DbUtilityOperation.update(operation);
                     return "redirect:/admin/view-operations";
             }
             return "admin/edit";
-        } catch (ClassNotFoundException | MessagingException | SQLException e) {
+        } catch (JsonProcessingException | ClassNotFoundException | MessagingException | SQLException e) {
             logger.error("An error occurred while doing something", e);
             return "redirect:/homepage";
         }

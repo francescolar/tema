@@ -89,7 +89,16 @@
                 <label class="users-filter-label">Data di creazione (fine):</label>
                 <input @change="applyFilter" class="users-filter-date" type="date" v-model="endDate"/>
             </div>
-            <button @click="resetFilters" class="btn btn-secondary users-filter-reset">Reset Filtri</button>
+            <div class="pagination">
+                <button :disabled="currentPage === 1" @click="currentPage = currentPage - 1" class="btn btn-secondary">
+                    Indietro
+                </button>
+                <span>Pagina {{ currentPage }} di {{ totalPages }}</span>
+                <button :disabled="currentPage === totalPages" @click="currentPage = currentPage + 1"
+                        class="btn btn-secondary">Avanti
+                </button>
+            </div>
+            <button @click="resetFilters" class="btn btn-primary users-filter-reset">Reset Filtri</button>
         </div>
     </div>
     <table class="users-table">
@@ -106,7 +115,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr :key="user.id" v-for="user in filteredUsers">
+        <tr :key="user.id" v-for="user in paginatedUsers">
             <td class="users-table-cell">{{ user.id }}</td>
             <td class="users-table-cell">{{ user.username }}</td>
             <td class="users-table-cell">{{ user.email }}</td>
@@ -155,11 +164,20 @@
                 </div>
             </td>
         </tr>
-        <tr v-if="filteredUsers.length === 0">
+        <tr v-if="paginatedUsers.length === 0">
             <td colspan="8">Nessun utente disponibile.</td>
         </tr>
         </tbody>
     </table>
+    <div class="pagination">
+        <button :disabled="currentPage === 1" @click="currentPage = currentPage - 1" class="btn btn-secondary">
+            Indietro
+        </button>
+        <span>Pagina {{ currentPage }} di {{ totalPages }}</span>
+        <button :disabled="currentPage === totalPages" @click="currentPage = currentPage + 1" class="btn btn-secondary">
+            Avanti
+        </button>
+    </div>
     <button
             class="btn btn-primary btn-lg users-add-button"
             data-bs-target="#modalId"
@@ -168,6 +186,18 @@
     >
         +
     </button>
+    <div class="toast-container bottom-0 end-0 translate-middle-x p-3" th:if="${userCreated}">
+        <div class="toast text-bg-success" id="userToast" role="alert">
+            <div class="toast-body">
+                <div class="d-flex gap-4">
+                    <span><i class="fa-solid fa-circle-exclamation fa-lg"></i></span>
+                    <div class="d-flex flex-grow-1 align-items-center">
+                        <span class="fw-semibold">Utente creato. Verrà inviata una mail con la password temporanea.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 </body>
 </html>

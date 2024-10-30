@@ -2,40 +2,100 @@ document.addEventListener('DOMContentLoaded', function() {
     new Vue({
         el: '#editForm',
         data: {
+            oldPassword: '',
             newPassword: '',
             confirmPassword: '',
-            oldPassword: '',
+            touchedNewPassword: false,  // Per evitare che gli errori appaiano subito
+            isFirstLogin: false,  // Flag per distinguere primo login o normale
             errors: {
-                newPassword: false,
-                confirmPassword: false,
-                oldPassword: false
+                oldPassword: [],
+                newPassword: [],
+                confirmPassword: []
+            }
+        },
+        computed: {
+            isFormInvalid() {
+                return (
+                (!this.isFirstLogin && !this.oldPassword) ||
+                !this.newPassword ||
+                !this.confirmPassword ||
+                this.errors.oldPassword.length > 0 ||
+                this.errors.newPassword.length > 0 ||
+                this.errors.confirmPassword.length > 0
+                );
             }
         },
         methods: {
             validateForm() {
-                this.errors.newPassword = this.newPassword && !this.validatePassword(this.newPassword);
-                this.errors.confirmPassword = this.newPassword && (this.newPassword !== this.confirmPassword);
-                this.errors.oldPassword = this.oldPassword.length < 2;
+                this.clearErrors();
 
-                if (!this.errors.newPassword && !this.errors.confirmPassword && !this.errors.oldPassword) {
-                    this.$refs.editContactForm.submit();
+                if (!this.isFirstLogin) {
+                    if (!this.oldPassword) {
+                        this.errors.oldPassword.push("La vecchia password è richiesta.");
+                    }
+                }
+
+                this.validateNewPassword();
+
+                this.validateConfirmPassword();
+
+                if (!this.isFormInvalid) {
+                    this.$refs.editForm.submit();
                 }
             },
-            validateFormFirstLogin() {
-                this.errors.newPassword = this.newPassword && !this.validatePassword(this.newPassword);
-                this.errors.confirmPassword = this.newPassword && (this.newPassword !== this.confirmPassword);
 
-                if (!this.errors.newPassword && !this.errors.confirmPassword) {
-                    this.$refs.editContactForm.submit();
+            validateNewPassword() {
+                this.errors.newPassword = [];
+
+                if (!this.newPassword && this.touchedNewPassword) {
+                    this.errors.newPassword.push("La nuova password è richiesta.");
+                } else if (this.newPassword) {
+                    if (this.newPassword.length < 8) {
+                        this.errors.newPassword.push("La password deve avere almeno 8 caratteri.");
+                    }
+                    if (this.newPassword.length > 50) {
+                        this.errors.newPassword.push("La password può avere al massimo 50 caratteri.");
+                    }
+                    if (!/[A-Z]/.test(this.newPassword)) {
+                        this.errors.newPassword.push("La password deve contenere almeno una lettera maiuscola.");
+                    }
+                    if (!/[a-z]/.test(this.newPassword)) {
+                        this.errors.newPassword.push("La password deve contenere almeno una lettera minuscola.");
+                    }
+                    if (!/[0-9]/.test(this.newPassword)) {
+                        this.errors.newPassword.push("La password deve contenere almeno un numero.");
+                    }
+                    if (!/[@$!%*?&?]/.test(this.newPassword)) {
+                        this.errors.newPassword.push("La password deve contenere almeno un carattere speciale (@$!%*?&?).");
+                    }
+                    if (/[^A-Za-z\d@$!%*?&?]/.test(this.newPassword)) {
+                        this.errors.newPassword.push("La password contiene caratteri non consentiti.");
+                    }
                 }
             },
-            validatePassword(newPassword) {
-                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-                return passwordRegex.test(newPassword);
+            validateConfirmPassword() {
+                this.errors.confirmPassword = [];
+                if (this.newPassword !== this.confirmPassword) {
+                    this.errors.confirmPassword.push("Le password non corrispondono.");
+                }
+            },
+            clearErrors() {
+                this.errors = {
+                    oldPassword: [],
+                    newPassword: [],
+                    confirmPassword: []
+                };
+            },
+            handleNewPasswordInput() {
+                this.touchedNewPassword = true;
+                this.validateNewPassword();
             },
             cancel() {
                 this.$refs.cancel.submit();
             }
+        },
+        mounted() {
+            this.isFirstLogin = document.querySelector('input[name="role"]').value === "true";
         }
     });
 });

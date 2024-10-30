@@ -39,7 +39,7 @@
 </head>
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
-<main id="editForm">
+<main id="editForm" v-cloak>
     <div sec:authorize="hasRole('USER_FIRSTLOGIN')"
          th:replace="~{fragments/edit-profile-first-login :: edit-profile-first-login}">
     </div>
